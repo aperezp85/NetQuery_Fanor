@@ -1,0 +1,17 @@
+{
+  "name": "netquery",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "exceljs": "^3.4.0",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "multer": "^2.1.1",
+    "session-file-store": "^1.5.0",
+    "uuid": "^14.0.0"
+  }
+}
