@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetQuery v3</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js?v=2"></script>
+<style>
+:root{--bg:#0a0c10;--bg2:#111318;--bg3:#181c24;--border:rgba(255,255,255,0.08);--text:#e8eaf0;--muted:#6b7280;--accent:#3b82f6;--accent2:#1d4ed8;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background-image:radial-gradient(ellipse at 20% 50%,rgba(59,130,246,0.08) 0%,transparent 60%);}
+.login-card{width:420px;padding:48px 40px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px;}
+.logo-icon{width:44px;height:44px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:22px;height:22px;fill:white;}
+.logo-text{font-size:22px;font-weight:600;}
+.logo-sub{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;}
+.login-title{font-size:26px;font-weight:600;margin-bottom:6px;}
+.login-sub{font-size:14px;color:var(--muted);margin-bottom:32px;}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;}
+.field input,.field select{width:100%;padding:12px 16px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:15px;font-family:inherit;transition:border-color 0.2s;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);}
+.btn-primary{width:100%;padding:13px;border-radius:8px;background:var(--accent);color:white;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:inherit;}
+.btn-primary:hover{background:var(--accent2);}
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
+.alert.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;}
+.alert.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#34d399;}
+.alert.warning{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#fcd34d;}
+#change-pass-screen{display:none;align-items:center;justify-content:center;min-height:100vh;background-image:radial-gradient(ellipse at 80% 50%,rgba(245,158,11,0.08) 0%,transparent 60%);}
+.change-pass-card{width:420px;padding:48px 40px;background:var(--bg2);border:1px solid rgba(245,158,11,0.3);border-radius:16px;}
+#app{display:none;flex-direction:column;min-height:100vh;}
+nav{display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:60px;position:sticky;top:0;z-index:100;}
+.nav-brand{display:flex;align-items:center;gap:10px;margin-right:32px;}
+.nav-brand .logo-icon{width:32px;height:32px;border-radius:7px;}
+.nav-brand .logo-icon svg{width:16px;height:16px;}
+.nav-brand span{font-size:17px;font-weight:600;}
+.nav-tabs{display:flex;gap:4px;flex:1;}
+.nav-tab{padding:7px 16px;border-radius:8px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;transition:all 0.15s;font-family:inherit;}
+.nav-tab:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+.nav-tab.active{color:var(--accent);background:rgba(59,130,246,0.1);}
+.nav-user{display:flex;align-items:center;gap:12px;}
+.user-badge{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:13px;}
+.role-pill{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.15);color:#60a5fa;font-family:'Space Mono',monospace;}
+.role-pill.consulta{background:rgba(16,185,129,0.15);color:#34d399;}
+.btn-logout{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-family:inherit;}
+.btn-logout:hover{border-color:var(--danger);color:#fca5a5;}
+main{flex:1;padding:32px 40px;max-width:1400px;width:100%;margin:0 auto;}
+.page{display:none;}
+.page.active{display:block;}
+.page-title{font-size:28px;font-weight:600;margin-bottom:6px;}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:28px;}
+.search-box{display:flex;gap:12px;margin-bottom:20px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.search-input-wrap{flex:1;position:relative;}
+.search-input-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);width:18px;height:18px;}
+.search-input{width:100%;padding:13px 16px 13px 44px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:15px;font-family:'Space Mono',monospace;letter-spacing:1px;transition:border-color 0.2s;}
+.search-input:focus{outline:none;border-color:var(--accent);}
+.search-input::placeholder{font-family:'DM Sans',sans-serif;letter-spacing:0;color:var(--muted);}
+.action-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;text-decoration:none;}
+.btn-blue{background:var(--accent);color:white;}.btn-blue:hover{background:var(--accent2);}
+.btn-green{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);}.btn-green:hover{background:rgba(16,185,129,0.25);}
+.btn-yellow{background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}.btn-yellow:hover{background:rgba(245,158,11,0.25);}
+.btn-red{background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}.btn-red:hover{background:rgba(239,68,68,0.2);}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;animation:fadeIn 0.3s ease;margin-bottom:16px;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.result-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--bg3);border-bottom:1px solid var(--border);}
+.result-code{font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--accent);}
+.result-badge{font-size:12px;padding:4px 10px;border-radius:20px;background:rgba(16,185,129,0.15);color:#34d399;}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
+.result-field{padding:12px 20px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);}
+.rf-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
+.rf-value{font-size:14px;color:var(--text);word-break:break-all;}
+.rf-value.mono{font-family:'Space Mono',monospace;font-size:13px;color:#93c5fd;}
+.rf-value.empty{color:var(--muted);font-style:italic;}
+.not-found{text-align:center;padding:48px 20px;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:12px;}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 24px;}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.stat-value{font-size:32px;font-weight:600;font-family:'Space Mono',monospace;color:var(--accent);}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg2);}
+.upload-zone:hover{border-color:var(--accent);background:rgba(59,130,246,0.05);}
+.columns-list{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 24px;}
+.col-tag{padding:4px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-size:18px;font-weight:600;}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.filter-btn.active{background:rgba(59,130,246,0.15);border-color:var(--accent);color:#60a5fa;}
+table{width:100%;border-collapse:collapse;}
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+thead{background:var(--bg3);}
+th{padding:12px 16px;text-align:left;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);}
+td{padding:12px 16px;font-size:14px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;}
+.tag.admin{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.tag.consulta{background:rgba(16,185,129,0.15);color:#34d399;}
+.tag.active{background:rgba(16,185,129,0.15);color:#34d399;}
+.tag.inactive{background:rgba(239,68,68,0.1);color:#fca5a5;}
+.tag.temporal{background:rgba(245,158,11,0.15);color:#fcd34d;}
+.btn-icon{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);transition:all 0.15s;margin-right:3px;font-size:13px;}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent);}
+.btn-icon.danger:hover{border-color:var(--danger);color:#fca5a5;}
+.btn-icon.warn:hover{border-color:var(--warning);color:#fcd34d;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeIn 0.2s ease;}
+.modal-title{font-size:20px;font-weight:600;margin-bottom:24px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.btn-row{display:flex;gap:10px;margin-top:24px;justify-content:flex-end;}
+.btn-cancel{padding:10px 20px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:inherit;font-size:14px;}
+.btn-save{padding:10px 24px;border-radius:8px;background:var(--accent);color:white;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;}
+.esmax-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.autocomplete-box{position:relative;}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;z-index:200;max-height:320px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4);display:none;}
+.autocomplete-list.open{display:block;}
+.autocomplete-item{padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.autocomplete-item:last-child{border-bottom:none;}
+.autocomplete-item:hover,.autocomplete-item.selected{background:rgba(59,130,246,0.1);}
+.ac-codigo{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);font-weight:600;}
+.ac-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+.ac-sheet{font-size:10px;color:var(--muted);opacity:0.6;float:right;margin-top:2px;}
+#file-input{display:none;}
+#file-input-ipdb{display:none;}
+</style>
+</head>
+<body>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><div class="logo-text">NetQuery</div><div class="logo-sub">Sistema de Servicios</div></div>
+    </div>
+    <div class="login-title">Iniciar sesion</div>
+    <div class="login-sub">Ingrese sus credenciales para continuar</div>
+    <div id="login-error" class="alert error"></div>
+    <div class="field"><label>Usuario</label><input type="text" id="login-user" placeholder="nombre de usuario" autocomplete="username"></div>
+    <div class="field">
+      <label>Contrasena</label>
+      <div style="position:relative">
+        <input type="password" id="login-pass" placeholder="********" autocomplete="current-password" style="width:100%;padding:12px 44px 12px 16px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:15px;font-family:inherit">
+        <button type="button" onmousedown="document.getElementById('login-pass').type='text'" onmouseup="document.getElementById('login-pass').type='password'" onmouseleave="document.getElementById('login-pass').type='password'" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;padding:0;line-height:1">&#128065;</button>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Ingresar al sistema</button>
+  </div>
+</div>
+
+<!-- CAMBIO CONTRASENA -->
+<div id="change-pass-screen">
+  <div class="change-pass-card">
+    <div class="login-logo">
+      <div class="logo-icon" style="background:var(--warning)"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div><div class="logo-text">Cambio requerido</div><div class="logo-sub" style="color:#fcd34d">Contrasena temporal</div></div>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:24px">Su contrasena es temporal. Debe crear una nueva para continuar.</p>
+    <div id="cp-error" class="alert error"></div>
+    <div class="field"><label>Nueva contrasena</label><input type="password" id="cp-new" placeholder="Minimo 6 caracteres"></div>
+    <div class="field"><label>Confirmar contrasena</label><input type="password" id="cp-confirm" placeholder="Repita la contrasena"></div>
+    <button class="btn-primary" onclick="doChangePassword()">Guardar y continuar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav>
+    <div class="nav-brand">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <span>NetQuery</span>
+    </div>
+    <div class="nav-tabs" id="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('consulta',this)">Consulta</button>
+      <button class="nav-tab" onclick="showPage('esmax',this)">Esmax</button>
+      <button class="nav-tab" onclick="showPage('ipdb',this)">Buscador IP</button>
+      <button class="nav-tab admin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
+      <button class="nav-tab admin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
+    </div>
+    <div class="nav-user">
+      <div class="user-badge"><span id="nav-username"></span><span class="role-pill" id="nav-role"></span></div>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </nav>
+  <main>
+
+    <!-- CONSULTA -->
+    <div class="page active" id="page-consulta">
+      <div class="page-title">Consulta de Codigo de Servicio</div>
+      <div class="page-sub">Ingrese el codigo y presione Enter o haga clic en Buscar</div>
+      <div class="search-box">
+        <div class="search-input-wrap autocomplete-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="search-input" type="text" placeholder="Ej: 33-61-0010445995 o escriba para buscar..." 
+            onkeydown="handleSearchKey(event)" oninput="onSearchInput()" autocomplete="off">
+          <div class="autocomplete-list" id="autocomplete-list"></div>
+        </div>
+        <button class="btn btn-blue" onclick="doSearch()">Buscar</button>
+      </div>
+      <div class="action-bar admin-only" style="display:none">
+        <button class="btn btn-green" onclick="openModalAgregar()">+ Agregar</button>
+        <button class="btn btn-yellow" onclick="openModalEditar()">Editar resultado</button>
+        <button class="btn btn-red" onclick="eliminarResultado()">Eliminar resultado</button>
+      </div>
+      <div id="search-result"></div>
+    </div>
+
+
+
+    <!-- ESMAX -->
+    <div class="page" id="page-esmax">
+      <div class="page-title">Esmax</div>
+      <div class="page-sub">Backups de Panorama y monitoreo ICMP en tiempo real</div>
+      <div style="display:flex;gap:8px;margin-bottom:24px">
+        <button class="filter-btn active" id="subtab-panorama" onclick="showSubtab('panorama',this)">&#128293; Backups Panorama</button>
+        <button class="filter-btn" id="subtab-monitoreo" onclick="showSubtab('monitoreo',this)">&#128421; Monitoreo</button>
+      </div>
+
+      <!-- SUBTAB PANORAMA -->
+      <div id="esmax-panorama">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px;max-width:700px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+            <div style="width:44px;height:44px;background:#E95420;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">&#128293;</div>
+            <div>
+              <div style="font-size:18px;font-weight:600">Palo Alto Panorama</div>
+              <div style="font-size:13px;color:var(--muted)">192.168.100.10 — Backup diario automatico 20:00</div>
+            </div>
+          </div>
+          <div style="margin-bottom:20px">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.8px">Seleccione fecha de backup</div>
+            <select id="palo-select" onchange="actualizarPaloInfo()" style="width:100%;padding:14px 16px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:'Space Mono',monospace">
+              <option value="">Cargando backups...</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:12px;margin-bottom:20px">
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 20px;flex:1">
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Tamano</div>
+              <div id="palo-size" style="font-size:20px;font-weight:600;font-family:'Space Mono',monospace;color:var(--accent)">-</div>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 20px;flex:1">
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Total backups</div>
+              <div id="palo-total" style="font-size:20px;font-weight:600;font-family:'Space Mono',monospace;color:var(--accent)">-</div>
+            </div>
+          </div>
+          <button class="btn btn-blue" onclick="descargarPalo()" style="width:100%;padding:14px;font-size:15px;justify-content:center">
+            &#11015; Descargar backup seleccionado
+          </button>
+          <div id="palo-msg" style="margin-top:12px;font-size:13px;color:#34d399;text-align:center;display:none">Descarga iniciada...</div>
+        </div>
+      </div>
+
+      <!-- SUBTAB MONITOREO -->
+      <div id="esmax-monitoreo" style="display:none">
+        <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;align-items:center">
+          <input id="esmax-nombre" type="text" class="admin-only" placeholder="Nombre del sitio" style="display:none;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);width:180px">
+          <input id="esmax-ip" type="text" class="admin-only" placeholder="IP (ej: 192.168.1.1)" style="display:none;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);width:180px">
+          <button class="btn btn-green admin-only" onclick="agregarSitioEsmax()" style="display:none">+ Agregar Sitio</button>
+          <button class="btn btn-blue admin-only" onclick="toggleMonitoreo()" id="btn-monitoreo" style="display:none;margin-left:auto">&#9654; Iniciar Monitoreo</button>
+        </div>
+        <div id="esmax-container"></div>
+      </div>
+    </div>
+
+    <!-- BUSCADOR IP -->
+    <div class="page" id="page-ipdb">
+      <div class="page-title">Buscador de IP</div>
+      <div class="page-sub">Busque equipos por IP o nombre</div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+        <input id="ipdb-search" type="text" placeholder="IP o nombre del equipo" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);width:280px" onkeydown="if(event.key==='Enter')buscarIPDB()">
+        <button class="btn btn-blue" onclick="buscarIPDB()">Buscar</button>
+        <button class="btn btn-green admin-only" onclick="abrirModalIPDB()" style="display:none">+ Agregar</button>
+      </div>
+      <div id="ipdb-info" style="font-size:13px;color:var(--muted);margin-bottom:16px"></div>
+      <div id="ipdb-result"></div>
+    </div>
+
+    <!-- BASE DE DATOS -->
+    <div class="page" id="page-datos">
+      <div class="page-title">Base de Datos</div>
+      <div class="page-sub">Gestione la base de datos del sistema</div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Registros</div><div class="stat-value" id="stat-rows">0</div></div>
+        <div class="stat-card"><div class="stat-label">Columnas</div><div class="stat-value" id="stat-cols">0</div></div>
+        <div class="stat-card"><div class="stat-label">Backups</div><div class="stat-value" id="stat-backups">0</div></div>
+      </div>
+      <div class="section-title" style="margin-bottom:8px">Columnas detectadas</div>
+      <div class="columns-list" id="columns-list"></div>
+      <div class="section-title" style="margin-bottom:12px">Importar Excel</div>
+      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="uploadFile(this.files[0])">
+        <div style="font-size:16px;color:var(--muted);margin-bottom:4px">Haz clic o arrastra tu archivo aqui</div>
+        <div style="font-size:13px;color:var(--muted);opacity:0.6">Soporta .xlsx .xls .csv - maximo 50MB</div>
+      </div>
+      <div id="upload-result" class="alert" style="margin-top:12px"></div>
+      <div style="display:flex;gap:12px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+        <button class="btn btn-green" onclick="doBackup()">Hacer Backup</button>
+        <button class="btn btn-red" onclick="doEliminarDB()">Eliminar base de datos</button>
+      </div>
+      <div class="section-title" style="margin-top:28px;margin-bottom:12px">Backups disponibles</div>
+      <div id="backup-list"></div>
+    </div>
+
+    <!-- USUARIOS -->
+    <div class="page" id="page-usuarios">
+      <div class="page-title">Gestion de Usuarios</div>
+      <div class="page-sub">Administre usuarios y sus niveles de acceso</div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Usuarios del sistema</div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="filter-btn active" onclick="filtrarUsuarios('todos',this)">Todos</button>
+            <button class="filter-btn" onclick="filtrarUsuarios('activo',this)">Activos</button>
+            <button class="filter-btn" onclick="filtrarUsuarios('inactivo',this)">Inactivos</button>
+          </div>
+        </div>
+        <button class="btn btn-blue" onclick="openModalUser()">+ Nuevo usuario</button>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="users-tbody"></tbody></table>
+      </div>
+    </div>
+
+  </main>
+</div>
+<!-- MODAL REGISTRO -->
+<div class="modal-overlay" id="modal-registro">
+  <div class="modal">
+    <div class="modal-title" id="modal-registro-title">Agregar registro</div>
+    <div id="modal-registro-fields"></div>
+    <div id="modal-registro-error" class="alert error" style="margin-top:12px"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-registro')">Cancelar</button>
+      <button class="btn-save" onclick="guardarRegistro()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL USUARIO -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal">
+    <div class="modal-title">Nuevo usuario</div>
+    <div class="form-row">
+      <div class="field"><label>Nombre completo</label><input type="text" id="u-nombre" placeholder="Juan Perez"></div>
+      <div class="field"><label>Usuario</label><input type="text" id="u-username" placeholder="jperez"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Contrasena</label><input type="password" id="u-password" placeholder="Min 6 caracteres"></div>
+      <div class="field"><label>Rol</label>
+        <select id="u-role">
+          <option value="consulta">Consulta (solo lectura)</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-top:8px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="u-temporal" style="width:auto;padding:0">
+        Contrasena temporal (el usuario debera cambiarla al ingresar)
+      </label>
+    </div>
+    <div id="modal-user-error" class="alert error" style="margin-top:12px"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-user')">Cancelar</button>
+      <button class="btn-save" onclick="saveUser()">Guardar usuario</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESET PASSWORD -->
+<div class="modal-overlay" id="modal-reset">
+  <div class="modal">
+    <div class="modal-title">Restablecer contrasena</div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Asigne una contrasena temporal. El usuario debera cambiarla al ingresar.</p>
+    <div class="field"><label>Contrasena temporal</label><input type="text" id="reset-password" placeholder="Ej: Temp1234"></div>
+    <div id="modal-reset-error" class="alert error" style="margin-top:12px"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-reset')">Cancelar</button>
+      <button class="btn-save" onclick="doResetPassword()">Asignar contrasena</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IPDB -->
+<div class="modal-overlay" id="modal-ipdb">
+  <div class="modal">
+    <div class="modal-title" id="modal-ipdb-title">Agregar equipo</div>
+    <div id="modal-ipdb-fields"></div>
+    <div id="modal-ipdb-error" class="alert error" style="margin-top:12px"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-ipdb')">Cancelar</button>
+      <button class="btn-save" onclick="guardarIPDB()">Guardar</button>
+    </div>
+  </div>
+</div>
+<script>
+let currentUser=null,lastResult=null,editMode=false,dbColumns=[],resetUserId=null,allUsers=[],filtroActual='todos';
+let esmax_charts={},esmax_monitoreando=false,esmax_interval=null,esmax_historico={};
+let ipdbCols=[],lastIPDB=null,editIPDB=false,allIPDB=[];
+
+// AUTH──
+async function doLogin(){
+  const username=document.getElementById('login-user').value.trim();
+  const password=document.getElementById('login-pass').value;
+  const errEl=document.getElementById('login-error');
+  errEl.style.display='none';
+  if(!username||!password){showAlert(errEl,'Complete todos los campos','error');return;}
+  const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})}).then(r=>r.json());
+  if(!r.success){showAlert(errEl,r.message,'error');return;}
+  currentUser=r.user;
+  if(currentUser.mustChangePassword){document.getElementById('login-screen').style.display='none';document.getElementById('change-pass-screen').style.display='flex';}
+  else initApp();
+}
+async function doChangePassword(){
+  const np=document.getElementById('cp-new').value;
+  const nc=document.getElementById('cp-confirm').value;
+  const errEl=document.getElementById('cp-error');errEl.style.display='none';
+  if(!np||np.length<6){showAlert(errEl,'Minimo 6 caracteres','error');return;}
+  if(np!==nc){showAlert(errEl,'Las contrasenas no coinciden','error');return;}
+  const r=await fetch('/api/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({newPassword:np})}).then(r=>r.json());
+  if(!r.success){showAlert(errEl,r.message,'error');return;}
+  document.getElementById('change-pass-screen').style.display='none';
+  initApp();
+}
+async function checkSession(){
+  const r=await fetch('/api/me').then(r=>r.ok?r.json():null).catch(()=>null);
+  if(r){currentUser=r;if(currentUser.mustChangePassword){document.getElementById('login-screen').style.display='none';document.getElementById('change-pass-screen').style.display='flex';}else initApp();}
+}
+function initApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('change-pass-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('nav-username').textContent=currentUser.nombre||currentUser.username;
+  document.getElementById('nav-role').textContent=currentUser.role;
+  document.getElementById('nav-role').className='role-pill '+(currentUser.role==='admin'?'':'consulta');
+  if(currentUser.role==='admin'){
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
+    loadDbInfo();loadUsers();loadBackups();
+  }
+  cargarPaloBackups();
+  cargarInfoIPDB();
+  setTimeout(()=>{
+    cargarSitiosEsmax().then(()=>{
+      if(!esmax_monitoreando){
+        esmax_monitoreando=true;
+        const btn=document.getElementById('btn-monitoreo');
+        if(btn){btn.textContent='Detener Monitoreo';btn.style.background='#ef4444';}
+        monitorearTodos();
+        esmax_interval=setInterval(monitorearTodos,30000);
+      }
+    });
+  },1000);
+}
+async function doLogout(){await fetch('/api/logout',{method:'POST'});location.reload();}
+
+// NAVEGACION
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='panorama') cargarPaloBackups();
+  if(name==='ipdb') cargarInfoIPDB();
+}
+
+// AUTOCOMPLETE
+let acTimeout = null;
+let acIndex = -1;
+
+function onSearchInput(){
+  const q = document.getElementById('search-input').value.trim();
+  clearTimeout(acTimeout);
+  if(q.length < 2){ cerrarAutocomplete(); return; }
+  acTimeout = setTimeout(()=>buscarSugerencias(q), 300);
+}
+
+async function buscarSugerencias(q){
+  const r = await fetch('/api/sugerencias?q='+encodeURIComponent(q)).then(r=>r.json());
+  const list = document.getElementById('autocomplete-list');
+  if(!r || r.length === 0){ cerrarAutocomplete(); return; }
+  acIndex = -1;
+  list.innerHTML = r.map((s,i) => `
+    <div class="autocomplete-item" data-codigo="${escHtml(s.codigo)}" onclick="seleccionarSugerencia('${escHtml(s.codigo)}')">
+      <div class="ac-codigo">${escHtml(s.codigo)}</div>
+      <div class="ac-desc">
+        ${s.desc ? escHtml(s.desc) : ''}
+        ${s.comuna ? ' — '+escHtml(s.comuna) : ''}
+        <span class="ac-sheet">${escHtml(s.sheet)}</span>
+      </div>
+    </div>`).join('');
+  list.classList.add('open');
+}
+
+function seleccionarSugerencia(codigo){
+  document.getElementById('search-input').value = codigo;
+  cerrarAutocomplete();
+  doSearch();
+}
+
+function cerrarAutocomplete(){
+  const list = document.getElementById('autocomplete-list');
+  if(list){ list.classList.remove('open'); list.innerHTML=''; }
+  acIndex = -1;
+}
+
+function handleSearchKey(e){
+  const list = document.getElementById('autocomplete-list');
+  const items = list ? list.querySelectorAll('.autocomplete-item') : [];
+  if(e.key === 'ArrowDown'){
+    e.preventDefault();
+    acIndex = Math.min(acIndex+1, items.length-1);
+    items.forEach((el,i)=>el.classList.toggle('selected',i===acIndex));
+  } else if(e.key === 'ArrowUp'){
+    e.preventDefault();
+    acIndex = Math.max(acIndex-1, -1);
+    items.forEach((el,i)=>el.classList.toggle('selected',i===acIndex));
+  } else if(e.key === 'Enter'){
+    if(acIndex >= 0 && items[acIndex]){
+      seleccionarSugerencia(items[acIndex].dataset.codigo);
+    } else {
+      cerrarAutocomplete();
+      doSearch();
+    }
+  } else if(e.key === 'Escape'){
+    cerrarAutocomplete();
+  }
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('.autocomplete-box')) cerrarAutocomplete();
+});
+
+// CONSULTA
+async function doSearch(){
+  const q=document.getElementById('search-input').value.trim();
+  if(!q)return;
+  const container=document.getElementById('search-result');
+  container.innerHTML='<div style="color:var(--muted);padding:20px">Buscando...</div>';
+  lastResult=null;
+  const r=await fetch('/api/consulta/'+encodeURIComponent(q)).then(r=>r.json());
+  if(!r.found){container.innerHTML='<div class="not-found"><p>No se encontro el codigo <strong style="color:var(--text);font-family:Space Mono,monospace">'+escHtml(q)+'</strong></p></div>';return;}
+  let html='';
+  Object.entries(r.data).forEach(([sheet,rows])=>{
+    const cleanSheet = sheet.replace('BD_','');
+    html+='<div style="margin-bottom:8px;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px">'+escHtml(cleanSheet)+'</div>';
+    rows.forEach(row=>{
+      lastResult=row;
+      const MONO=['Codigo','IP','Ip','Wan','Vrf','OLT','FRAME','SLOT','PORT'];
+      const fields=Object.keys(row).map(k=>{
+        const val=row[k]!==undefined&&row[k]!==''?row[k]:null;
+        const isMono=MONO.some(m=>k.toLowerCase().includes(m.toLowerCase()));
+        return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
+      }).join('');
+      html+='<div class="result-card" style="margin-bottom:16px"><div class="result-header"><div class="result-code">'+escHtml(String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||''))+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
+    });
+  });
+  container.innerHTML=html;
+}
+
+function copiarResultado(btn){
+  const card=btn.closest('.result-card');
+  const fields=card.querySelectorAll('.result-field');
+  let txt='';
+  fields.forEach(f=>{
+    const label=f.querySelector('.rf-label').textContent;
+    const val=f.querySelector('.rf-value').textContent;
+    txt+=label+': '+val+'\n';
+  });
+  const ta=document.createElement('textarea');
+  ta.value=txt;
+  ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  btn.textContent='Copiado!';
+  btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
+
+function buildFormFields(data={}){
+  if(dbColumns.length===0)return '<div class="alert warning" style="display:block">Primero cargue la base de datos.</div>';
+  return dbColumns.map(col=>'<div class="field"><label>'+escHtml(col)+'</label><input type="text" id="field-'+escHtml(col)+'" value="'+escHtml(String(data[col]||''))+'"></div>').join('');
+}
+function openModalAgregar(){editMode=false;document.getElementById('modal-registro-title').textContent='Agregar nuevo registro';document.getElementById('modal-registro-fields').innerHTML=buildFormFields();document.getElementById('modal-registro-error').style.display='none';document.getElementById('modal-registro').classList.add('open');}
+function openModalEditar(){if(!lastResult){alert('Primero busque un registro');return;}editMode=true;document.getElementById('modal-registro-title').textContent='Editar: '+(lastResult.CODIGO||'');document.getElementById('modal-registro-fields').innerHTML=buildFormFields(lastResult);document.getElementById('modal-registro-error').style.display='none';document.getElementById('modal-registro').classList.add('open');}
+async function guardarRegistro(){
+  const errEl=document.getElementById('modal-registro-error');errEl.style.display='none';
+  const data={};dbColumns.forEach(col=>{const el=document.getElementById('field-'+col);if(el)data[col]=el.value.trim();});
+  if(!data.CODIGO){showAlert(errEl,'El campo CODIGO es obligatorio','error');return;}
+  let r;
+  if(editMode)r=await fetch('/api/datos/'+encodeURIComponent(lastResult.CODIGO),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
+  else r=await fetch('/api/datos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
+  if(!r.success){showAlert(errEl,r.message,'error');return;}
+  closeModal('modal-registro');lastResult=data;renderResult(data,document.getElementById('search-result'));document.getElementById('search-input').value=data.CODIGO;loadDbInfo();
+}
+async function eliminarResultado(){
+  if(!lastResult){alert('Primero busque un registro');return;}
+  if(!confirm('Eliminar '+lastResult.CODIGO+'?'))return;
+  const r=await fetch('/api/datos/'+encodeURIComponent(lastResult.CODIGO),{method:'DELETE'}).then(r=>r.json());
+  if(!r.success){alert('Error: '+r.message);return;}
+  lastResult=null;document.getElementById('search-result').innerHTML='<div class="not-found"><p>Registro eliminado</p></div>';document.getElementById('search-input').value='';loadDbInfo();
+}
+
+// PANORAMA──
+async function cargarPaloBackups(){
+  try{
+    const backups=await fetch('/api/palo/backups').then(r=>r.json());
+    const sel=document.getElementById('palo-select');
+    const tot=document.getElementById('palo-total');
+    if(!sel)return;
+    if(backups.length===0){sel.innerHTML='<option value="">No hay backups disponibles</option>';return;}
+    sel.innerHTML=backups.map(b=>{
+      const fecha=new Date(b.fecha);
+      const label=fecha.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+fecha.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+      const size=(b.size/1024/1024).toFixed(1)+' MB';
+      return '<option value="'+escHtml(b.name)+'" data-size="'+size+'">'+label+' - '+size+'</option>';
+    }).join('');
+    if(tot)tot.textContent=backups.length;
+    actualizarPaloInfo();
+  }catch(e){console.error('Error Panorama:',e);}
+}
+function actualizarPaloInfo(){
+  const sel=document.getElementById('palo-select');
+  const sizeEl=document.getElementById('palo-size');
+  if(!sel||!sizeEl)return;
+  const opt=sel.options[sel.selectedIndex];
+  sizeEl.textContent=opt?(opt.dataset.size||'-'):'-';
+}
+function descargarPalo(){
+  const sel=document.getElementById('palo-select');
+  if(!sel||!sel.value){alert('Seleccione un backup para descargar');return;}
+  const a=document.createElement('a');
+  a.href='/api/palo/backup/download/'+encodeURIComponent(sel.value);
+  a.download=sel.value;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  const msg=document.getElementById('palo-msg');
+  if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',3000);}
+}
+
+// BASE DE DATOS
+async function loadDbInfo(){
+  const r=await fetch('/api/db/info').then(r=>r.json());
+  document.getElementById('stat-rows').textContent=r.rows.toLocaleString();
+  document.getElementById('stat-cols').textContent=r.columns.length;
+  dbColumns=r.columns;
+  document.getElementById('columns-list').innerHTML=r.columns.map(c=>'<span class="col-tag">'+escHtml(c)+'</span>').join('');
+}
+async function uploadFile(file){
+  if(!file)return;
+  const res=document.getElementById('upload-result');res.style.display='none';
+  const fd=new FormData();fd.append('file',file);
+  try{
+    const r=await fetch('/api/upload',{method:'POST',body:fd}).then(r=>r.json());
+    if(r.success){showAlert(res,'Importados '+r.rows.toLocaleString()+' registros con '+r.columns.length+' columnas','success');loadDbInfo();}
+    else showAlert(res,'Error: '+r.message,'error');
+  }catch(e){showAlert(res,'Error de conexion','error');}
+}
+async function doBackup(){
+  const r=await fetch('/api/db/backup',{method:'POST'}).then(r=>r.json());
+  if(r.success){alert('Backup creado: '+r.file);loadBackups();}
+  else alert('Error: '+r.message);
+}
+async function loadBackups(){
+  const backups=await fetch('/api/db/backups').then(r=>r.json());
+  document.getElementById('stat-backups').textContent=backups.length;
+  const el=document.getElementById('backup-list');
+  if(backups.length===0){el.innerHTML='<p style="color:var(--muted);font-size:13px">No hay backups</p>';return;}
+  el.innerHTML=backups.map(b=>'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><span style="font-family:Space Mono,monospace;font-size:12px;color:var(--muted)">'+escHtml(b.name)+'</span><span style="color:var(--muted);font-size:12px">'+(b.size/1024).toFixed(1)+' KB</span><a href="/api/db/backup/download/'+encodeURIComponent(b.name)+'" style="color:var(--accent);font-size:13px;text-decoration:none">Descargar</a></div>').join('');
+}
+async function doEliminarDB(){
+  mostrarConfirm('Eliminar TODA la base de datos? Esta accion no se puede deshacer.', async ()=>{
+    const r=await fetch('/api/db',{method:'DELETE'}).then(r=>r.json());
+    if(r.success){loadDbInfo();showAlert(document.getElementById('upload-result'),'Base de datos eliminada correctamente','success');}
+  });
+}
+
+// ESMAX
+async function cargarSitiosEsmax(){
+  const sites=await fetch('/api/esmax/sites').then(r=>r.json());
+  const cont=document.getElementById('esmax-container');
+  cont.innerHTML=sites.map(s=>`
+    <div class="esmax-card" id="esmax-card-${s.id}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div id="sem-${s.id}" style="width:18px;height:18px;border-radius:50%;background:#555;flex-shrink:0"></div>
+        <strong style="font-size:16px">${escHtml(s.nombre)}</strong>
+        <span style="color:var(--muted);font-family:monospace;font-size:13px">${escHtml(s.ip)}</span>
+        <span id="txt-${s.id}" style="font-size:12px;color:var(--muted)">Esperando...</span>
+        ${currentUser&&currentUser.role==='admin'?`<button class="btn btn-yellow" style="margin-left:auto;padding:4px 10px;font-size:12px" onclick="pingManual('${s.ip}','${s.id}')">Ping</button><button class="btn btn-red" style="padding:4px 10px;font-size:12px" onclick="eliminarSitioEsmax(${s.id})">X</button>`:''}
+      </div>
+      <canvas id="chart-${s.id}" height="80" style="width:100%;border-radius:8px;background:var(--bg3)"></canvas>
+      <div id="log-${s.id}" style="font-size:11px;color:var(--muted);margin-top:6px;font-family:monospace"></div>
+    </div>`).join('');
+  sites.forEach(s=>{
+    if(!esmax_historico[s.id])esmax_historico[s.id]=[];
+    iniciarChart(s.id);
+  });
+}
+function iniciarChart(id){
+  const canvas=document.getElementById('chart-'+id);
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  esmax_charts[id]=new Chart(ctx,{
+    type:'line',
+    data:{labels:[],datasets:[
+      {label:'Latencia (ms)',data:[],borderColor:'#73BF69',backgroundColor:'rgba(115,191,105,0.08)',tension:0.4,pointRadius:2,borderWidth:2,fill:true},
+      {label:'Perdida %',data:[],borderColor:'#F2495C',backgroundColor:'rgba(242,73,92,0.08)',tension:0.4,pointRadius:2,borderWidth:2,fill:true,yAxisID:'y2'}
+    ]},
+    options:{
+      responsive:true,animation:{duration:300},
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:true,position:'top',align:'end',labels:{color:'#8E9BB5',font:{size:11},boxWidth:12}}},
+      scales:{
+        y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8E9BB5',font:{size:11},callback:v=>v+' ms'}},
+        y2:{beginAtZero:true,position:'right',max:100,grid:{display:false},ticks:{color:'#F2495C',font:{size:11},callback:v=>v+'%'}},
+        x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8E9BB5',font:{size:10},maxTicksLimit:10,maxRotation:0}}
+      }
+    }
+  });
+}
+function toggleMonitoreo(){
+  const btn=document.getElementById('btn-monitoreo');
+  if(esmax_monitoreando){
+    clearInterval(esmax_interval);esmax_monitoreando=false;
+    if(btn){btn.innerHTML='&#9654; Iniciar Monitoreo';btn.style.background='var(--accent)';}
+  }else{
+    esmax_monitoreando=true;
+    if(btn){btn.textContent='Detener Monitoreo';btn.style.background='#ef4444';}
+    monitorearTodos();esmax_interval=setInterval(monitorearTodos,30000);
+  }
+}
+async function monitorearTodos(){
+  const sites=await fetch('/api/esmax/sites').then(r=>r.json()).catch(()=>[]);
+  sites.forEach(async s=>{
+    try{
+      const r=await fetch('/api/esmax/ping/'+s.ip).then(r=>r.json());
+      actualizarSemaforo(s.id,r);
+      fetch('/api/esmax/historico',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:s.id,avg:r.avg,loss:r.loss,estado:r.estado,hora:new Date().toLocaleTimeString()})});
+    }catch(e){}
+  });
+}
+function actualizarSemaforo(id,r){
+  const sem=document.getElementById('sem-'+id);
+  const txt=document.getElementById('txt-'+id);
+  const log=document.getElementById('log-'+id);
+  if(!sem)return;
+  const col={verde:'#10b981',amarillo:'#f59e0b',rojo:'#ef4444'};
+  sem.style.background=col[r.estado]||'#555';
+  sem.style.boxShadow='0 0 8px '+(col[r.estado]||'#555');
+  if(txt){
+    if(r.estado==='verde')txt.textContent='OK - '+r.avg.toFixed(1)+' ms - 0% perdida';
+    else if(r.estado==='amarillo')txt.textContent='Intermitencia - '+r.loss+'% perdida';
+    else txt.textContent='CAIDO - 100% perdida';
+    txt.style.color=col[r.estado];
+  }
+  if(log)log.textContent=new Date().toLocaleTimeString()+' | perdida:'+r.loss+'% | avg:'+(r.avg?r.avg.toFixed(1)+'ms':'N/A');
+  const chart=esmax_charts[id];
+  if(chart){
+    chart.data.labels.push(new Date().toLocaleTimeString());
+    chart.data.datasets[0].data.push(r.avg!==null?parseFloat(r.avg.toFixed(1)):null);
+    chart.data.datasets[1].data.push(r.loss||0);
+    if(chart.data.labels.length>30){chart.data.labels.shift();chart.data.datasets[0].data.shift();chart.data.datasets[1].data.shift();}
+    chart.update();
+  }
+}
+async function pingManual(ip,id){
+  document.getElementById('txt-'+id).textContent='Haciendo ping...';
+  const r=await fetch('/api/esmax/ping/'+ip).then(r=>r.json());
+  actualizarSemaforo(id,r);
+}
+async function agregarSitioEsmax(){
+  const nombre=document.getElementById('esmax-nombre').value.trim();
+  const ip=document.getElementById('esmax-ip').value.trim();
+  if(!nombre||!ip){alert('Ingrese nombre e IP');return;}
+  const r=await fetch('/api/esmax/sites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,ip})}).then(r=>r.json());
+  if(r.success){document.getElementById('esmax-nombre').value='';document.getElementById('esmax-ip').value='';cargarSitiosEsmax();}
+  else alert('Error: '+r.message);
+}
+async function eliminarSitioEsmax(id){
+  if(!confirm('Eliminar sitio?'))return;
+  await fetch('/api/esmax/sites/'+id,{method:'DELETE'});
+  cargarSitiosEsmax();
+}
+
+// BUSCADOR IP──
+async function cargarInfoIPDB(){
+  try{
+    const r=await fetch('/api/ipdb/info').then(r=>r.json());
+    const el=document.getElementById('ipdb-info');
+    if(el)el.textContent='Base de datos: '+r.rows+' equipos registrados';
+    ipdbCols=r.columns||[];
+  }catch(e){}
+}
+async function buscarIPDB(){
+  const q=document.getElementById('ipdb-search').value.trim();
+  if(!q)return;
+  const cont=document.getElementById('ipdb-result');
+  cont.innerHTML='<div style="color:var(--muted);padding:20px">Buscando...</div>';
+  const r=await fetch('/api/ipdb/search?q='+encodeURIComponent(q)).then(r=>r.json());
+  if(!r||r.length===0){cont.innerHTML='<div class="not-found"><p>No se encontraron equipos para <strong>'+escHtml(q)+'</strong></p></div>';return;}
+  cont.innerHTML=r.map(row=>`
+    <div class="result-card" style="margin-bottom:12px">
+      <div class="result-header">
+        <div class="result-code">${escHtml(row.Equipo||row.IP||'')}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${currentUser&&currentUser.role==='admin'?`<button class="btn btn-yellow" style="padding:4px 10px;font-size:12px" onclick='editarIPDB(${JSON.stringify(row)})'>Editar</button><button class="btn btn-red" style="padding:4px 10px;font-size:12px" onclick="eliminarIPDB(${row.id})">X</button>`:''}
+          <div class="result-badge">Encontrado</div>
+        </div>
+      </div>
+      <div class="result-grid">${Object.keys(row).filter(k=>k!=='id').map(k=>'<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value">'+escHtml(String(row[k]||''))+'</div></div>').join('')}</div>
+    </div>`).join('');
+}
+function abrirModalIPDB(){
+  editIPDB=false;lastIPDB=null;
+  document.getElementById('modal-ipdb-title').textContent='Agregar equipo';
+  document.getElementById('modal-ipdb-fields').innerHTML=ipdbCols.length?ipdbCols.map(c=>'<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="ipdb-field-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>').join(''):'<p style="color:var(--muted)">No hay columnas definidas</p>';
+  document.getElementById('modal-ipdb-error').style.display='none';
+  document.getElementById('modal-ipdb').classList.add('open');
+}
+function editarIPDB(row){
+  editIPDB=true;lastIPDB=row;
+  document.getElementById('modal-ipdb-title').textContent='Editar equipo';
+  document.getElementById('modal-ipdb-fields').innerHTML=ipdbCols.length?ipdbCols.map(c=>'<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="ipdb-field-'+escHtml(c)+'" value="'+escHtml(String(row[c]||''))+'"></div>').join(''):'';
+  document.getElementById('modal-ipdb-error').style.display='none';
+  document.getElementById('modal-ipdb').classList.add('open');
+}
+async function guardarIPDB(){
+  const errEl=document.getElementById('modal-ipdb-error');errEl.style.display='none';
+  const data={};ipdbCols.forEach(c=>{const el=document.getElementById('ipdb-field-'+c);if(el)data[c]=el.value.trim();});
+  let r;
+  if(editIPDB&&lastIPDB)r=await fetch('/api/ipdb/'+lastIPDB.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
+  else r=await fetch('/api/ipdb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
+  if(!r.success){showAlert(errEl,r.message,'error');return;}
+  closeModal('modal-ipdb');buscarIPDB();
+}
+async function eliminarIPDB(id){
+  if(!confirm('Eliminar este equipo?'))return;
+  await fetch('/api/ipdb/'+id,{method:'DELETE'});
+  buscarIPDB();
+}
+
+// USUARIOS
+async function loadUsers(){
+  allUsers=await fetch('/api/usuarios').then(r=>r.json());
+  renderUsers();
+}
+function filtrarUsuarios(filtro,btn){
+  filtroActual=filtro;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');renderUsers();
+}
+function renderUsers(){
+  let users=allUsers;
+  if(filtroActual==='activo')users=allUsers.filter(u=>u.activo);
+  if(filtroActual==='inactivo')users=allUsers.filter(u=>!u.activo);
+  document.getElementById('users-tbody').innerHTML=users.map(u=>`<tr>
+    <td><strong>${escHtml(u.nombre)}</strong></td>
+    <td style="font-family:Space Mono,monospace;font-size:13px">${escHtml(u.username)}</td>
+    <td><span class="tag ${u.role}">${u.role==='admin'?'Administrador':'Consulta'}</span></td>
+    <td><span class="tag ${u.activo?'active':'inactive'}">${u.activo?'Activo':'Inactivo'}</span>${u.mustChangePassword?'<span class="tag temporal" style="margin-left:4px">Temporal</span>':''}</td>
+    <td>
+      <button class="btn-icon warn" onclick="openModalReset(${u.id})" title="Restablecer contrasena">&#128273;</button>
+      <button class="btn-icon" onclick="toggleUser(${u.id},${!u.activo})" title="${u.activo?'Desactivar':'Activar'}">${u.activo?'&#9646;&#9646;':'&#9654;'}</button>
+      ${u.username!=='admin'?'<button class="btn-icon danger" onclick="deleteUser('+u.id+')" title="Eliminar">&#10005;</button>':''}
+    </td>
+  </tr>`).join('');
+}
+function openModalUser(){
+  document.getElementById('u-nombre').value='';document.getElementById('u-username').value='';
+  document.getElementById('u-password').value='';document.getElementById('u-role').value='consulta';
+  document.getElementById('u-temporal').checked=false;
+  document.getElementById('modal-user-error').style.display='none';
+  document.getElementById('modal-user').classList.add('open');
+}
+async function saveUser(){
+  const nombre=document.getElementById('u-nombre').value.trim();
+  const username=document.getElementById('u-username').value.trim();
+  const password=document.getElementById('u-password').value;
+  const role=document.getElementById('u-role').value;
+  const temporal=document.getElementById('u-temporal').checked;
+  const errEl=document.getElementById('modal-user-error');errEl.style.display='none';
+  if(!nombre||!username||!password){showAlert(errEl,'Todos los campos son requeridos','error');return;}
+  if(password.length<6){showAlert(errEl,'Minimo 6 caracteres','error');return;}
+  const r=await fetch('/api/usuarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,username,password,role,temporal})}).then(r=>r.json());
+  if(!r.success){showAlert(errEl,r.message,'error');return;}
+  closeModal('modal-user');loadUsers();
+}
+function openModalReset(id){
+  resetUserId=id;document.getElementById('reset-password').value='';
+  document.getElementById('modal-reset-error').style.display='none';
+  document.getElementById('modal-reset').classList.add('open');
+}
+async function doResetPassword(){
+  const password=document.getElementById('reset-password').value.trim();
+  const errEl=document.getElementById('modal-reset-error');errEl.style.display='none';
+  if(!password){showAlert(errEl,'Ingrese una contrasena temporal','error');return;}
+  const r=await fetch('/api/usuarios/'+resetUserId+'/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})}).then(r=>r.json());
+  if(!r.success){showAlert(errEl,r.message,'error');return;}
+  closeModal('modal-reset');loadUsers();alert('Contrasena temporal asignada.');
+}
+async function toggleUser(id,activo){
+  await fetch('/api/usuarios/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({activo})});
+  loadUsers();
+}
+async function deleteUser(id){
+  mostrarConfirm('Eliminar este usuario permanentemente?', async ()=>{ fetch('/api/usuarios/'+id,{method:'DELETE'}).then(()=>loadUsers()); });
+  await fetch('/api/usuarios/'+id,{method:'DELETE'});
+  loadUsers();
+}
+
+// UTILS
+function showSubtab(name, btn){
+  document.getElementById('esmax-panorama').style.display = name==='panorama' ? '' : 'none';
+  document.getElementById('esmax-monitoreo').style.display = name==='monitoreo' ? '' : 'none';
+  document.querySelectorAll('#subtab-panorama,#subtab-monitoreo').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='panorama') cargarPaloBackups();
+}
+function mostrarConfirm(msg, callback){
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('modal-confirm').classList.add('open');
+  const btn = document.getElementById('confirm-ok-btn');
+  btn.onclick = ()=>{ closeModal('modal-confirm'); callback(); };
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function showAlert(el,msg,type){el.textContent=msg;el.className='alert '+type;el.style.display='block';}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+checkSession();
+</script>
+
+<!-- MODAL CONFIRMACION -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-title">Confirmar accion</div>
+    <p id="confirm-msg" style="font-size:14px;color:var(--muted);margin-bottom:8px"></p>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-confirm')">Cancelar</button>
+      <button class="btn-save" style="background:var(--danger)" id="confirm-ok-btn">Confirmar</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

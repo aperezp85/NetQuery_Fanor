@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "$2a$10$sA5qHYCyQCumAk5A/RoLdeEugjTnCVENFiwktJf90Sf1/Tc0MBkYK",
+    "role": "admin",
+    "nombre": "Administrador",
+    "activo": true,
+    "mustChangePassword": false
+  },
+  {
+    "id": 1780055445840,
+    "username": "BFigueroa",
+    "nombre": "Bryan Figueroa",
+    "password": "$2a$10$2kU.9NwyY49jNYPld0TvLeQNtKGzf2p9h6BRcDpmYJoc7xb0HrgiW",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false
+  },
+  {
+    "id": 1780056770008,
+    "username": "SCarrasco",
+    "nombre": "Sebastian Carrasco",
+    "password": "$2a$10$gxWKALChu7Um3O0SSW3fCOuvunRwyOiKwApQEwS.JjfJD9NdgCQ9i",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false
+  },
+  {
+    "id": 1780056987571,
+    "username": "prueba",
+    "nombre": "ale prueba",
+    "password": "$2a$10$Kua9CUjlydSxUryiJc1K0.i6UabbB.wFehPyO4pM4177QlCezo8Hi",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false
+  },
+  {
+    "id": 1780060093710,
+    "username": "JPalma",
+    "nombre": "Jose Palma",
+    "password": "$2a$10$RiOZCqoiZhNbe0BZ2t.xae1lHINuxhvBOgF.j/x8hxI16QRiT3KKu",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": true
+  }
+]
