@@ -355,7 +355,7 @@ app.get('/api/ipdb/search', requireAuth, (req, res) => {
 });
 app.get('/api/ipdb/info', requireAuth, (req, res) => {
   const db = loadJSON(IP_FILE) || [];
-  const columns = db.length > 0 ? Object.keys(db[0]) : [];
+  const columns = db.length > 0 ? Object.keys(db[0]).filter(k=>k && k!=='id' && k!=='undefined') : [];
   res.json({ rows: db.length, columns });
 });
 
@@ -395,5 +395,47 @@ app.get('/api/palo/backup/download/:filename', requireAuth, (req, res) => {
   if (!fs.existsSync(file)) return res.status(404).json({ error: 'No encontrado' });
   res.download(file);
 });
+
+app.get('/api/hoja/:sheet', requireAuth, (req, res) => {
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  const sheet = Object.keys(ms).find(k => k === req.params.sheet);
+  if (!sheet) return res.json([]);
+  res.json(ms[sheet]);
+});
+
+
+app.post('/api/multisheet', requireAdmin, (req, res) => {
+  const { sheet, data } = req.body;
+  if(!sheet || !data) return res.json({ success: false, message: 'Datos incompletos' });
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  if(!ms[sheet]) ms[sheet] = [];
+  ms[sheet].push(data);
+  saveJSON(MULTISHEET_FILE, ms);
+  res.json({ success: true });
+});
+
+app.put('/api/multisheet', requireAdmin, (req, res) => {
+  const { sheet, keyField, keyValue, data } = req.body;
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  if(!ms[sheet]) return res.json({ success: false, message: 'Hoja no encontrada' });
+  ms[sheet] = ms[sheet].map(row => {
+    if((row[keyField]||'').toString().trim() === keyValue.toString().trim()) return { ...row, ...data };
+    return row;
+  });
+  saveJSON(MULTISHEET_FILE, ms);
+  res.json({ success: true });
+});
+
+app.delete('/api/multisheet', requireAdmin, (req, res) => {
+  const { sheet, keyField, keyValue } = req.body;
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  if(!ms[sheet]) return res.json({ success: false, message: 'Hoja no encontrada' });
+  ms[sheet] = ms[sheet].filter(row => (row[keyField]||'').toString().trim() !== keyValue.toString().trim());
+  saveJSON(MULTISHEET_FILE, ms);
+  res.json({ success: true });
+});
+
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 app.listen(PORT, () => { console.log('NetQuery corriendo en http://localhost:' + PORT); });
+
+

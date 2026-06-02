@@ -176,6 +176,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <button class="nav-tab active" onclick="showPage('consulta',this)">Consulta</button>
       <button class="nav-tab" onclick="showPage('esmax',this)">Esmax</button>
       <button class="nav-tab" onclick="showPage('ipdb',this)">Buscador IP</button>
+      <button class="nav-tab" onclick="showPage('ipo',this)">IPO</button>
       <button class="nav-tab admin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
       <button class="nav-tab admin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
     </div>
@@ -323,7 +324,27 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       </div>
     </div>
 
-  </main>
+  <div class="page" id="page-ipo">
+      <div class="page-title">Gestión de Servicios IPO</div>
+      <div class="page-sub">Busque por nombre IPO, IP de gestión o razón social</div>
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="ipo-search" type="text"
+            placeholder="Ej: IPO_CLIENTE o 10.158.0.1..."
+            onkeydown="if(event.key==='Enter')filtrarIpo()"
+            oninput="filtrarIpo()"
+            autocomplete="off">
+        </div>
+        <button class="btn btn-blue" onclick="filtrarIpo()">Buscar</button>
+      </div>
+      <div class="action-bar admin-only" style="display:none">
+        <button class="btn btn-green" onclick="openCreateModal('BD_Ipo')">+ Agregar</button>
+      </div>
+      <div id="ipo-result"></div>
+    </div>
+
+    </main>
 </div>
 <!-- MODAL REGISTRO -->
 <div class="modal-overlay" id="modal-registro">
@@ -333,7 +354,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <div id="modal-registro-error" class="alert error" style="margin-top:12px"></div>
     <div class="btn-row">
       <button class="btn-cancel" onclick="closeModal('modal-registro')">Cancelar</button>
-      <button class="btn-save" onclick="guardarRegistro()">Guardar</button>
+      <button class="btn-save" id="modal-registro-save-btn">Guardar</button>
     </div>
   </div>
 </div>
@@ -441,6 +462,7 @@ function initApp(){
   }
   cargarPaloBackups();
   cargarInfoIPDB();
+  cargarDatosIpo();
   setTimeout(()=>{
     cargarSitiosEsmax().then(()=>{
       if(!esmax_monitoreando){
@@ -463,6 +485,8 @@ function showPage(name,btn){
   btn.classList.add('active');
   if(name==='panorama') cargarPaloBackups();
   if(name==='ipdb') cargarInfoIPDB();
+  cargarDatosIpo();
+  if(name==='ipo') cargarDatosIpo();
 }
 
 // AUTOCOMPLETE
@@ -559,6 +583,14 @@ async function doSearch(){
   container.innerHTML=html;
 }
 
+function copiarIPO(btn, ipo, ip, razon, fqdn){
+  const txt = "IPO: "+ipo+"\nIP Gestión: "+ip+"\nRazón Social: "+razon+"\nFQDN: "+fqdn;
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  btn.textContent='¡Copiado!'; btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
 function copiarResultado(btn){
   const card=btn.closest('.result-card');
   const fields=card.querySelectorAll('.result-field');
@@ -584,8 +616,121 @@ function buildFormFields(data={}){
   if(dbColumns.length===0)return '<div class="alert warning" style="display:block">Primero cargue la base de datos.</div>';
   return dbColumns.map(col=>'<div class="field"><label>'+escHtml(col)+'</label><input type="text" id="field-'+escHtml(col)+'" value="'+escHtml(String(data[col]||''))+'"></div>').join('');
 }
-function openModalAgregar(){editMode=false;document.getElementById('modal-registro-title').textContent='Agregar nuevo registro';document.getElementById('modal-registro-fields').innerHTML=buildFormFields();document.getElementById('modal-registro-error').style.display='none';document.getElementById('modal-registro').classList.add('open');}
-function openModalEditar(){if(!lastResult){alert('Primero busque un registro');return;}editMode=true;document.getElementById('modal-registro-title').textContent='Editar: '+(lastResult.CODIGO||'');document.getElementById('modal-registro-fields').innerHTML=buildFormFields(lastResult);document.getElementById('modal-registro-error').style.display='none';document.getElementById('modal-registro').classList.add('open');}
+
+function openCreateModal(sheet){
+  document.getElementById('modal-registro-title').textContent = 'Agregar registro IPO';
+  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  let html = '';
+  cols.forEach(c => { html += '<div class="field"><label>' + c + '</label><input type="text" id="field-' + c + '" placeholder="' + c + '"></div>'; });
+  document.getElementById('modal-registro-fields').innerHTML = html;
+  document.getElementById('modal-registro-error').style.display = 'none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._modalSheet = sheet;
+  window._modalEditMode = false;
+  document.getElementById('modal-registro-save-btn').onclick = guardarIPO;
+}
+
+async function openModalAgregar(){
+  editMode=false;
+  document.getElementById('modal-registro-title').textContent='Agregar registro en BD_Servicios';
+  document.getElementById('modal-registro-error').style.display='none';
+  // Cargar columnas dinámicas desde BD_Servicios
+  let cols = [];
+  try{
+    const r = await fetch('/api/hoja/BD_Servicios').then(r=>r.json());
+    if(r && r.length>0) cols = Object.keys(r[0]);
+  }catch(e){}
+  if(!cols.length) cols = ['Codigo_Servicio','Cliente','Direccion','Comuna','Ip_Gestion','Vrf','Wan','Nodo','Puerta','Ip_Admin_Switch'];
+  window._servicioCols = cols;
+  document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro').classList.add('open');
+  window._modalEditMode=false;
+  document.getElementById('modal-registro-save-btn').onclick=guardarServicio;
+}
+async function openModalEditar(){
+  if(!lastResult){alert('Primero busque un registro');return;}
+  editMode=true;
+  const codigo = lastResult.Codigo_Servicio||lastResult.CODIGO||'';
+  document.getElementById('modal-registro-title').textContent='Editar: '+codigo;
+  document.getElementById('modal-registro-error').style.display='none';
+  let cols = [];
+  try{
+    const r = await fetch('/api/hoja/BD_Servicios').then(r=>r.json());
+    if(r && r.length>0) cols = Object.keys(r[0]);
+  }catch(e){}
+  if(!cols.length) cols = Object.keys(lastResult);
+  window._servicioCols = cols;
+  document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'" value="'+escHtml(String(lastResult[c]||''))+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro').classList.add('open');
+  window._modalEditMode=true;
+  window._modalEditValue=codigo;
+  document.getElementById('modal-registro-save-btn').onclick=guardarServicio;
+}
+
+async function guardarIPO(){
+  const errEl = document.getElementById('modal-registro-error');
+  errEl.style.display = 'none';
+  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  const data = {};
+  cols.forEach(c => {
+    const el = document.getElementById('field-' + c);
+    if(el) data[c] = el.value.trim();
+  });
+  if(!data.IPO){ showAlert(errEl, 'El campo IPO es obligatorio', 'error'); return; }
+  let r;
+  if(window._modalEditMode){
+    r = await fetch('/api/multisheet', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({sheet: 'BD_Ipo', keyField: 'IPO', keyValue: window._modalEditValue, data})
+    }).then(r => r.json());
+  } else {
+    r = await fetch('/api/multisheet', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({sheet: 'BD_Ipo', data})
+    }).then(r => r.json());
+  }
+  if(!r.success){ showAlert(errEl, r.message, 'error'); return; }
+  closeModal('modal-registro');
+  cargarDatosIpo();
+}
+
+async function guardarServicio(){
+  const errEl=document.getElementById('modal-registro-error');
+  errEl.style.display='none';
+  const cols = window._servicioCols || [];
+  const data={};
+  cols.forEach(c=>{
+    const el=document.getElementById('field-srv-'+c);
+    if(el) data[c]=el.value.trim();
+  });
+  const codigo = data.Codigo_Servicio||'';
+  if(!codigo){showAlert(errEl,'El campo Codigo_Servicio es obligatorio','error');return;}
+  let r;
+  if(window._modalEditMode){
+    r=await fetch('/api/multisheet',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Servicios',keyField:'Codigo_Servicio',keyValue:window._modalEditValue,data})
+    }).then(r=>r.json());
+  } else {
+    r=await fetch('/api/multisheet',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Servicios',data})
+    }).then(r=>r.json());
+  }
+  if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
+  closeModal('modal-registro');
+  // Refrescar búsqueda
+  if(window._modalEditMode) doSearch();
+}
+
 async function guardarRegistro(){
   const errEl=document.getElementById('modal-registro-error');errEl.style.display='none';
   const data={};dbColumns.forEach(col=>{const el=document.getElementById('field-'+col);if(el)data[col]=el.value.trim();});
@@ -598,10 +743,22 @@ async function guardarRegistro(){
 }
 async function eliminarResultado(){
   if(!lastResult){alert('Primero busque un registro');return;}
-  if(!confirm('Eliminar '+lastResult.CODIGO+'?'))return;
-  const r=await fetch('/api/datos/'+encodeURIComponent(lastResult.CODIGO),{method:'DELETE'}).then(r=>r.json());
-  if(!r.success){alert('Error: '+r.message);return;}
-  lastResult=null;document.getElementById('search-result').innerHTML='<div class="not-found"><p>Registro eliminado</p></div>';document.getElementById('search-input').value='';loadDbInfo();
+  const codigo = lastResult.Codigo_Servicio||lastResult.CODIGO||'';
+  if(!codigo){alert('No se puede identificar el registro');return;}
+  document.getElementById('confirm-msg').textContent='¿Eliminar el servicio: '+codigo+'?';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    const r = await fetch('/api/multisheet',{
+      method:'DELETE',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Servicios',keyField:'Codigo_Servicio',keyValue:codigo})
+    }).then(r=>r.json());
+    if(!r.success){alert('Error: '+r.message);return;}
+    lastResult=null;
+    document.getElementById('search-result').innerHTML='<div class="not-found"><p>Registro eliminado correctamente</p></div>';
+    document.getElementById('search-input').value='';
+  };
+  document.getElementById('modal-confirm').classList.add('open');
 }
 
 // PANORAMA──
@@ -631,7 +788,13 @@ function actualizarPaloInfo(){
 }
 function descargarPalo(){
   const sel=document.getElementById('palo-select');
-  if(!sel||!sel.value){alert('Seleccione un backup para descargar');return;}
+  if(!sel||!sel.value){
+    document.getElementById('confirm-msg').textContent='Seleccione un backup para descargar.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
   const a=document.createElement('a');
   a.href='/api/palo/backup/download/'+encodeURIComponent(sel.value);
   a.download=sel.value;
@@ -660,8 +823,18 @@ async function uploadFile(file){
 }
 async function doBackup(){
   const r=await fetch('/api/db/backup',{method:'POST'}).then(r=>r.json());
-  if(r.success){alert('Backup creado: '+r.file);loadBackups();}
-  else alert('Error: '+r.message);
+  if(r.success){
+    document.getElementById('confirm-msg').textContent='Backup creado: '+r.file;
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    loadBackups();
+  } else {
+    document.getElementById('confirm-msg').textContent='Error al crear backup: '+r.message;
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+  }
 }
 async function loadBackups(){
   const backups=await fetch('/api/db/backups').then(r=>r.json());
@@ -773,15 +946,31 @@ async function pingManual(ip,id){
 async function agregarSitioEsmax(){
   const nombre=document.getElementById('esmax-nombre').value.trim();
   const ip=document.getElementById('esmax-ip').value.trim();
-  if(!nombre||!ip){alert('Ingrese nombre e IP');return;}
+  if(!nombre||!ip){
+    document.getElementById('confirm-msg').textContent='Ingrese nombre e IP del sitio.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
   const r=await fetch('/api/esmax/sites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,ip})}).then(r=>r.json());
   if(r.success){document.getElementById('esmax-nombre').value='';document.getElementById('esmax-ip').value='';cargarSitiosEsmax();}
-  else alert('Error: '+r.message);
+  else {
+    document.getElementById('confirm-msg').textContent='Error: '+r.message;
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+  }
 }
 async function eliminarSitioEsmax(id){
-  if(!confirm('Eliminar sitio?'))return;
-  await fetch('/api/esmax/sites/'+id,{method:'DELETE'});
-  cargarSitiosEsmax();
+  document.getElementById('confirm-msg').textContent='¿Eliminar este sitio de monitoreo?';
+  document.getElementById('confirm-ok-btn').textContent='Confirmar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    await fetch('/api/esmax/sites/'+id,{method:'DELETE'});
+    cargarSitiosEsmax();
+  };
+  document.getElementById('modal-confirm').classList.add('open');
 }
 
 // BUSCADOR IP──
@@ -836,9 +1025,13 @@ async function guardarIPDB(){
   closeModal('modal-ipdb');buscarIPDB();
 }
 async function eliminarIPDB(id){
-  if(!confirm('Eliminar este equipo?'))return;
-  await fetch('/api/ipdb/'+id,{method:'DELETE'});
-  buscarIPDB();
+  document.getElementById('confirm-msg').textContent='¿Eliminar este equipo?';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    await fetch('/api/ipdb/'+id,{method:'DELETE'});
+    buscarIPDB();
+  };
+  document.getElementById('modal-confirm').classList.add('open');
 }
 
 // USUARIOS
@@ -898,7 +1091,11 @@ async function doResetPassword(){
   if(!password){showAlert(errEl,'Ingrese una contrasena temporal','error');return;}
   const r=await fetch('/api/usuarios/'+resetUserId+'/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})}).then(r=>r.json());
   if(!r.success){showAlert(errEl,r.message,'error');return;}
-  closeModal('modal-reset');loadUsers();alert('Contrasena temporal asignada.');
+  closeModal('modal-reset');loadUsers();
+  document.getElementById('confirm-msg').textContent='Contraseña temporal asignada correctamente.';
+  document.getElementById('confirm-ok-btn').textContent='Aceptar';
+  document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+  document.getElementById('modal-confirm').classList.add('open');
 }
 async function toggleUser(id,activo){
   await fetch('/api/usuarios/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({activo})});
@@ -943,4 +1140,114 @@ checkSession();
   </div>
 </div>
 </body>
-</html>
+</html><script>
+let ipoData = [];
+async function cargarDatosIpo(){
+  try{
+    const r = await fetch('/api/hoja/BD_Ipo').then(r=>r.json());
+    ipoData = r || [];
+    const q = document.getElementById('ipo-search') ? document.getElementById('ipo-search').value.trim() : '';
+    if(q) filtrarIpo(); else renderIpoTable(ipoData);
+  }catch(e){ renderIpoTable([]); }
+}
+function filtrarIpo(){
+  const el = document.getElementById('ipo-search');
+  const q = el ? el.value.trim().toUpperCase() : '';
+  if(!q){ renderIpoTable(ipoData); return; }
+  const filtrado = ipoData.filter(row =>
+    Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
+  );
+  renderIpoTable(filtrado);
+}
+function editarIPO(ipo, ip, razon, fqdn){
+  document.getElementById('modal-registro-title').textContent = 'Editar registro IPO';
+  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  const vals = [ipo, ip, razon, fqdn];
+  let html = '';
+  cols.forEach((c,i) => { html += '<div class="field"><label>' + c + '</label><input type="text" id="field-' + c + '" value="' + (vals[i]||'') + '"></div>'; });
+  document.getElementById('modal-registro-fields').innerHTML = html;
+  document.getElementById('modal-registro-error').style.display = 'none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._modalSheet = 'BD_Ipo';
+  window._modalEditMode = true;
+  window._modalEditKey = 'IPO';
+  window._modalEditValue = ipo;
+  document.getElementById('modal-registro-save-btn').onclick = guardarIPO;
+}
+
+async function eliminarIPO(ipo){
+  document.getElementById('confirm-msg').textContent = '¿Está seguro que desea eliminar el IPO: ' + ipo + '?';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    const r = await fetch('/api/multisheet', {
+      method: 'DELETE',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({sheet:'BD_Ipo', keyField:'IPO', keyValue:ipo})
+    }).then(r=>r.json());
+    if(r.success) cargarDatosIpo();
+    else {
+      document.getElementById('confirm-msg').textContent='Error: '+r.message;
+      document.getElementById('confirm-ok-btn').textContent='Aceptar';
+      document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+      document.getElementById('modal-confirm').classList.add('open');
+    }
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
+function mostrarCredenciales(ipo, usuario, pass){
+  const msg = 'IPO: ' + ipo + '\nUsuario: ' + usuario + '\nPassword: ' + pass;
+  const div = document.createElement('div');
+  div.style = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--accent);border-radius:12px;padding:24px 32px;z-index:2000;min-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.5)';
+  div.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--accent)">Credenciales ' + ipo + '</div>' +
+    '<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">USUARIO</span><div style="font-family:monospace;font-size:15px">' + usuario + '</div></div>' +
+    '<div style="margin-bottom:16px"><span style="color:var(--muted);font-size:12px">PASSWORD</span><div style="font-family:monospace;font-size:15px">' + pass + '</div></div>' +
+    '<button onclick="navigator.clipboard.writeText(\'' + usuario + '\\n' + pass + '\');this.textContent=\'✓ Copiado\';setTimeout(()=>this.textContent=\'📋 Copiar\',1500)" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">📋 Copiar</button>' +
+    '<button onclick="this.parentNode.remove()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer">Cerrar</button>';
+  const overlay = document.createElement('div');
+  overlay.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999';
+  overlay.onclick = () => { div.remove(); overlay.remove(); };
+  document.body.appendChild(overlay);
+  document.body.appendChild(div);
+}
+
+function renderIpoTable(data){
+  const cont = document.getElementById('ipo-result');
+  if(!cont) return;
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  if(!data || data.length === 0){
+    cont.innerHTML = '<div class="not-found"><p>Sin registros IPO</p></div>';
+    return;
+  }
+  cont.innerHTML = data.map(row => {
+    const ipo   = (row.IPO||'');
+    const ip    = (row.Ip_Gestion||'');
+    const razon = (row.Razon_Social||row['Razon Social']||'');
+    const fqdn  = (row.FQDN||'');
+    const isIntegral = ipo.toUpperCase().includes('PRUEBA_INTEGRAL');
+    const ipoE   = escHtml(ipo);
+    const ipE    = escHtml(ip);
+    const razonE = escHtml(razon);
+    const fqdnE  = escHtml(fqdn);
+    const ipoJ   = ipo.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const ipJ    = ip.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const razonJ = razon.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const fqdnJ  = fqdn.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const fields = [
+      {label:'IPO',         value:ipoE,   mono:true},
+      {label:'IP Gestión',  value:ipE,    mono:true},
+      {label:'Razón Social',value:razonE, mono:false},
+      {label:'FQDN',        value:fqdnE,  mono:false},
+    ].map(f=>`<div class="result-field"><div class="rf-label">${f.label}</div><div class="rf-value ${f.mono?'mono':''}${f.value?'':' empty'}">${f.value||'&mdash;'}</div></div>`).join('');
+    let btns = `<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarIPO(this,'${ipoJ}','${ipJ}','${razonJ}','${fqdnJ}')">Copiar</button>`;
+    if(isIntegral) btns += `<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredenciales('${ipoJ}','Administrator','Admi2002722413')">&#128273; Creds</button>`;
+    if(isAdmin) btns += `<button class="btn btn-yellow" style="padding:4px 10px;font-size:12px" onclick="editarIPO('${ipoJ}','${ipJ}','${razonJ}','${fqdnJ}')">Editar</button><button class="btn btn-red" style="padding:4px 10px;font-size:12px" onclick="eliminarIPO('${ipoJ}')">Eliminar</button>`;
+    return `<div class="result-card" style="margin-bottom:16px"><div class="result-header"><div class="result-code">${ipoE}</div><div style="display:flex;gap:8px;align-items:center">${btns}<div class="result-badge">IPO</div></div></div><div class="result-grid">${fields}</div></div>`;
+  }).join('');
+}
+</script>
+
+
+
+
+
