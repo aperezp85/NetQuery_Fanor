@@ -339,7 +339,9 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         <button class="btn btn-blue" onclick="filtrarIpo()">Buscar</button>
       </div>
       <div class="action-bar admin-only" style="display:none">
-        <button class="btn btn-green" onclick="openCreateModal('BD_Ipo')">+ Agregar</button>
+        <button class="btn btn-green" onclick="openModalAgregarIPO()">+ Agregar</button>
+        <button class="btn btn-yellow" onclick="openModalEditarIPO()">Editar resultado</button>
+        <button class="btn btn-red" onclick="eliminarResultadoIPO()">Eliminar resultado</button>
       </div>
       <div id="ipo-result"></div>
     </div>
@@ -634,7 +636,6 @@ async function openModalAgregar(){
   editMode=false;
   document.getElementById('modal-registro-title').textContent='Agregar registro en BD_Servicios';
   document.getElementById('modal-registro-error').style.display='none';
-  // Cargar columnas dinámicas desde BD_Servicios
   let cols = [];
   try{
     const r = await fetch('/api/hoja/BD_Servicios').then(r=>r.json());
@@ -650,7 +651,13 @@ async function openModalAgregar(){
   document.getElementById('modal-registro-save-btn').onclick=guardarServicio;
 }
 async function openModalEditar(){
-  if(!lastResult){alert('Primero busque un registro');return;}
+  if(!lastResult){
+    document.getElementById('confirm-msg').textContent='Primero busque un registro para editar.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
   editMode=true;
   const codigo = lastResult.Codigo_Servicio||lastResult.CODIGO||'';
   document.getElementById('modal-registro-title').textContent='Editar: '+codigo;
@@ -713,21 +720,16 @@ async function guardarServicio(){
   if(!codigo){showAlert(errEl,'El campo Codigo_Servicio es obligatorio','error');return;}
   let r;
   if(window._modalEditMode){
-    r=await fetch('/api/multisheet',{
-      method:'PUT',
-      headers:{'Content-Type':'application/json'},
+    r=await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({sheet:'BD_Servicios',keyField:'Codigo_Servicio',keyValue:window._modalEditValue,data})
     }).then(r=>r.json());
   } else {
-    r=await fetch('/api/multisheet',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+    r=await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({sheet:'BD_Servicios',data})
     }).then(r=>r.json());
   }
   if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
   closeModal('modal-registro');
-  // Refrescar búsqueda
   if(window._modalEditMode) doSearch();
 }
 
@@ -742,10 +744,23 @@ async function guardarRegistro(){
   closeModal('modal-registro');lastResult=data;renderResult(data,document.getElementById('search-result'));document.getElementById('search-input').value=data.CODIGO;loadDbInfo();
 }
 async function eliminarResultado(){
-  if(!lastResult){alert('Primero busque un registro');return;}
+  if(!lastResult){
+    document.getElementById('confirm-msg').textContent='Primero busque un registro para eliminar.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
   const codigo = lastResult.Codigo_Servicio||lastResult.CODIGO||'';
-  if(!codigo){alert('No se puede identificar el registro');return;}
+  if(!codigo){
+    document.getElementById('confirm-msg').textContent='No se puede identificar el registro.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
   document.getElementById('confirm-msg').textContent='¿Eliminar el servicio: '+codigo+'?';
+  document.getElementById('confirm-ok-btn').textContent='Confirmar';
   document.getElementById('confirm-ok-btn').onclick = async function(){
     closeModal('modal-confirm');
     const r = await fetch('/api/multisheet',{
@@ -753,7 +768,13 @@ async function eliminarResultado(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({sheet:'BD_Servicios',keyField:'Codigo_Servicio',keyValue:codigo})
     }).then(r=>r.json());
-    if(!r.success){alert('Error: '+r.message);return;}
+    if(!r.success){
+      document.getElementById('confirm-msg').textContent='Error: '+(r.message||'No se pudo eliminar');
+      document.getElementById('confirm-ok-btn').textContent='Aceptar';
+      document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+      document.getElementById('modal-confirm').classList.add('open');
+      return;
+    }
     lastResult=null;
     document.getElementById('search-result').innerHTML='<div class="not-found"><p>Registro eliminado correctamente</p></div>';
     document.getElementById('search-input').value='';
@@ -788,13 +809,7 @@ function actualizarPaloInfo(){
 }
 function descargarPalo(){
   const sel=document.getElementById('palo-select');
-  if(!sel||!sel.value){
-    document.getElementById('confirm-msg').textContent='Seleccione un backup para descargar.';
-    document.getElementById('confirm-ok-btn').textContent='Aceptar';
-    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
-    document.getElementById('modal-confirm').classList.add('open');
-    return;
-  }
+  if(!sel||!sel.value){alert('Seleccione un backup para descargar');return;}
   const a=document.createElement('a');
   a.href='/api/palo/backup/download/'+encodeURIComponent(sel.value);
   a.download=sel.value;
@@ -946,21 +961,10 @@ async function pingManual(ip,id){
 async function agregarSitioEsmax(){
   const nombre=document.getElementById('esmax-nombre').value.trim();
   const ip=document.getElementById('esmax-ip').value.trim();
-  if(!nombre||!ip){
-    document.getElementById('confirm-msg').textContent='Ingrese nombre e IP del sitio.';
-    document.getElementById('confirm-ok-btn').textContent='Aceptar';
-    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
-    document.getElementById('modal-confirm').classList.add('open');
-    return;
-  }
+  if(!nombre||!ip){alert('Ingrese nombre e IP');return;}
   const r=await fetch('/api/esmax/sites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,ip})}).then(r=>r.json());
   if(r.success){document.getElementById('esmax-nombre').value='';document.getElementById('esmax-ip').value='';cargarSitiosEsmax();}
-  else {
-    document.getElementById('confirm-msg').textContent='Error: '+r.message;
-    document.getElementById('confirm-ok-btn').textContent='Aceptar';
-    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
-    document.getElementById('modal-confirm').classList.add('open');
-  }
+  else alert('Error: '+r.message);
 }
 async function eliminarSitioEsmax(id){
   document.getElementById('confirm-msg').textContent='¿Eliminar este sitio de monitoreo?';
@@ -1026,6 +1030,7 @@ async function guardarIPDB(){
 }
 async function eliminarIPDB(id){
   document.getElementById('confirm-msg').textContent='¿Eliminar este equipo?';
+  document.getElementById('confirm-ok-btn').textContent='Confirmar';
   document.getElementById('confirm-ok-btn').onclick = async function(){
     closeModal('modal-confirm');
     await fetch('/api/ipdb/'+id,{method:'DELETE'});
@@ -1139,16 +1144,19 @@ checkSession();
     </div>
   </div>
 </div>
-</body>
-</html><script>
+<script>
+
 let ipoData = [];
 async function cargarDatosIpo(){
   try{
     const r = await fetch('/api/hoja/BD_Ipo').then(r=>r.json());
     ipoData = r || [];
     const q = document.getElementById('ipo-search') ? document.getElementById('ipo-search').value.trim() : '';
-    if(q) filtrarIpo(); else renderIpoTable(ipoData);
-  }catch(e){ renderIpoTable([]); }
+    if(q) filtrarIpo(); else {
+      const cont = document.getElementById('ipo-result');
+      if(cont) cont.innerHTML = '';
+    }
+  }catch(e){}
 }
 function filtrarIpo(){
   const el = document.getElementById('ipo-search');
@@ -1185,12 +1193,7 @@ async function eliminarIPO(ipo){
       body: JSON.stringify({sheet:'BD_Ipo', keyField:'IPO', keyValue:ipo})
     }).then(r=>r.json());
     if(r.success) cargarDatosIpo();
-    else {
-      document.getElementById('confirm-msg').textContent='Error: '+r.message;
-      document.getElementById('confirm-ok-btn').textContent='Aceptar';
-      document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
-      document.getElementById('modal-confirm').classList.add('open');
-    }
+    else alert(r.message);
   };
   document.getElementById('modal-confirm').classList.add('open');
 }
@@ -1214,40 +1217,140 @@ function mostrarCredenciales(ipo, usuario, pass){
 function renderIpoTable(data){
   const cont = document.getElementById('ipo-result');
   if(!cont) return;
-  const isAdmin = currentUser && currentUser.role === 'admin';
+  window._ipoDataRef = data;
   if(!data || data.length === 0){
     cont.innerHTML = '<div class="not-found"><p>Sin registros IPO</p></div>';
     return;
   }
-  cont.innerHTML = data.map(row => {
-    const ipo   = (row.IPO||'');
-    const ip    = (row.Ip_Gestion||'');
-    const razon = (row.Razon_Social||row['Razon Social']||'');
-    const fqdn  = (row.FQDN||'');
-    const isIntegral = ipo.toUpperCase().includes('PRUEBA_INTEGRAL');
-    const ipoE   = escHtml(ipo);
-    const ipE    = escHtml(ip);
-    const razonE = escHtml(razon);
-    const fqdnE  = escHtml(fqdn);
-    const ipoJ   = ipo.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    const ipJ    = ip.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    const razonJ = razon.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    const fqdnJ  = fqdn.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const MONO_KEYS = ['IPO','Ip','ip'];
+  cont.innerHTML = data.map((row,idx) => {
+    const ipo   = escHtml(row.IPO||'');
+    const ip    = escHtml(row.Ip_Gestion||'');
+    const razon = escHtml(row.Razon_Social||row['Razon Social']||'');
+    const fqdn  = escHtml(row.FQDN||'');
+    const isIntegral = (row.IPO||'').toUpperCase().includes('PRUEBA_INTEGRAL');
     const fields = [
-      {label:'IPO',         value:ipoE,   mono:true},
-      {label:'IP Gestión',  value:ipE,    mono:true},
-      {label:'Razón Social',value:razonE, mono:false},
-      {label:'FQDN',        value:fqdnE,  mono:false},
-    ].map(f=>`<div class="result-field"><div class="rf-label">${f.label}</div><div class="rf-value ${f.mono?'mono':''}${f.value?'':' empty'}">${f.value||'&mdash;'}</div></div>`).join('');
-    let btns = `<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarIPO(this,'${ipoJ}','${ipJ}','${razonJ}','${fqdnJ}')">Copiar</button>`;
-    if(isIntegral) btns += `<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredenciales('${ipoJ}','Administrator','Admi2002722413')">&#128273; Creds</button>`;
-    if(isAdmin) btns += `<button class="btn btn-yellow" style="padding:4px 10px;font-size:12px" onclick="editarIPO('${ipoJ}','${ipJ}','${razonJ}','${fqdnJ}')">Editar</button><button class="btn btn-red" style="padding:4px 10px;font-size:12px" onclick="eliminarIPO('${ipoJ}')">Eliminar</button>`;
-    return `<div class="result-card" style="margin-bottom:16px"><div class="result-header"><div class="result-code">${ipoE}</div><div style="display:flex;gap:8px;align-items:center">${btns}<div class="result-badge">IPO</div></div></div><div class="result-grid">${fields}</div></div>`;
+      {label:'IPO',         value:ipo,   mono:true},
+      {label:'IP Gestión',  value:ip,    mono:true},
+      {label:'Razón Social',value:razon, mono:false},
+      {label:'FQDN',        value:fqdn,  mono:false},
+    ].map(f=>'<div class="result-field"><div class="rf-label">'+f.label+'</div><div class="rf-value '+(f.mono?'mono':'')+(f.value?'':' empty')+'">'+(f.value||'&mdash;')+'</div></div>').join('');
+    let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarIPOIdx(this,'+idx+')">Copiar</button>';
+    if(isIntegral) btns += '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredsIPO('+idx+')">&#128273; Creds</button>';
+    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarIPO('+idx+',this)"><div class="result-header"><div class="result-code">'+ipo+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">IPO</div></div></div><div class="result-grid">'+fields+'</div></div>';
   }).join('');
 }
+
+function seleccionarIPO(idx, el){
+  lastIPOResult = window._ipoDataRef[idx];
+  document.querySelectorAll('#ipo-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
+  el.style.borderColor='var(--accent)';
+}
+
+function copiarIPOIdx(btn, idx){
+  const row = window._ipoDataRef[idx];
+  const txt = 'IPO: '+(row.IPO||'')+'\nIP Gestión: '+(row.Ip_Gestion||'')+'\nRazón Social: '+(row.Razon_Social||'')+'\nFQDN: '+(row.FQDN||'');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  btn.textContent='¡Copiado!';btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
+
+function mostrarCredsIPO(idx){
+  const row = window._ipoDataRef[idx];
+  mostrarCredenciales(row.IPO||'','Administrator','Admi2002722413');
+}
+
+let lastIPOResult = null;
+
+
+
+async function openModalAgregarIPO(){
+  lastIPOResult = null;
+  document.getElementById('modal-registro-title').textContent = 'Agregar registro IPO';
+  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
+    '<div class="field"><label>'+c+'</label><input type="text" id="field-ipo-'+c+'" placeholder="'+c+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._ipoEditMode = false;
+  document.getElementById('modal-registro-save-btn').onclick = guardarIPOModal;
+}
+
+async function openModalEditarIPO(){
+  if(!lastIPOResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro IPO haciendo clic en él.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const row = lastIPOResult;
+  document.getElementById('modal-registro-title').textContent = 'Editar: '+(row.IPO||'');
+  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
+    '<div class="field"><label>'+c+'</label><input type="text" id="field-ipo-'+c+'" value="'+(row[c]||'')+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._ipoEditMode = true;
+  window._ipoEditValue = row.IPO||'';
+  document.getElementById('modal-registro-save-btn').onclick = guardarIPOModal;
+}
+
+async function guardarIPOModal(){
+  const errEl = document.getElementById('modal-registro-error');
+  errEl.style.display='none';
+  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  const data={};
+  cols.forEach(c=>{
+    const el=document.getElementById('field-ipo-'+c);
+    if(el) data[c]=el.value.trim();
+  });
+  if(!data.IPO){showAlert(errEl,'El campo IPO es obligatorio','error');return;}
+  let r;
+  if(window._ipoEditMode){
+    r=await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Ipo',keyField:'IPO',keyValue:window._ipoEditValue,data})
+    }).then(r=>r.json());
+  } else {
+    r=await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Ipo',data})
+    }).then(r=>r.json());
+  }
+  if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
+  closeModal('modal-registro');
+  lastIPOResult=null;
+  cargarDatosIpo();
+}
+
+async function eliminarResultadoIPO(){
+  if(!lastIPOResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro IPO haciendo clic en él.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const ipo = lastIPOResult.IPO||'';
+  document.getElementById('confirm-msg').textContent='¿Eliminar el IPO: '+ipo+'?';
+  document.getElementById('confirm-ok-btn').textContent='Confirmar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    const r=await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Ipo',keyField:'IPO',keyValue:ipo})
+    }).then(r=>r.json());
+    if(r.success){lastIPOResult=null;cargarDatosIpo();}
+    else{
+      document.getElementById('confirm-msg').textContent='Error: '+r.message;
+      document.getElementById('confirm-ok-btn').textContent='Aceptar';
+      document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+      document.getElementById('modal-confirm').classList.add('open');
+    }
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
 </script>
-
-
-
-
-
+</body>
+</html>
