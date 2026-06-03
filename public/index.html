@@ -177,6 +177,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <button class="nav-tab" onclick="showPage('esmax',this)">Esmax</button>
       <button class="nav-tab" onclick="showPage('ipdb',this)">Buscador IP</button>
       <button class="nav-tab" onclick="showPage('ipo',this)">IPO</button>
+      <button class="nav-tab" onclick="showPage('sdwan',this)">SDWAN</button>
       <button class="nav-tab admin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
       <button class="nav-tab admin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
     </div>
@@ -275,6 +276,29 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       </div>
       <div id="ipdb-info" style="font-size:13px;color:var(--muted);margin-bottom:16px"></div>
       <div id="ipdb-result"></div>
+    </div>
+
+    <!-- SDWAN -->
+    <div class="page" id="page-sdwan">
+      <div class="page-title">Gestión de Servicios SDWAN</div>
+      <div class="page-sub">Busque por código, hostname, IP o cliente</div>
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="sdwan-search" type="text"
+            placeholder="Ej: 02-25-001... o hostname..."
+            onkeydown="if(event.key==='Enter')filtrarSdwan()"
+            oninput="filtrarSdwan()"
+            autocomplete="off">
+        </div>
+        <button class="btn btn-blue" onclick="filtrarSdwan()">Buscar</button>
+      </div>
+      <div class="action-bar admin-only" style="display:none">
+        <button class="btn btn-green" onclick="openModalAgregarSdwan()">+ Agregar</button>
+        <button class="btn btn-yellow" onclick="openModalEditarSdwan()">Editar resultado</button>
+        <button class="btn btn-red" onclick="eliminarResultadoSdwan()">Eliminar resultado</button>
+      </div>
+      <div id="sdwan-result"></div>
     </div>
 
     <!-- BASE DE DATOS -->
@@ -465,6 +489,7 @@ function initApp(){
   cargarPaloBackups();
   cargarInfoIPDB();
   cargarDatosIpo();
+  cargarDatosSdwan();
   setTimeout(()=>{
     cargarSitiosEsmax().then(()=>{
       if(!esmax_monitoreando){
@@ -489,6 +514,7 @@ function showPage(name,btn){
   if(name==='ipdb') cargarInfoIPDB();
   cargarDatosIpo();
   if(name==='ipo') cargarDatosIpo();
+  if(name==='sdwan') cargarDatosSdwan();
 }
 
 // AUTOCOMPLETE
@@ -1342,6 +1368,151 @@ async function eliminarResultadoIPO(){
       body:JSON.stringify({sheet:'BD_Ipo',keyField:'IPO',keyValue:ipo})
     }).then(r=>r.json());
     if(r.success){lastIPOResult=null;cargarDatosIpo();}
+    else{
+      document.getElementById('confirm-msg').textContent='Error: '+r.message;
+      document.getElementById('confirm-ok-btn').textContent='Aceptar';
+      document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+      document.getElementById('modal-confirm').classList.add('open');
+    }
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
+// ── SDWAN ──
+let sdwanData = [];
+let lastSdwanResult = null;
+const SDWAN_COLS = ['Codigo_Servicio','Local','Direccion','Comuna','Hostname','Detalle_Dirección','Ip_Gestion','Lan','Cliente','Proveedor'];
+
+async function cargarDatosSdwan(){
+  try{
+    const r = await fetch('/api/hoja/BD_Sdwan').then(r=>r.json());
+    sdwanData = r || [];
+    const q = document.getElementById('sdwan-search') ? document.getElementById('sdwan-search').value.trim() : '';
+    if(q) filtrarSdwan();
+    else { const cont=document.getElementById('sdwan-result'); if(cont) cont.innerHTML=''; }
+  }catch(e){}
+}
+
+function filtrarSdwan(){
+  const el = document.getElementById('sdwan-search');
+  const q = el ? el.value.trim().toUpperCase() : '';
+  if(!q){ const cont=document.getElementById('sdwan-result'); if(cont) cont.innerHTML=''; return; }
+  const filtrado = sdwanData.filter(row =>
+    Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
+  );
+  renderSdwan(filtrado);
+}
+
+function renderSdwan(data){
+  const cont = document.getElementById('sdwan-result');
+  if(!cont) return;
+  window._sdwanDataRef = data;
+  if(!data || data.length === 0){
+    cont.innerHTML = '<div class="not-found"><p>Sin registros SDWAN</p></div>';
+    return;
+  }
+  const MONO_KEYS = ['Codigo','Ip','ip','Lan','Hostname'];
+  cont.innerHTML = data.map((row,idx) => {
+    const codigo = escHtml(row.Codigo_Servicio||'');
+    const fields = SDWAN_COLS.map(k=>{
+      const val = row[k]!==undefined&&row[k]!=='' ? row[k] : null;
+      const isMono = MONO_KEYS.some(m=>k.toLowerCase().includes(m.toLowerCase()));
+      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
+    }).join('');
+    let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarSdwanIdx(this,'+idx+')">Copiar</button>';
+    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarSdwan('+idx+',this)"><div class="result-header"><div class="result-code">'+codigo+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">SDWAN</div></div></div><div class="result-grid">'+fields+'</div></div>';
+  }).join('');
+}
+
+function seleccionarSdwan(idx, el){
+  lastSdwanResult = window._sdwanDataRef[idx];
+  document.querySelectorAll('#sdwan-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
+  el.style.borderColor='var(--accent)';
+}
+
+function copiarSdwanIdx(btn, idx){
+  const row = window._sdwanDataRef[idx];
+  const txt = SDWAN_COLS.map(k=>k+': '+(row[k]||'-')).join('\n');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  btn.textContent='¡Copiado!';btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
+
+async function openModalAgregarSdwan(){
+  lastSdwanResult = null;
+  document.getElementById('modal-registro-title').textContent = 'Agregar registro SDWAN';
+  document.getElementById('modal-registro-fields').innerHTML = SDWAN_COLS.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-sdwan-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._sdwanEditMode = false;
+  document.getElementById('modal-registro-save-btn').onclick = guardarSdwan;
+}
+
+async function openModalEditarSdwan(){
+  if(!lastSdwanResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en él.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const row = lastSdwanResult;
+  document.getElementById('modal-registro-title').textContent = 'Editar: '+(row.Codigo_Servicio||'');
+  document.getElementById('modal-registro-fields').innerHTML = SDWAN_COLS.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-sdwan-'+escHtml(c)+'" value="'+escHtml(String(row[c]||''))+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._sdwanEditMode = true;
+  window._sdwanEditValue = row.Codigo_Servicio||'';
+  document.getElementById('modal-registro-save-btn').onclick = guardarSdwan;
+}
+
+async function guardarSdwan(){
+  const errEl = document.getElementById('modal-registro-error');
+  errEl.style.display='none';
+  const data={};
+  SDWAN_COLS.forEach(c=>{
+    const el=document.getElementById('field-sdwan-'+c);
+    if(el) data[c]=el.value.trim();
+  });
+  if(!data.Codigo_Servicio){showAlert(errEl,'El campo Codigo_Servicio es obligatorio','error');return;}
+  let r;
+  if(window._sdwanEditMode){
+    r=await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Sdwan',keyField:'Codigo_Servicio',keyValue:window._sdwanEditValue,data})
+    }).then(r=>r.json());
+  } else {
+    r=await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Sdwan',data})
+    }).then(r=>r.json());
+  }
+  if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
+  closeModal('modal-registro');
+  lastSdwanResult=null;
+  cargarDatosSdwan();
+}
+
+async function eliminarResultadoSdwan(){
+  if(!lastSdwanResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en él.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const codigo = lastSdwanResult.Codigo_Servicio||'';
+  document.getElementById('confirm-msg').textContent='¿Eliminar el registro SDWAN: '+codigo+'?';
+  document.getElementById('confirm-ok-btn').textContent='Confirmar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    const r=await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Sdwan',keyField:'Codigo_Servicio',keyValue:codigo})
+    }).then(r=>r.json());
+    if(r.success){lastSdwanResult=null;cargarDatosSdwan();}
     else{
       document.getElementById('confirm-msg').textContent='Error: '+r.message;
       document.getElementById('confirm-ok-btn').textContent='Aceptar';
