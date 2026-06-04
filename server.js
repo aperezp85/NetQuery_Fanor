@@ -105,6 +105,31 @@ app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) =>
     const multisheet = {};
     let totalRows = 0;
     workbook.eachSheet((worksheet, sheetId) => {
+      // Hoja especial con dos tablas lado a lado
+      if (worksheet.name === 'BD_Fw-Onpremise') {
+        const row3 = worksheet.getRow(3);
+        const headersLeft = [], headersRight = [];
+        // Columnas A-C (1-3) = Internet Seguro, E-G (5-7) = On Premise
+        row3.eachCell({ includeEmpty: true }, (cell, col) => {
+          if (col >= 1 && col <= 3) headersLeft[col-1] = cell.value || null;
+          if (col >= 5 && col <= 7) headersRight[col-5] = cell.value || null;
+        });
+        const dataLeft = [], dataRight = [];
+        worksheet.eachRow((row, rowNumber) => {
+          if (rowNumber <= 3) return;
+          const objL = {}, objR = {};
+          row.eachCell({ includeEmpty: true }, (cell, col) => {
+            if (col >= 1 && col <= 3 && headersLeft[col-1]) objL[headersLeft[col-1]] = cell.value !== null ? String(cell.value) : '';
+            if (col >= 5 && col <= 7 && headersRight[col-5]) objR[headersRight[col-5]] = cell.value !== null ? String(cell.value) : '';
+          });
+          if (Object.values(objL).some(v => v !== '')) dataLeft.push(objL);
+          if (Object.values(objR).some(v => v !== '')) dataRight.push(objR);
+        });
+        multisheet['BD_Fw_Internet_Seguro'] = dataLeft;
+        multisheet['BD_Fw_On_Premise'] = dataRight;
+        totalRows += dataLeft.length + dataRight.length;
+        return;
+      }
       const headers = [];
       worksheet.getRow(1).eachCell((cell) => headers.push(cell.value));
       if (headers.filter(Boolean).length === 0) return;
