@@ -147,7 +147,7 @@ app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) =>
         if (rowNumber === 1) return;
         const obj = {};
         row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-          if (headers[colNumber-1]) obj[headers[colNumber-1]] = cell.value !== null ? String(cell.value) : '';
+          if (headers[colNumber-1]) { let val = cell.value; if (val !== null && val !== undefined) { if (typeof val === "object") { if (val.richText) val = val.richText.map(r => r.text || "").join(""); else if (val.result !== undefined) val = String(val.result); else if (val.text) val = String(val.text); else val = String(val); } else { val = String(val); } } else { val = ""; } obj[headers[colNumber-1]] = val; }
         });
         if (Object.values(obj).some(v => v !== '')) data.push(obj);
       });
