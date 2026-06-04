@@ -125,6 +125,59 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .ac-sheet{font-size:10px;color:var(--muted);opacity:0.6;float:right;margin-top:2px;}
 #file-input{display:none;}
 #file-input-ipdb{display:none;}
+
+/* TEMA CLARO */
+body.light-mode {
+  --bg:#f0f2f5;
+  --bg2:#ffffff;
+  --bg3:#e8eaed;
+  --border:rgba(0,0,0,0.1);
+  --text:#1a1c23;
+  --muted:#6b7280;
+  --accent:#3b82f6;
+  --accent2:#1d4ed8;
+  --success:#10b981;
+  --danger:#ef4444;
+  --warning:#f59e0b;
+}
+#theme-toggle{
+  width:34px;height:34px;border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg3);color:var(--text);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all 0.15s;flex-shrink:0;
+  font-family:inherit;
+}
+#theme-toggle:hover{background:var(--border);}
+
+body.light-mode .btn-green{background:#059669;color:#ffffff;border:1px solid #047857;}
+body.light-mode .btn-green:hover{background:#047857;}
+body.light-mode .btn-yellow{background:#d97706;color:#ffffff;border:1px solid #b45309;}
+body.light-mode .btn-yellow:hover{background:#b45309;}
+body.light-mode .btn-red{background:#dc2626;color:#ffffff;border:1px solid #b91c1c;}
+body.light-mode .btn-red:hover{background:#b91c1c;}
+body.light-mode .rf-value.mono{color:#1d4ed8;}
+body.light-mode .result-code{color:var(--accent2);}
+body.light-mode .role-pill{background:rgba(59,130,246,0.15);color:#1d4ed8;}
+body.light-mode .role-pill.consulta{background:rgba(16,185,129,0.15);color:#059669;}
+body.light-mode .stat-value{color:var(--accent2);}
+body.light-mode .nav-tab.active{color:var(--accent2);background:rgba(59,130,246,0.12);}
+body.light-mode .btn-logout:hover{border-color:var(--danger);color:#dc2626;}
+body.light-mode .rf-label{color:#374151;}
+body.light-mode .rf-value{color:#111827;}
+body.light-mode .page-sub{color:#4b5563;}
+body.light-mode .stat-label{color:#374151;}
+body.light-mode .muted{color:#4b5563;}
+body.light-mode .nav-tab{color:#374151;}
+body.light-mode .nav-tab:hover{color:#111827;background:rgba(0,0,0,0.05);}
+body.light-mode .user-badge{color:#111827;}
+body.light-mode .btn-logout{color:#374151;}
+body.light-mode .upload-zone{color:#374151;}
+body.light-mode .search-input{color:#111827;}
+body.light-mode .not-found{color:#4b5563;}
+body.light-mode .alert.error{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:#dc2626;}
+body.light-mode .alert.success{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);color:#059669;}
+body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);color:#d97706;}
 </style>
 </head>
 <body>
@@ -1753,6 +1806,54 @@ async function eliminarResultadoFw(){
   };
   document.getElementById('modal-confirm').classList.add('open');
 }
+
+
+// SISTEMA DE TEMAS
+(function(){
+  const btn = document.createElement('button');
+  btn.id = 'theme-toggle';
+  btn.title = 'Cambiar tema';
+  const nav = document.querySelector('.nav-user');
+  if(nav){
+    const logout = nav.querySelector('.btn-logout');
+    nav.insertBefore(btn, logout);
+  } else {
+    document.body.appendChild(btn);
+  }
+
+  function getTheme(){
+    const saved = localStorage.getItem('nq-theme');
+    if(saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function applyTheme(t){
+    if(t === 'light'){
+      document.body.classList.add('light-mode');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 1a6 6 0 0 1 0 12V1z" fill="currentColor"/></svg>';
+      btn.title = 'Cambiar a modo oscuro';
+    } else {
+      document.body.classList.remove('light-mode');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 1a6 6 0 0 1 0 12V1z" fill="currentColor"/></svg>';
+      btn.title = 'Cambiar a modo claro';
+    }
+  }
+
+  applyTheme(getTheme());
+
+  btn.addEventListener('click', function(){
+    const current = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    localStorage.setItem('nq-theme', next);
+    applyTheme(next);
+  });
+
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e){
+    if(!localStorage.getItem('nq-theme')){
+      applyTheme(e.matches ? 'light' : 'dark');
+    }
+  });
+})();
 
 </script>
 </body>
