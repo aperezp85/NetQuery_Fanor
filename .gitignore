@@ -3,3 +3,9 @@ sessions/
 uploads/
 data/backups/
 *.log
+.env
+*.key
+data/*.json
+node_modules/
+logs/
+*.bak*
