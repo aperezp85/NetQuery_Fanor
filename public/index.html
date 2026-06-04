@@ -178,6 +178,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <button class="nav-tab" onclick="showPage('ipdb',this)">Buscador IP</button>
       <button class="nav-tab" onclick="showPage('ipo',this)">IPO</button>
       <button class="nav-tab" onclick="showPage('sdwan',this)">SDWAN</button>
+      <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
       <button class="nav-tab admin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
       <button class="nav-tab admin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
     </div>
@@ -299,6 +300,30 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         <button class="btn btn-red" onclick="eliminarResultadoSdwan()">Eliminar resultado</button>
       </div>
       <div id="sdwan-result"></div>
+    </div>
+
+    <!-- FW ON-PREMISE -->
+    <div class="page" id="page-fwonpremise">
+      <div class="page-title">FW On-Premise</div>
+      <div class="page-sub">Busque en Internet Seguro y On Premise simultáneamente</div>
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="fw-search" type="text"
+            placeholder="Ej: nombre, nomenclatura o IP..."
+            onkeydown="if(event.key==='Enter')filtrarFw()"
+            oninput="filtrarFw()"
+            autocomplete="off">
+        </div>
+        <button class="btn btn-blue" onclick="filtrarFw()">Buscar</button>
+      </div>
+      <div class="action-bar admin-only" style="display:none">
+        <button class="btn btn-green" onclick="openModalAgregarFw()">+ Agregar</button>
+        <button class="btn btn-yellow" onclick="openModalEditarFw()">Editar resultado</button>
+        <button class="btn btn-red" onclick="eliminarResultadoFw()">Eliminar resultado</button>
+      </div>
+      <div id="fw-result-internet" style="margin-bottom:24px"></div>
+      <div id="fw-result-onpremise"></div>
     </div>
 
     <!-- BASE DE DATOS -->
@@ -490,6 +515,7 @@ function initApp(){
   cargarInfoIPDB();
   cargarDatosIpo();
   cargarDatosSdwan();
+  cargarDatosFw();
   setTimeout(()=>{
     cargarSitiosEsmax().then(()=>{
       if(!esmax_monitoreando){
@@ -515,6 +541,7 @@ function showPage(name,btn){
   cargarDatosIpo();
   if(name==='ipo') cargarDatosIpo();
   if(name==='sdwan') cargarDatosSdwan();
+  if(name==='fwonpremise') cargarDatosFw();
 }
 
 // AUTOCOMPLETE
@@ -1522,6 +1549,211 @@ async function eliminarResultadoSdwan(){
   };
   document.getElementById('modal-confirm').classList.add('open');
 }
+
+// ── FW ON-PREMISE ──
+let fwInternetData = [];
+let fwOnPremiseData = [];
+
+async function cargarDatosFw(){
+  try{
+    const [i,o] = await Promise.all([
+      fetch('/api/hoja/BD_Fw_Internet_Seguro').then(r=>r.json()),
+      fetch('/api/hoja/BD_Fw_On_Premise').then(r=>r.json())
+    ]);
+    fwInternetData = i || [];
+    fwOnPremiseData = o || [];
+    const q = document.getElementById('fw-search') ? document.getElementById('fw-search').value.trim() : '';
+    if(q) filtrarFw();
+    else {
+      const ci=document.getElementById('fw-result-internet');
+      const co=document.getElementById('fw-result-onpremise');
+      if(ci) ci.innerHTML='';
+      if(co) co.innerHTML='';
+    }
+  }catch(e){}
+}
+
+function filtrarFw(){
+  const el = document.getElementById('fw-search');
+  const q = el ? el.value.trim().toUpperCase() : '';
+  const ci = document.getElementById('fw-result-internet');
+  const co = document.getElementById('fw-result-onpremise');
+  lastFwResult = null;
+  lastFwTipo = null;
+  if(!q){
+    if(ci) ci.innerHTML='';
+    if(co) co.innerHTML='';
+    window._fwFiltI = [];
+    window._fwFiltO = [];
+    return;
+  }
+  window._fwFiltI = fwInternetData.filter(row=>Object.values(row).some(v=>(v||'').toString().toUpperCase().includes(q)));
+  window._fwFiltO = fwOnPremiseData.filter(row=>Object.values(row).some(v=>(v||'').toString().toUpperCase().includes(q)));
+  renderFwSection(ci, window._fwFiltI, 'INTERNET SEGURO', ['Nombre','Nomenclatura','Ip_Gestion']);
+  renderFwSection(co, window._fwFiltO, 'ON PREMISE', ['Nombre','IP_Pública','Ip_Gestion']);
+}
+
+function renderFwSection(cont, data, titulo, cols){
+  if(!cont) return;
+  const isInternet = titulo.includes('INTERNET');
+  const accentColor = isInternet ? '#378ADD' : '#1D9E75';
+  const badgeBg = isInternet ? 'rgba(55,138,221,0.12)' : 'rgba(29,158,117,0.12)';
+  const badgeBorder = isInternet ? 'rgba(55,138,221,0.3)' : 'rgba(29,158,117,0.3)';
+  const badgeColor = isInternet ? '#185FA5' : '#0F6E56';
+  if(!data || data.length === 0){
+    cont.innerHTML = '<div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid '+accentColor+'">'+titulo+' <span style="font-size:13px;font-weight:400;color:var(--muted);">(0 resultados)</span></div><div class="not-found"><p>Sin coincidencias en '+titulo+'</p></div>';
+    return;
+  }
+  let html = '<div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid '+accentColor+'">'+titulo+' <span style="font-size:13px;font-weight:400;color:'+accentColor+';">('+data.length+' resultados)</span></div>';
+  html += data.map((row,idx) => {
+    const nombre = escHtml(row.Nombre||row[cols[0]]||'');
+    const fields = cols.map(k=>{
+      const val = row[k]!==undefined&&row[k]!=='' ? row[k] : null;
+      const isMono = k.toLowerCase().includes('ip') || k.toLowerCase().includes('nomenclatura');
+      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
+    }).join('');
+    let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="seleccionarFw('+idx+',\''+titulo+'\',this)">Copiar</button>';
+    return '<div class="result-card" data-fw-idx="'+idx+'" data-fw-tipo="'+titulo+'" style="margin-bottom:12px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarFwCard('+idx+',\''+titulo+'\',this)"><div class="result-header"><div class="result-code" style="color:'+accentColor+'">'+nombre+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<span style="font-size:11px;padding:3px 10px;border-radius:20px;background:'+badgeBg+';color:'+badgeColor+';border:0.5px solid '+badgeBorder+'">'+titulo+'</span></div></div><div class="result-grid">'+fields+'</div></div>';
+  }).join('');
+  cont.innerHTML = html;
+}
+
+function copiarFw(btn, idx, tipo){
+  const data = tipo.includes('INTERNET') ? fwInternetData : fwOnPremiseData;
+  const row = data[idx];
+  const txt = Object.keys(row).map(k=>k+': '+(row[k]||'-')).join('\n');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  btn.textContent='¡Copiado!';btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
+let lastFwResult = null;
+let lastFwTipo = null;
+
+function seleccionarFwCard(idx, tipo, el){
+  const data = tipo.includes('INTERNET') ? (window._fwFiltI||fwInternetData) : (window._fwFiltO||fwOnPremiseData);
+  lastFwResult = data[idx];
+  lastFwTipo = tipo;
+  document.querySelectorAll('#fw-result-internet .result-card, #fw-result-onpremise .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
+  el.style.borderColor = tipo.includes('INTERNET') ? '#378ADD' : '#1D9E75';
+}
+
+function seleccionarFw(idx, tipo, btn){
+  const data = tipo.includes('INTERNET') ? (window._fwFiltI||fwInternetData) : (window._fwFiltO||fwOnPremiseData);
+  const row = data[idx];
+  const txt = Object.keys(row).map(k=>k+': '+(row[k]||'-')).join('\n');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  btn.textContent='¡Copiado!';btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
+
+function openModalAgregarFw(){
+  document.getElementById('modal-registro-title').textContent = 'Agregar registro FW';
+  document.getElementById('modal-registro-fields').innerHTML = `
+    <div class="field">
+      <label>Sección</label>
+      <select id="field-fw-seccion" onchange="actualizarCamposFw()" style="width:100%;padding:12px 16px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:inherit">
+        <option value="internet">Internet Seguro</option>
+        <option value="onpremise">On Premise</option>
+      </select>
+    </div>
+    <div id="fw-campos-dinamicos"></div>`;
+  actualizarCamposFw();
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._fwEditMode = false;
+  document.getElementById('modal-registro-save-btn').onclick = guardarFw;
+}
+
+function actualizarCamposFw(){
+  const sel = document.getElementById('field-fw-seccion');
+  if(!sel) return;
+  const isInternet = sel.value === 'internet';
+  const cols = isInternet ? ['Nombre','Nomenclatura','Ip_Gestion'] : ['Nombre','IP_Pública','Ip_Gestion'];
+  window._fwSheet = isInternet ? 'BD_Fw_Internet_Seguro' : 'BD_Fw_On_Premise';
+  window._fwCols = cols;
+  document.getElementById('fw-campos-dinamicos').innerHTML = cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-fw-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>'
+  ).join('');
+}
+
+function openModalEditarFw(){
+  if(!lastFwResult){
+    document.getElementById('confirm-msg').textContent='Primero haga clic en una card para seleccionarla.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const cols = lastFwTipo.includes('INTERNET') ? ['Nombre','Nomenclatura','Ip_Gestion'] : ['Nombre','IP_Pública','Ip_Gestion'];
+  const sheet = lastFwTipo.includes('INTERNET') ? 'BD_Fw_Internet_Seguro' : 'BD_Fw_On_Premise';
+  document.getElementById('modal-registro-title').textContent = 'Editar: '+(lastFwResult.Nombre||'');
+  document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-fw-'+escHtml(c)+'" value="'+escHtml(String(lastFwResult[c]||''))+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._fwSheet = sheet;
+  window._fwCols = cols;
+  window._fwEditMode = true;
+  window._fwEditValue = lastFwResult.Nombre||'';
+  document.getElementById('modal-registro-save-btn').onclick = guardarFw;
+}
+
+async function guardarFw(){
+  const errEl = document.getElementById('modal-registro-error');
+  errEl.style.display='none';
+  const data={};
+  window._fwCols.forEach(c=>{
+    const el=document.getElementById('field-fw-'+c);
+    if(el) data[c]=el.value.trim();
+  });
+  if(!data.Nombre){showAlert(errEl,'El campo Nombre es obligatorio','error');return;}
+  let r;
+  if(window._fwEditMode){
+    r=await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:window._fwSheet,keyField:'Nombre',keyValue:window._fwEditValue,data})
+    }).then(r=>r.json());
+  } else {
+    r=await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:window._fwSheet,data})
+    }).then(r=>r.json());
+  }
+  if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
+  closeModal('modal-registro');
+  lastFwResult=null;
+  cargarDatosFw();
+}
+
+async function eliminarResultadoFw(){
+  if(!lastFwResult){
+    document.getElementById('confirm-msg').textContent='Primero haga clic en una card para seleccionarla.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const sheet = lastFwTipo.includes('INTERNET') ? 'BD_Fw_Internet_Seguro' : 'BD_Fw_On_Premise';
+  const nombre = lastFwResult.Nombre||'';
+  document.getElementById('confirm-msg').textContent='¿Eliminar: '+nombre+' de '+lastFwTipo+'?';
+  document.getElementById('confirm-ok-btn').textContent='Confirmar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    const r=await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet,keyField:'Nombre',keyValue:nombre})
+    }).then(r=>r.json());
+    if(r.success){lastFwResult=null;cargarDatosFw();}
+    else{
+      document.getElementById('confirm-msg').textContent='Error: '+r.message;
+      document.getElementById('confirm-ok-btn').textContent='Aceptar';
+      document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+      document.getElementById('modal-confirm').classList.add('open');
+    }
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
 </script>
 </body>
 </html>
