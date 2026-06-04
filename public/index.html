@@ -583,6 +583,27 @@ function initApp(){
 }
 async function doLogout(){await fetch('/api/logout',{method:'POST'});location.reload();}
 
+// Interceptar respuestas 401 globalmente — sesion expirada
+const _fetch = window.fetch;
+window.fetch = async function(...args) {
+  const res = await _fetch(...args);
+  if (res.status === 401) {
+    const clone = res.clone();
+    try {
+      const json = await clone.json();
+      if (json.error === 'No autorizado') {
+        currentUser = null;
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('login-error').textContent = 'Tu sesion expiro. Ingresa nuevamente.';
+        document.getElementById('login-error').style.display = 'block';
+      }
+    } catch(e) {}
+    return res;
+  }
+  return res;
+};
+
 // NAVEGACION
 function showPage(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
