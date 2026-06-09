@@ -706,7 +706,8 @@ async function doSearch(){
         const isMono=MONO.some(m=>k.toLowerCase().includes(m.toLowerCase()));
         return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
       }).join('');
-      html+='<div class="result-card" style="margin-bottom:16px"><div class="result-header"><div class="result-code">'+escHtml(String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||''))+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
+      const codigoCS=String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||'');
+      html+='<div class="result-card" style="margin-bottom:16px"><div class="result-header"><div class="result-code">'+escHtml(codigoCS)+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
     });
   });
   container.innerHTML=html;
@@ -908,6 +909,8 @@ async function eliminarResultado(){
   };
   document.getElementById('modal-confirm').classList.add('open');
 }
+
+
 
 // PANORAMA──
 async function cargarPaloBackups(){
@@ -1276,7 +1279,7 @@ checkSession();
 let ipoData = [];
 async function cargarDatosIpo(){
   try{
-    const r = await fetch('/api/hoja/BD_Ipo').then(r=>r.json());
+    const r = await fetch('/api/ipo/search' + (q ? '?q=' + encodeURIComponent(q) : '')).then(r=>r.json());
     ipoData = r || [];
     const q = document.getElementById('ipo-search') ? document.getElementById('ipo-search').value.trim() : '';
     if(q) filtrarIpo(); else {
