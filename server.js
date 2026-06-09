@@ -394,6 +394,8 @@ app.get('/api/ipdb/info', requireAuth, (req, res) => {
 });
 
 
+
+
 // Historico de pings
 const ESMAX_HIST_FILE = './data/esmax_historico.json';
 if (!fs.existsSync(ESMAX_HIST_FILE)) saveJSON(ESMAX_HIST_FILE, {});
