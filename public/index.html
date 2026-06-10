@@ -1364,7 +1364,7 @@ function renderIpoTable(data){
   const cols = Object.keys(data[0]);
   cont.innerHTML = data.map((row,idx) => {
     const ipo = escHtml(row.IPO||'');
-    const isIntegral = (row.IPO||'').toUpperCase().includes('PRUEBA_INTEGRAL');
+    const isIntegral = (row.IPO||'').toUpperCase().includes('PRUEBA');
     const fields = cols.map(k => {
       const val = (row[k] !== undefined && row[k] !== '') ? escHtml(String(row[k])) : '';
       const isMono = MONO_KEYS.some(m => k.toLowerCase().includes(m));

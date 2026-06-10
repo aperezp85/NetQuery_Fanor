@@ -738,15 +738,6 @@
     "undefined": ""
   },
   {
-    "id": 1780067349202,
-    "Equipo": "CL07MAIDSL01",
-    "Comuna": "CAUQUENES",
-    "Sitio": "CALLE MAIPU 521",
-    "IP": "",
-    "Descriptor": "-",
-    "undefined": ""
-  },
-  {
     "id": 1780067349203,
     "Equipo": "CL07AFUDSL01",
     "Comuna": "CHANCO",
@@ -8193,15 +8184,6 @@
     "Sitio": "METRO ESTACION SALVADOR VIA 2",
     "IP": "192.168.51.33",
     "Descriptor": "ME3600-M_Salvador_CLRMMSASWT06",
-    "undefined": ""
-  },
-  {
-    "id": 1780067350038,
-    "Equipo": "CLNDLS1_TRK3/4",
-    "Comuna": "PROVIDENCIA",
-    "Sitio": "CALLE NUEVA DE LYON 96 SUB 3 BOD 13",
-    "IP": "10.21.20.40",
-    "Descriptor": "-",
     "undefined": ""
   },
   {
