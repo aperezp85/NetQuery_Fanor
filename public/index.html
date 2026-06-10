@@ -1279,14 +1279,22 @@ checkSession();
 let ipoData = [];
 async function cargarDatosIpo(){
   try{
-    const r = await fetch('/api/ipo/search' + (q ? '?q=' + encodeURIComponent(q) : '')).then(r=>r.json());
+    const r = await fetch('/api/ipo/search').then(r=>r.json());
     ipoData = r || [];
-    const q = document.getElementById('ipo-search') ? document.getElementById('ipo-search').value.trim() : '';
-    if(q) filtrarIpo(); else {
-      const cont = document.getElementById('ipo-result');
-      if(cont) cont.innerHTML = '';
-    }
   }catch(e){}
+}
+
+async function buscarIPO(){
+  const q = (document.getElementById('ipo-search')||{}).value||'';
+  const cont = document.getElementById('ipo-result');
+  if(!cont) return;
+  cont.innerHTML = '<div style="color:var(--muted);padding:20px">Buscando...</div>';
+  try{
+    const url = '/api/ipo/search' + (q.trim() ? '?q='+encodeURIComponent(q.trim()) : '');
+    const r = await fetch(url).then(r=>r.json());
+    ipoData = r || [];
+    renderIpoTable(ipoData);
+  }catch(e){ cont.innerHTML='<div class="not-found"><p>Error al buscar</p></div>'; }
 }
 function filtrarIpo(){
   const el = document.getElementById('ipo-search');
@@ -1352,19 +1360,16 @@ function renderIpoTable(data){
     cont.innerHTML = '<div class="not-found"><p>Sin registros IPO</p></div>';
     return;
   }
-  const MONO_KEYS = ['IPO','Ip','ip'];
+  const MONO_KEYS = ['ipo','ip','vlan','sbc','gw','gestion','publica'];
+  const cols = Object.keys(data[0]);
   cont.innerHTML = data.map((row,idx) => {
-    const ipo   = escHtml(row.IPO||'');
-    const ip    = escHtml(row.Ip_Gestion||'');
-    const razon = escHtml(row.Razon_Social||row['Razon Social']||'');
-    const fqdn  = escHtml(row.FQDN||'');
+    const ipo = escHtml(row.IPO||'');
     const isIntegral = (row.IPO||'').toUpperCase().includes('PRUEBA_INTEGRAL');
-    const fields = [
-      {label:'IPO',         value:ipo,   mono:true},
-      {label:'IP Gestión',  value:ip,    mono:true},
-      {label:'Razón Social',value:razon, mono:false},
-      {label:'FQDN',        value:fqdn,  mono:false},
-    ].map(f=>'<div class="result-field"><div class="rf-label">'+f.label+'</div><div class="rf-value '+(f.mono?'mono':'')+(f.value?'':' empty')+'">'+(f.value||'&mdash;')+'</div></div>').join('');
+    const fields = cols.map(k => {
+      const val = (row[k] !== undefined && row[k] !== '') ? escHtml(String(row[k])) : '';
+      const isMono = MONO_KEYS.some(m => k.toLowerCase().includes(m));
+      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val||'&mdash;')+'</div></div>';
+    }).join('');
     let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarIPOIdx(this,'+idx+')">Copiar</button>';
     if(isIntegral) btns += '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredsIPO('+idx+')">&#128273; Creds</button>';
     return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarIPO('+idx+',this)"><div class="result-header"><div class="result-code">'+ipo+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">IPO</div></div></div><div class="result-grid">'+fields+'</div></div>';
