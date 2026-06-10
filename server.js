@@ -471,6 +471,19 @@ app.delete('/api/multisheet', requireAdmin, (req, res) => {
   res.json({ success: true });
 });
 
+
+// ── BD_IPO ────────────────────────────────────────────────────────────────────
+app.get('/api/ipo/search', requireAuth, (req, res) => {
+  const q = (req.query.q || '').trim().toUpperCase();
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  const rows = ms['BD_Ipo'] || ms['BD_IPO'] || ms['BD_ipo'] || [];
+  if (!q) return res.json(rows.slice(0, 500));
+  const result = rows.filter(row =>
+    Object.values(row).some(v => (v || '').toString().toUpperCase().includes(q))
+  );
+  res.json(result.slice(0, 500));
+});
+
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 app.listen(PORT, () => { console.log('NetQuery corriendo en http://localhost:' + PORT); });
 
