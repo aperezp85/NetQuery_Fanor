@@ -827,7 +827,7 @@ async function openModalAgregar(){
   if(!cols.length) cols = ['Codigo_Servicio','Cliente','Direccion','Comuna','Ip_Gestion','Vrf','Wan','Nodo','Puerta','Ip_Admin_Switch'];
   window._servicioCols = cols;
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
-    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>'
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' placeholder="'+escHtml(c)+'"></div>'
   ).join('');
   document.getElementById('modal-registro').classList.add('open');
   window._modalEditMode=false;
@@ -848,7 +848,7 @@ async function openModalEditar(){
   const cols = Object.keys(lastResult);
   window._servicioCols = cols;
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
-    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'" value="'+escHtml(String(lastResult[c]||''))+'"></div>'
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' value="'+escHtml(String(lastResult[c]||''))+'"></div>'
   ).join('');
   document.getElementById('modal-registro').classList.add('open');
   window._modalEditMode=true;
@@ -1355,6 +1355,26 @@ function showAlert(el,msg,type){el.textContent=msg;el.className='alert '+type;el
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 checkSession();
+
+// ── AUTOCOMPLETADO NODO ──
+let equiposData = [];
+async function cargarEquipos(){
+  try{
+    const r = await fetch('/api/hoja/BD_Equipos').then(r=>r.json());
+    equiposData = r || [];
+  }catch(e){}
+}
+function buscarIpPorNodo(nodo){
+  if(!nodo||!equiposData.length) return '';
+  const n = nodo.trim().toUpperCase();
+  const eq = equiposData.find(e=>(e.Swtich||'').toUpperCase()===n);
+  return eq ? (eq.Ip_Administracion||'') : '';
+}
+function onNodoInput(inputEl){
+  const ip = buscarIpPorNodo(inputEl.value);
+  const ipEl = document.getElementById('field-srv-Ip_Admin_Switch');
+  if(ipEl&&ip){ ipEl.value=ip; ipEl.style.borderColor='var(--success)'; setTimeout(()=>ipEl.style.borderColor='',2000); }
+}
 </script>
 
 <!-- MODAL CONFIRMACION -->
