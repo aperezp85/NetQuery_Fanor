@@ -11686,10 +11686,14 @@
       "Codigo_Servicio": "02-25-0000031664",
       "Cliente": "KENTUCKY FOODS CHILE S.A.",
       "Direccion": "AV. AMERICO VESPUCIO 3300 LOCAL 1058",
-      "Comuna": "PENALOLEN",
+      "Comuna": "PENALOLEN | SANTIAGO | RM",
       "Ip_Gestion": "10.156.21.203",
       "Vrf": "kfc",
-      "Wan": "172.10.12.0/30"
+      "Wan": "172.10.12.0/30",
+      "Nodo": "Sw_LoCanas_5_CLRMSSOSWT06",
+      "Puerta": "Fa0/11",
+      "Ip_Admin_Switch": "192.168.53.85",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "02-25-0010044206",
@@ -38004,8 +38008,9 @@
       "Vrf": "guante",
       "Wan": "10.18.80.0/30",
       "Nodo": "CLRMAMBSWT01",
-      "Puerta": "Nulo",
-      "Ip_Admin_Switch": "192.168.66.62"
+      "Puerta": "Gi1/34",
+      "Ip_Admin_Switch": "192.168.66.62",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "02-25-0010288761",
@@ -50519,12 +50524,13 @@
       "Cliente": "SISTEMA NACIONAL DE COMUNICACIONES FINANCIERA S.A",
       "Direccion": "AVDA DEL VALLE 928",
       "Comuna": "HUECHURABA | SANTIAGO | RM",
-      "Ip_Gestion": "Nulo",
+      "Ip_Gestion": "10.156.58.5",
       "Vrf": "Nulo",
       "Wan": "Nulo",
       "Nodo": "Nulo",
       "Puerta": "Nulo",
-      "Ip_Admin_Switch": "Nulo"
+      "Ip_Admin_Switch": "Nulo",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "06-01-0010422986",
@@ -52547,12 +52553,13 @@
       "Cliente": "ADMINISTRACION Y PROCESOS SPA",
       "Direccion": "AVDA PAJARITOS 1790 LOCAL 3032",
       "Comuna": "MAIPU | SANTIAGO | RM",
-      "Ip_Gestion": "Nulo",
-      "Vrf": "Nulo",
+      "Ip_Gestion": "172.16.14.158",
+      "Vrf": "telmex-int",
       "Wan": "172.16.14.156/30",
       "Nodo": "Nulo",
       "Puerta": "Nulo",
-      "Ip_Admin_Switch": "Nulo"
+      "Ip_Admin_Switch": "Nulo",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "02-25-0010239108",
@@ -54904,18 +54911,6 @@
       "Ip_Admin_Switch": "Nulo"
     },
     {
-      "Codigo_Servicio": "02-25-0000020050",
-      "Cliente": "KENTUCKY FOODS CHILE S.A.",
-      "Direccion": "AVDA 11 DE SEPTIEMBRE 2226  0  0",
-      "Comuna": "PROVIDENCIA | SANTIAGO | RM",
-      "Ip_Gestion": "Nulo",
-      "Vrf": "Nulo",
-      "Wan": "Nulo",
-      "Nodo": "Nulo",
-      "Puerta": "Nulo",
-      "Ip_Admin_Switch": "Nulo"
-    },
-    {
       "Codigo_Servicio": "06-01-0000341172",
       "Cliente": "INGENIERIA SERVICIOS Y COMUNICACIONES SPA",
       "Direccion": "AVDA ELIODORO YANEZ 1163     / NODO TELMEX",
@@ -55834,12 +55829,13 @@
       "Cliente": "CAMARA DE DIPUTADOS",
       "Direccion": "AVDA AV. PEDRO MONTT 2890",
       "Comuna": "VALPARAISO | VALPARAISO | R V",
-      "Ip_Gestion": "Nulo",
+      "Ip_Gestion": "172.16.7.114",
       "Vrf": "claro-internet",
-      "Wan": "172.16.7.113/30",
+      "Wan": "172.16.7.112/30",
       "Nodo": "CL05SDOSWT18",
       "Puerta": "port 7",
-      "Ip_Admin_Switch": "192.168.65.110"
+      "Ip_Admin_Switch": "192.168.65.110",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "02-25-0010428118",
@@ -56474,6 +56470,110 @@
       "Puerta": "",
       "Ip_Admin_Switch": "",
       "Proveedor": "ONNET || QUOL00060627"
+    },
+    {
+      "Codigo_Servicio": "02-25-0009986604",
+      "Cliente": "INTEGRAMEDICA S.A",
+      "Direccion": "AVDA ..AMERICO VESPUCIO 1501",
+      "Comuna": "CERRILLOS | SANTIAGO | RM",
+      "Ip_Gestion": "10.156.40.31",
+      "Vrf": "integramedica",
+      "Wan": "172.17.0.28/30",
+      "Nodo": "4948-1_Cerrillos_CLRMLERSWT02",
+      "Puerta": "Gi1/12",
+      "Ip_Admin_Switch": "192.168.56.59",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "02-25-0010192100",
+      "Cliente": "GTD LARGA DISTANCIA S.A. (GUANTE)",
+      "Direccion": "AVDA AMERICO VESPUCIO 1501 MALL LOCAL156",
+      "Comuna": "CERRILLOS | SANTIAGO | RM",
+      "Ip_Gestion": "10.156.39.230",
+      "Vrf": "guante",
+      "Wan": "10.18.80.0/30",
+      "Nodo": "4948_AEROP-13i054_CLRMAMBSWT01",
+      "Puerta": "Gi1/34",
+      "Ip_Admin_Switch": "192.168.66.62",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "02-25-0010438009",
+      "Cliente": "I MUNICIPALIDAD DE CERRILLOS",
+      "Direccion": "AVDA PILOTO LAZO 90",
+      "Comuna": "CERRILLOS | SANTIAGO | RM",
+      "Ip_Gestion": "10.156.83.111",
+      "Vrf": "muni_cerrillos",
+      "Wan": "172.16.7.28/30",
+      "Nodo": "4948E-Las_Americas_CLRMLAMSWT01",
+      "Puerta": "Gi1/12",
+      "Ip_Admin_Switch": "192.168.56.22",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "06-01-0010453653",
+      "Cliente": "ARZOBISPADO DE LA SERENA",
+      "Direccion": "CALLE LOS CARRERA 450",
+      "Comuna": "LA SERENA | ELQUI | R IV",
+      "Ip_Gestion": "192.168.146.94",
+      "Vrf": "claro-internet",
+      "Wan": "192.168.146.92/30",
+      "Nodo": "",
+      "Puerta": "",
+      "Ip_Admin_Switch": "",
+      "Proveedor": "ONNET || DIR02066790"
+    },
+    {
+      "Codigo_Servicio": "06-01-0010418109",
+      "Cliente": "ADMINISTRACION Y PROCESOS SPA",
+      "Direccion": "AVDA CAMILO HENRIQUEZ 3296 MALL LOCALA-204",
+      "Comuna": "PUENTE ALTO | CORDILLERA | RM",
+      "Ip_Gestion": "",
+      "Vrf": "telmex-int",
+      "Wan": "192.168.147.0/30",
+      "Nodo": "",
+      "Puerta": "",
+      "Ip_Admin_Switch": "",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "06-01-0010418046",
+      "Cliente": "ADMINISTRACION Y PROCESOS SPA",
+      "Direccion": "AVDA INMACULADA CONCEPCION 47",
+      "Comuna": "COLINA | CHACABUCO | RM",
+      "Ip_Gestion": "172.18.11.74",
+      "Vrf": "telmex-int",
+      "Wan": "172.18.11.72/30",
+      "Nodo": "",
+      "Puerta": "",
+      "Ip_Admin_Switch": "",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "06-01-0010052460",
+      "Cliente": "COMERCIAL E INVERSIONES CROSUR LTDA",
+      "Direccion": "PRESIDENTE CARLOS IBAÑEZ DEL CAMPO 5741",
+      "Comuna": "PUNTA ARENAS | MAGALLANES | R XII",
+      "Ip_Gestion": "172.16.22.126",
+      "Vrf": "telmex-int",
+      "Wan": "172.16.22.124/30",
+      "Nodo": "CL12BORSWT01",
+      "Puerta": "",
+      "Ip_Admin_Switch": "",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "06-01-0010372883",
+      "Cliente": "ELITE BRANDS INTERNATIONAL CHILE SPA",
+      "Direccion": "AVDA BALMACEDA 3242 MALL LOCAL122",
+      "Comuna": "CALAMA | EL LOA | R II",
+      "Ip_Gestion": "172.16.19.210",
+      "Vrf": "claro-internet",
+      "Wan": "172.16.19.208/29",
+      "Nodo": "",
+      "Puerta": "",
+      "Ip_Admin_Switch": "",
+      "Proveedor": ""
     }
   ],
   "BD_Intralot": [
@@ -109601,10 +109701,10 @@
       "Local": "Las Palmas",
       "Direccion": "AVDA 11 DE SEPTIEMBRE 2226",
       "Comuna": "PROVIDENCIA | SANTIAGO | RM",
-      "Hostname": "",
+      "Hostname": "KENTUCKY_LAS_PALMAS",
       "Detalle_Dirección": "",
       "Ip_Gestion": "10.156.16.232",
-      "Lan": "",
+      "Lan": "192.168.7.1/24",
       "Cliente": "KFC",
       "Proveedor": ""
     },
@@ -110914,6 +111014,18 @@
       "Ip_Gestion": "",
       "Lan": "10.221.8.1/24",
       "Cliente": "",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "33-61-0010429871",
+      "Local": "Local 1058",
+      "Direccion": "AV. AMERICO VESPUCIO 3300 LOCAL 1058",
+      "Comuna": "PENALOLEN | SANTIAGO | RM",
+      "Hostname": "KFC_PASEOQUILIN",
+      "Detalle_Dirección": "",
+      "Ip_Gestion": "10.156.21.203",
+      "Lan": "192.168.40.1/24",
+      "Cliente": "KENTUCKY FOODS CHILE S.A.",
       "Proveedor": ""
     }
   ],

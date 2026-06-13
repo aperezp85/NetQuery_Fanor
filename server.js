@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
@@ -165,7 +166,26 @@ app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) =>
   }
 });
 app.get('/api/db/info', requireAuth, (req, res) => { const db = loadJSON(DB_FILE); res.json({ rows: db.length, columns: db.length > 0 ? Object.keys(db[0]) : [] }); });
-app.post('/api/db/backup', requireAdmin, async (req, res) => { try { const db = loadJSON(DB_FILE); const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19); const filename = 'backup-' + ts + '.xlsx'; const xlsxFile = path.join(BACKUP_DIR, filename); const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('Datos'); if (db.length > 0) { const columns = Object.keys(db[0]); worksheet.columns = columns.map(col => ({ header: col, key: col, width: 20 })); db.forEach(row => worksheet.addRow(row)); } await workbook.xlsx.writeFile(xlsxFile); res.json({ success: true, file: filename, rows: db.length }); } catch(e) { res.json({ success: false, message: e.message }); } });
+app.post('/api/db/backup', requireAdmin, async (req, res) => {
+  try {
+    const multisheet = loadJSON(MULTISHEET_FILE);
+    const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+    const filename = 'backup-' + ts + '.xlsx';
+    const xlsxFile = path.join(BACKUP_DIR, filename);
+    const workbook = new ExcelJS.Workbook();
+    let totalRows = 0;
+    for (const [sheetName, data] of Object.entries(multisheet)) {
+      if (!Array.isArray(data) || data.length === 0) continue;
+      const worksheet = workbook.addWorksheet(sheetName);
+      const columns = Object.keys(data[0]);
+      worksheet.columns = columns.map(col => ({ header: col, key: col, width: 22 }));
+      data.forEach(row => worksheet.addRow(row));
+      totalRows += data.length;
+    }
+    await workbook.xlsx.writeFile(xlsxFile);
+    res.json({ success: true, file: filename, rows: totalRows });
+  } catch(e) { res.json({ success: false, message: e.message }); }
+});
 app.get('/api/db/backups', requireAdmin, (req, res) => { const files = fs.readdirSync(BACKUP_DIR).filter(f => f.endsWith('.xlsx')).map(f => ({ name: f, size: fs.statSync(path.join(BACKUP_DIR, f)).size })).reverse(); res.json(files); });
 app.get('/api/db/backup/download/:filename', requireAdmin, (req, res) => { const filename = path.basename(req.params.filename); const file = path.join(BACKUP_DIR, filename); if (!fs.existsSync(file)) return res.status(404).json({ error: 'No encontrado' }); res.download(file); });
 app.delete('/api/db', requireAdmin, (req, res) => { saveJSON(DB_FILE, []); res.json({ success: true }); });
@@ -393,9 +413,6 @@ app.get('/api/ipdb/info', requireAuth, (req, res) => {
   res.json({ rows: db.length, columns });
 });
 
-
-
-
 // Historico de pings
 const ESMAX_HIST_FILE = './data/esmax_historico.json';
 if (!fs.existsSync(ESMAX_HIST_FILE)) saveJSON(ESMAX_HIST_FILE, {});
@@ -487,4 +504,82 @@ app.get('/api/ipo/search', requireAuth, (req, res) => {
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 app.listen(PORT, () => { console.log('NetQuery corriendo en http://localhost:' + PORT); });
 
+// ── BACKUP AUTOMÁTICO SEMANAL BD (Domingo 23:59) ──
+function msHasta(hora, minuto, diaSemana = null, diaMes = null) {
+  const ahora = new Date();
+  const objetivo = new Date(ahora);
+  if (diaSemana !== null) {
+    // Próximo día de la semana (0=Dom, 1=Lun, ... 6=Sab)
+    let diff = diaSemana - ahora.getDay();
+    if (diff <= 0) diff += 7;
+    objetivo.setDate(ahora.getDate() + diff);
+  } else if (diaMes !== null) {
+    // Próximo día del mes
+    objetivo.setDate(diaMes);
+    if (objetivo <= ahora) objetivo.setMonth(objetivo.getMonth() + 1);
+  }
+  objetivo.setHours(hora, minuto, 0, 0);
+  return objetivo - ahora;
+}
 
+async function ejecutarBackupBD() {
+  try {
+    const multisheet = loadJSON(MULTISHEET_FILE);
+    const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+    const filename = 'backup-' + ts + '.xlsx';
+    const xlsxFile = path.join(BACKUP_DIR, filename);
+    const workbook = new ExcelJS.Workbook();
+    let totalRows = 0;
+    for (const [sheetName, data] of Object.entries(multisheet)) {
+      if (!Array.isArray(data) || data.length === 0) continue;
+      const worksheet = workbook.addWorksheet(sheetName);
+      const columns = Object.keys(data[0]);
+      worksheet.columns = columns.map(col => ({ header: col, key: col, width: 22 }));
+      data.forEach(row => worksheet.addRow(row));
+      totalRows += data.length;
+    }
+    await workbook.xlsx.writeFile(xlsxFile);
+    console.log(`[Backup BD] Backup creado: ${filename} (${totalRows} registros)`);
+  } catch(e) {
+    console.error('[Backup BD] Error en backup:', e.message);
+  }
+}
+
+function limpiarBackupAntiguo() {
+  try {
+    const archivos = fs.readdirSync(BACKUP_DIR)
+      .filter(f => f.startsWith('backup-') && f.endsWith('.xlsx'))
+      .sort(); // orden ascendente = más antiguo primero
+    if (archivos.length > 0) {
+      const masAntiguo = archivos[0];
+      fs.unlinkSync(path.join(BACKUP_DIR, masAntiguo));
+      console.log(`[Backup BD] Backup eliminado (más antiguo): ${masAntiguo}`);
+    } else {
+      console.log('[Backup BD] No hay backups para eliminar');
+    }
+  } catch(e) {
+    console.error('[Backup BD] Error limpieza:', e.message);
+  }
+}
+
+function programarBackupBD() {
+  // Backup cada domingo 23:59
+  const msBackup = msHasta(23, 59, 0);
+  const proxDomingo = new Date(Date.now() + msBackup);
+  setTimeout(() => {
+    ejecutarBackupBD();
+    setInterval(ejecutarBackupBD, 7 * 24 * 60 * 60 * 1000);
+  }, msBackup);
+  console.log(`[Backup BD] Próximo backup domingo: ${proxDomingo.toLocaleString('es-CL')}`);
+
+  // Limpieza cada día 1 del mes 00:00
+  const msLimpieza = msHasta(0, 0, null, 1);
+  const proxPrimero = new Date(Date.now() + msLimpieza);
+  setTimeout(() => {
+    limpiarBackupAntiguo();
+    setInterval(limpiarBackupAntiguo, 30 * 24 * 60 * 60 * 1000);
+  }, msLimpieza);
+  console.log(`[Backup BD] Próxima limpieza día 1: ${proxPrimero.toLocaleString('es-CL')}`);
+}
+
+programarBackupBD();
