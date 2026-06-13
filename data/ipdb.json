@@ -6614,7 +6614,7 @@
   {
     "id": 1780067349862,
     "Equipo": "CLRMADVSWT01",
-    "Comuna": "HUECHURABA",
+    "Comuna": "HUECHURABA | SANTIAGO | RM",
     "Sitio": "AV. DEL VALLE 928",
     "IP": "192.168.50.202",
     "Descriptor": "Sw_Chile.com-CLRMADVSWT01",
@@ -11728,5 +11728,13 @@
     "IP": "172.31.184.172",
     "Descriptor": "RR1-FNR",
     "undefined": ""
+  },
+  {
+    "id": 1781355456764,
+    "Equipo": "CLRMCRMSWT01",
+    "Comuna": "carmen",
+    "Sitio": "carmen",
+    "IP": "192.168.67.212",
+    "Descriptor": "PEAGG1_CARMEN_CLRMCRMSWT01"
   }
 ]

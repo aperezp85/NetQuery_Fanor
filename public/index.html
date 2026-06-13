@@ -383,26 +383,67 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
     <div class="page" id="page-datos">
       <div class="page-title">Base de Datos</div>
       <div class="page-sub">Gestione la base de datos del sistema</div>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="stat-label">Registros</div><div class="stat-value" id="stat-rows">0</div></div>
-        <div class="stat-card"><div class="stat-label">Columnas</div><div class="stat-value" id="stat-cols">0</div></div>
-        <div class="stat-card"><div class="stat-label">Backups</div><div class="stat-value" id="stat-backups">0</div></div>
+      <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="uploadFile(this.files[0])" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+
+        <!-- Izquierda: Stats + Columnas + Botones -->
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px">
+          <div style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Estadísticas</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+            <div style="background:var(--bg3);border-radius:8px;padding:12px">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Registros</div>
+              <div class="stat-value" id="stat-rows" style="font-size:22px">0</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:12px">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Columnas</div>
+              <div class="stat-value" id="stat-cols" style="font-size:22px">0</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:12px">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Backups</div>
+              <div class="stat-value" id="stat-backups-info" style="font-size:22px">0</div>
+            </div>
+          </div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px">Columnas detectadas</div>
+          <div class="columns-list" id="columns-list" style="margin-bottom:20px"></div>
+          <div id="upload-result" class="alert" style="margin-bottom:12px"></div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-green" onclick="document.getElementById('file-input').click()">&#128190; Importar Excel</button>
+            <button class="btn btn-red" onclick="doEliminarDB()">Eliminar BD</button>
+          </div>
+        </div>
+
+        <!-- Derecha: Backups estilo Panorama -->
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <div style="width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">&#128190;</div>
+            <div>
+              <div style="font-size:15px;font-weight:600">Backups Base de Datos</div>
+              <div style="font-size:12px;color:var(--muted)">Domingo 23:59 — Limpieza día 1 cada mes</div>
+            </div>
+          </div>
+          <div style="margin-bottom:16px">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px">Seleccione fecha de backup</div>
+            <select id="backup-select" onchange="actualizarBackupInfo()" style="width:100%;padding:12px 16px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:'Space Mono',monospace">
+              <option value="">Cargando backups...</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+            <div style="background:var(--bg3);border-radius:8px;padding:12px">
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Tamaño</div>
+              <div id="backup-size" style="font-size:20px;font-weight:600;font-family:'Space Mono',monospace;color:var(--accent)">-</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:12px">
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Total backups</div>
+              <div id="stat-backups" style="font-size:20px;font-weight:600;font-family:'Space Mono',monospace;color:var(--accent)">-</div>
+            </div>
+          </div>
+          <button class="btn btn-blue" onclick="descargarBackupBD()" style="width:100%;padding:14px;font-size:14px;justify-content:center">
+            &#11015; Descargar backup seleccionado
+          </button>
+          <div id="backup-msg" style="margin-top:10px;font-size:13px;color:#34d399;text-align:center;display:none">Backup creado correctamente</div>
+        </div>
       </div>
-      <div class="section-title" style="margin-bottom:8px">Columnas detectadas</div>
-      <div class="columns-list" id="columns-list"></div>
-      <div class="section-title" style="margin-bottom:12px">Importar Excel</div>
-      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="uploadFile(this.files[0])">
-        <div style="font-size:16px;color:var(--muted);margin-bottom:4px">Haz clic o arrastra tu archivo aqui</div>
-        <div style="font-size:13px;color:var(--muted);opacity:0.6">Soporta .xlsx .xls .csv - maximo 50MB</div>
-      </div>
-      <div id="upload-result" class="alert" style="margin-top:12px"></div>
-      <div style="display:flex;gap:12px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
-        <button class="btn btn-green" onclick="doBackup()">Hacer Backup</button>
-        <button class="btn btn-red" onclick="doEliminarDB()">Eliminar base de datos</button>
-      </div>
-      <div class="section-title" style="margin-top:28px;margin-bottom:12px">Backups disponibles</div>
-      <div id="backup-list"></div>
+
     </div>
 
     <!-- USUARIOS -->
@@ -698,8 +739,7 @@ async function doSearch(){
   Object.entries(r.data).forEach(([sheet,rows])=>{
     const cleanSheet = sheet.replace('BD_','');
     html+='<div style="margin-bottom:8px;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px">'+escHtml(cleanSheet)+'</div>';
-    rows.forEach(row=>{
-      lastResult=row;
+    rows.forEach((row,idx)=>{
       const MONO=['Codigo','IP','Ip','Wan','Vrf','OLT','FRAME','SLOT','PORT'];
       const fields=Object.keys(row).map(k=>{
         const val=row[k]!==undefined&&row[k]!==''?row[k]:null;
@@ -707,10 +747,25 @@ async function doSearch(){
         return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
       }).join('');
       const codigoCS=String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||'');
-      html+='<div class="result-card" style="margin-bottom:16px"><div class="result-header"><div class="result-code">'+escHtml(codigoCS)+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
+      const rowId='card-'+sheet+'-'+idx;
+      html+='<div class="result-card" id="'+rowId+'" data-row="'+escHtml(JSON.stringify(row))+'" data-sheet="'+escHtml(sheet)+'" style="margin-bottom:16px;cursor:pointer;border:1px solid var(--border);transition:border-color 0.2s" onclick="seleccionarCard(this)"><div class="result-header"><div class="result-code">'+escHtml(codigoCS)+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
     });
   });
   container.innerHTML=html;
+  // Seleccionar primer card por defecto
+  const firstCard=container.querySelector('.result-card');
+  if(firstCard) firstCard.click();
+}
+function seleccionarCard(el){
+  document.querySelectorAll('#search-result .result-card').forEach(c=>{
+    c.style.borderColor='var(--border)';
+    c.style.background='';
+  });
+  el.style.borderColor='#f0a639';
+  el.style.background='rgba(240,166,57,0.08)';
+  el.style.boxShadow='0 0 0 2px rgba(240,166,57,0.3)';
+  lastResult=JSON.parse(el.dataset.row);
+  lastSheet=el.dataset.sheet;
 }
 
 function copiarIPO(btn, ipo, ip, razon, fqdn){
@@ -790,12 +845,7 @@ async function openModalEditar(){
   const codigo = lastResult.Codigo_Servicio||lastResult.CODIGO||'';
   document.getElementById('modal-registro-title').textContent='Editar: '+codigo;
   document.getElementById('modal-registro-error').style.display='none';
-  let cols = [];
-  try{
-    const r = await fetch('/api/hoja/BD_Servicios').then(r=>r.json());
-    if(r && r.length>0) cols = Object.keys(r[0]);
-  }catch(e){}
-  if(!cols.length) cols = Object.keys(lastResult);
+  const cols = Object.keys(lastResult);
   window._servicioCols = cols;
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'" value="'+escHtml(String(lastResult[c]||''))+'"></div>'
@@ -955,6 +1005,7 @@ async function loadDbInfo(){
   document.getElementById('stat-cols').textContent=r.columns.length;
   dbColumns=r.columns;
   document.getElementById('columns-list').innerHTML=r.columns.map(c=>'<span class="col-tag">'+escHtml(c)+'</span>').join('');
+  loadBackups();
 }
 async function uploadFile(file){
   if(!file)return;
@@ -969,11 +1020,9 @@ async function uploadFile(file){
 async function doBackup(){
   const r=await fetch('/api/db/backup',{method:'POST'}).then(r=>r.json());
   if(r.success){
-    document.getElementById('confirm-msg').textContent='Backup creado: '+r.file;
-    document.getElementById('confirm-ok-btn').textContent='Aceptar';
-    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
-    document.getElementById('modal-confirm').classList.add('open');
     loadBackups();
+    const msg=document.getElementById('backup-msg');
+    if(msg){msg.textContent='Backup creado correctamente';msg.style.display='block';setTimeout(()=>{msg.style.display='none';msg.textContent='Descarga iniciada...';},3000);}
   } else {
     document.getElementById('confirm-msg').textContent='Error al crear backup: '+r.message;
     document.getElementById('confirm-ok-btn').textContent='Aceptar';
@@ -982,11 +1031,56 @@ async function doBackup(){
   }
 }
 async function loadBackups(){
-  const backups=await fetch('/api/db/backups').then(r=>r.json());
-  document.getElementById('stat-backups').textContent=backups.length;
-  const el=document.getElementById('backup-list');
-  if(backups.length===0){el.innerHTML='<p style="color:var(--muted);font-size:13px">No hay backups</p>';return;}
-  el.innerHTML=backups.map(b=>'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><span style="font-family:Space Mono,monospace;font-size:12px;color:var(--muted)">'+escHtml(b.name)+'</span><span style="color:var(--muted);font-size:12px">'+(b.size/1024).toFixed(1)+' KB</span><a href="/api/db/backup/download/'+encodeURIComponent(b.name)+'" style="color:var(--accent);font-size:13px;text-decoration:none">Descargar</a></div>').join('');
+  try{
+    const backups = await fetch('/api/db/backups').then(r=>r.json());
+    const sel = document.getElementById('backup-select');
+    const tot = document.getElementById('stat-backups');
+    if(!sel) return;
+    if(backups.length === 0){
+      sel.innerHTML='<option value="">No hay backups disponibles</option>';
+      if(tot) tot.textContent='0';
+      return;
+    }
+    sel.innerHTML = backups.map(b=>{
+      // formato: backup-2026-06-12T19-29-43.xlsx
+      const raw = b.name.replace('backup-','').replace('.xlsx','');
+      // Convertir T19-29-43 → T19:29:43
+      const iso = raw.replace(/T(\d{2})-(\d{2})-(\d{2})$/,'T$1:$2:$3');
+      const fecha = new Date(iso);
+      const label = isNaN(fecha.getTime()) ? b.name :
+        fecha.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'})+
+        ' '+fecha.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',hour12:false});
+      const size = (b.size/1024/1024).toFixed(1)+' MB';
+      return '<option value="'+escHtml(b.name)+'" data-size="'+size+'">'+label+' - '+size+'</option>';
+    }).join('');
+    if(tot) tot.textContent = backups.length;
+    actualizarBackupInfo();
+  }catch(e){ console.error('Error cargando backups:', e); }
+}
+
+function actualizarBackupInfo(){
+  const sel = document.getElementById('backup-select');
+  const sizeEl = document.getElementById('backup-size');
+  if(!sel||!sizeEl) return;
+  const opt = sel.options[sel.selectedIndex];
+  sizeEl.textContent = opt ? (opt.dataset.size||'-') : '-';
+}
+
+function descargarBackupBD(){
+  const sel = document.getElementById('backup-select');
+  if(!sel||!sel.value){
+    document.getElementById('confirm-msg').textContent='Seleccione un backup para descargar.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = '/api/db/backup/download/'+encodeURIComponent(sel.value);
+  a.download = sel.value;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  const msg = document.getElementById('backup-msg');
+  if(msg){ msg.style.display='block'; setTimeout(()=>msg.style.display='none',3000); }
 }
 async function doEliminarDB(){
   mostrarConfirm('Eliminar TODA la base de datos? Esta accion no se puede deshacer.', async ()=>{
@@ -1883,6 +1977,9 @@ async function eliminarResultadoFw(){
     }
   });
 })();
+
+
+
 
 </script>
 </body>
