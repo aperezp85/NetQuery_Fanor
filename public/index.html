@@ -469,7 +469,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-blue" onclick="openModalUser()">+ Nuevo usuario</button>
       </div>
       <div class="table-wrap">
-        <table><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <table><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Última actividad</th><th>Acciones</th></tr></thead>
         <tbody id="users-tbody"></tbody></table>
       </div>
     </div>
@@ -613,6 +613,7 @@ function initApp(){
     loadDbInfo();loadUsers();loadBackups();
   }
   cargarPaloBackups();
+  setInterval(()=>{ if(currentUser&&currentUser.role==='admin') loadUsers(); }, 30000);
   cargarInfoIPDB();
   cargarDatosIpo();
   cargarEquipos();
@@ -1297,6 +1298,7 @@ function renderUsers(){
     <td style="font-family:Space Mono,monospace;font-size:13px">${escHtml(u.username)}</td>
     <td><span class="tag ${u.role}">${u.role==='admin'?'Administrador':'Consulta'}</span></td>
     <td><span class="tag ${u.activo?'active':'inactive'}">${u.activo?'Activo':'Inactivo'}</span>${u.mustChangePassword?'<span class="tag temporal" style="margin-left:4px">Temporal</span>':''}</td>
+    <td style="font-size:12px;color:var(--muted)">${formatActividad(u.lastActivity)}</td>
     <td>
       <button class="btn-icon warn" onclick="openModalReset(${u.id})" title="Restablecer contrasena">&#128273;</button>
       <button class="btn-icon" onclick="toggleUser(${u.id},${!u.activo})" title="${u.activo?'Desactivar':'Activar'}">${u.activo?'&#9646;&#9646;':'&#9654;'}</button>
@@ -1352,6 +1354,14 @@ async function deleteUser(id){
 }
 
 // UTILS
+function formatActividad(iso){
+  if(!iso) return '<span style="color:var(--muted);font-style:italic">Sin actividad</span>';
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if(diff < 60) return 'hace '+diff+' seg';
+  if(diff < 3600) return 'hace '+Math.floor(diff/60)+' min';
+  if(diff < 86400) return 'hace '+Math.floor(diff/3600)+' h';
+  return 'hace '+Math.floor(diff/86400)+' días';
+}
 function showSubtab(name, btn){
   document.getElementById('esmax-panorama').style.display = name==='panorama' ? '' : 'none';
   document.getElementById('esmax-monitoreo').style.display = name==='monitoreo' ? '' : 'none';
