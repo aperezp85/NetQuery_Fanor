@@ -323,8 +323,15 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
     <div class="page" id="page-ipdb">
       <div class="page-title">Buscador de IP</div>
       <div class="page-sub">Busque equipos por IP o nombre</div>
-      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
-        <input id="ipdb-search" type="text" placeholder="IP o nombre del equipo" style="padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);width:280px" onkeydown="if(event.key==='Enter')buscarIPDB()">
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="ipdb-search" type="text"
+            placeholder="IP o nombre del equipo..."
+            onkeydown="if(event.key==='Enter')buscarIPDB()"
+            oninput="buscarIPDB()"
+            autocomplete="off">
+        </div>
         <button class="btn btn-blue" onclick="buscarIPDB()">Buscar</button>
         <button class="btn btn-green admin-only" onclick="abrirModalIPDB()" style="display:none">+ Agregar</button>
       </div>
@@ -562,7 +569,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
   </div>
 </div>
 <script>
-let currentUser=null,lastResult=null,editMode=false,dbColumns=[],resetUserId=null,allUsers=[],filtroActual='todos';
+let currentUser=null,lastResult=null,lastSheet=null,editMode=false,dbColumns=[],resetUserId=null,allUsers=[],filtroActual='todos';
 let esmax_charts={},esmax_monitoreando=false,esmax_interval=null,esmax_historico={};
 let ipdbCols=[],lastIPDB=null,editIPDB=false,allIPDB=[];
 
@@ -778,43 +785,39 @@ function copiarIPO(btn, ipo, ip, razon, fqdn){
   setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
 }
 function copiarResultado(btn){
-  const card=btn.closest('.result-card');
-  const fields=card.querySelectorAll('.result-field');
-  let txt='';
-  fields.forEach(f=>{
-    const label=f.querySelector('.rf-label').textContent;
-    const val=f.querySelector('.rf-value').textContent;
-    txt+=label+': '+val+'\n';
+  const allCards = document.querySelectorAll('#search-result .result-card');
+  let txt = '';
+  allCards.forEach(card => {
+    const header = card.querySelector('.result-code');
+    if(header) txt += '=== '+header.textContent+' ===\n';
+    const fields = card.querySelectorAll('.result-field');
+    fields.forEach(f=>{
+      const label = f.querySelector('.rf-label').textContent;
+      const val = f.querySelector('.rf-value').textContent;
+      txt += label+': '+val+'\n';
+    });
+    txt += '\n';
   });
   const ta=document.createElement('textarea');
-  ta.value=txt;
+  ta.value=txt.trim();
   ta.style.position='fixed';ta.style.opacity='0';
   document.body.appendChild(ta);
   ta.select();
   document.execCommand('copy');
   document.body.removeChild(ta);
-  btn.textContent='Copiado!';
-  btn.style.color='#34d399';
-  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+  document.querySelectorAll('#search-result .btn').forEach(b=>{
+    if(b.textContent==='Copiar'){ b.textContent='¡Copiado!'; b.style.color='#34d399'; }
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('#search-result .btn').forEach(b=>{
+      if(b.textContent==='¡Copiado!'){ b.textContent='Copiar'; b.style.color=''; }
+    });
+  },2000);
 }
 
-function buildFormFields(data={}){
-  if(dbColumns.length===0)return '<div class="alert warning" style="display:block">Primero cargue la base de datos.</div>';
-  return dbColumns.map(col=>'<div class="field"><label>'+escHtml(col)+'</label><input type="text" id="field-'+escHtml(col)+'" value="'+escHtml(String(data[col]||''))+'"></div>').join('');
-}
 
-function openCreateModal(sheet){
-  document.getElementById('modal-registro-title').textContent = 'Agregar registro IPO';
-  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
-  let html = '';
-  cols.forEach(c => { html += '<div class="field"><label>' + c + '</label><input type="text" id="field-' + c + '" placeholder="' + c + '"></div>'; });
-  document.getElementById('modal-registro-fields').innerHTML = html;
-  document.getElementById('modal-registro-error').style.display = 'none';
-  document.getElementById('modal-registro').classList.add('open');
-  window._modalSheet = sheet;
-  window._modalEditMode = false;
-  document.getElementById('modal-registro-save-btn').onclick = guardarIPO;
-}
+
+
 
 async function openModalAgregar(){
   editMode=false;
@@ -846,8 +849,9 @@ async function openModalEditar(){
   const codigo = lastResult.Codigo_Servicio||lastResult.CODIGO||'';
   document.getElementById('modal-registro-title').textContent='Editar: '+codigo;
   document.getElementById('modal-registro-error').style.display='none';
-  const cols = Object.keys(lastResult);
+  const cols = Object.keys(lastResult).filter(c=>c!=='_sheet');
   window._servicioCols = cols;
+  window._servicioSheet = lastSheet || 'BD_Servicios';
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' value="'+escHtml(String(lastResult[c]||''))+'"></div>'
   ).join('');
@@ -898,13 +902,14 @@ async function guardarServicio(){
   const codigo = data.Codigo_Servicio||'';
   if(!codigo){showAlert(errEl,'El campo Codigo_Servicio es obligatorio','error');return;}
   let r;
+  const sheet = window._servicioSheet || 'BD_Servicios';
   if(window._modalEditMode){
     r=await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sheet:'BD_Servicios',keyField:'Codigo_Servicio',keyValue:window._modalEditValue,data})
+      body:JSON.stringify({sheet:sheet,keyField:sheet==='BD_Clientes_OLT'?'CODIGO':'Codigo_Servicio',keyValue:window._modalEditValue,data})
     }).then(r=>r.json());
   } else {
     r=await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sheet:'BD_Servicios',data})
+      body:JSON.stringify({sheet:sheet,data})
     }).then(r=>r.json());
   }
   if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
@@ -912,16 +917,7 @@ async function guardarServicio(){
   if(window._modalEditMode) doSearch();
 }
 
-async function guardarRegistro(){
-  const errEl=document.getElementById('modal-registro-error');errEl.style.display='none';
-  const data={};dbColumns.forEach(col=>{const el=document.getElementById('field-'+col);if(el)data[col]=el.value.trim();});
-  if(!data.CODIGO){showAlert(errEl,'El campo CODIGO es obligatorio','error');return;}
-  let r;
-  if(editMode)r=await fetch('/api/datos/'+encodeURIComponent(lastResult.CODIGO),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
-  else r=await fetch('/api/datos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
-  if(!r.success){showAlert(errEl,r.message,'error');return;}
-  closeModal('modal-registro');lastResult=data;renderResult(data,document.getElementById('search-result'));document.getElementById('search-input').value=data.CODIGO;loadDbInfo();
-}
+
 async function eliminarResultado(){
   if(!lastResult){
     document.getElementById('confirm-msg').textContent='Primero busque un registro para eliminar.';
@@ -942,10 +938,11 @@ async function eliminarResultado(){
   document.getElementById('confirm-ok-btn').textContent='Confirmar';
   document.getElementById('confirm-ok-btn').onclick = async function(){
     closeModal('modal-confirm');
+    const sheetE = lastResult._sheet || 'BD_Servicios';
     const r = await fetch('/api/multisheet',{
       method:'DELETE',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sheet:'BD_Servicios',keyField:'Codigo_Servicio',keyValue:codigo})
+      body:JSON.stringify({sheet:sheetE,keyField:sheetE==='BD_Clientes_OLT'?'CODIGO':'Codigo_Servicio',keyValue:codigo})
     }).then(r=>r.json());
     if(!r.success){
       document.getElementById('confirm-msg').textContent='Error: '+(r.message||'No se pudo eliminar');
@@ -990,7 +987,13 @@ function actualizarPaloInfo(){
 }
 function descargarPalo(){
   const sel=document.getElementById('palo-select');
-  if(!sel||!sel.value){alert('Seleccione un backup para descargar');return;}
+  if(!sel||!sel.value){
+    document.getElementById('confirm-msg').textContent='Seleccione un backup para descargar.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
   const a=document.createElement('a');
   a.href='/api/palo/backup/download/'+encodeURIComponent(sel.value);
   a.download=sel.value;
@@ -1186,10 +1189,21 @@ async function pingManual(ip,id){
 async function agregarSitioEsmax(){
   const nombre=document.getElementById('esmax-nombre').value.trim();
   const ip=document.getElementById('esmax-ip').value.trim();
-  if(!nombre||!ip){alert('Ingrese nombre e IP');return;}
+  if(!nombre||!ip){
+    document.getElementById('confirm-msg').textContent='Ingrese nombre e IP del sitio.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
   const r=await fetch('/api/esmax/sites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,ip})}).then(r=>r.json());
   if(r.success){document.getElementById('esmax-nombre').value='';document.getElementById('esmax-ip').value='';cargarSitiosEsmax();}
-  else alert('Error: '+r.message);
+  else {
+    document.getElementById('confirm-msg').textContent='Error: '+r.message;
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+  }
 }
 async function eliminarSitioEsmax(id){
   document.getElementById('confirm-msg').textContent='¿Eliminar este sitio de monitoreo?';
@@ -1446,7 +1460,12 @@ async function eliminarIPO(ipo){
       body: JSON.stringify({sheet:'BD_Ipo', keyField:'IPO', keyValue:ipo})
     }).then(r=>r.json());
     if(r.success) cargarDatosIpo();
-    else alert(r.message);
+    else{
+      document.getElementById('confirm-msg').textContent='Error: '+r.message;
+      document.getElementById('confirm-ok-btn').textContent='Aceptar';
+      document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+      document.getElementById('modal-confirm').classList.add('open');
+    }
   };
   document.getElementById('modal-confirm').classList.add('open');
 }
@@ -1974,11 +1993,11 @@ async function eliminarResultadoFw(){
   function applyTheme(t){
     if(t === 'light'){
       document.body.classList.add('light-mode');
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 1a6 6 0 0 1 0 12V1z" fill="currentColor"/></svg>';
+      btn.innerHTML = '&#9728;';
       btn.title = 'Cambiar a modo oscuro';
     } else {
       document.body.classList.remove('light-mode');
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 1a6 6 0 0 1 0 12V1z" fill="currentColor"/></svg>';
+      btn.innerHTML = '&#9790;';
       btn.title = 'Cambiar a modo claro';
     }
   }
