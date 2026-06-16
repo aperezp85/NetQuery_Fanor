@@ -141,6 +141,7 @@
     "passwordHash": "$2a$10$MKS/kqJcXFy7WH/1ftNjCef.DQeSfJil/cf3qJi3l/VLvCXp1NEVC",
     "role": "admin",
     "activo": true,
-    "mustChangePassword": false
+    "mustChangePassword": false,
+    "lastActivity": "2026-06-16T12:34:41.104Z"
   }
 ]
