@@ -3,7 +3,8 @@
     {
       "Swtich": "CL05ECADSL01",
       "Direccion": "EL CANELO S/N",
-      "Comuna": "ALGARROBO"
+      "Comuna": "ALGARROBO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02PRASWT01",
@@ -80,7 +81,8 @@
     {
       "Swtich": "CL02BALDSL02",
       "Direccion": "AV BALMACEDA/INT PUERTO ANTOFAGASTA",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02BALSWT01",
@@ -151,7 +153,8 @@
     {
       "Swtich": "CL02ELSDSL03",
       "Direccion": "EL SALITRE 7940",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02ELSSWT02",
@@ -168,12 +171,14 @@
     {
       "Swtich": "CL02ELSDSL01",
       "Direccion": "EL SALITRE 7940",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02ELSDSL02",
       "Direccion": "EL SALITRE 7940",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02URIROU01",
@@ -220,12 +225,14 @@
     {
       "Swtich": "CL02URIDSL08",
       "Direccion": "CALLE URIBE 645",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02URIDSL06",
       "Direccion": "CALLE URIBE 645",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02URISWT01",
@@ -284,17 +291,20 @@
     {
       "Swtich": "CL02URIDSL03",
       "Direccion": "CALLE URIBE 645",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02URIDSL05",
       "Direccion": "CALLE URIBE 645",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02URIDSL02",
       "Direccion": "CALLE URIBE 645",
-      "Comuna": "ANTOFAGASTA"
+      "Comuna": "ANTOFAGASTA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01APRSWT04",
@@ -345,7 +355,10 @@
       "Ip_Administracion": "-"
     },
     {
-      "Swtich": "CL01APRSWT01"
+      "Swtich": "CL01APRSWT01",
+      "Direccion": "",
+      "Comuna": "",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01DPOSWT01",
@@ -374,7 +387,8 @@
     {
       "Swtich": "CL02ABADSL05",
       "Direccion": "CALLE ABAROA 1926 B",
-      "Comuna": "CALAMA"
+      "Comuna": "CALAMA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02ABASWT04",
@@ -385,7 +399,8 @@
     {
       "Swtich": "CL02ABADSL04",
       "Direccion": "CALLE ABAROA 1926 B",
-      "Comuna": "CALAMA"
+      "Comuna": "CALAMA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL02ABASWT03",
@@ -468,17 +483,20 @@
     {
       "Swtich": "CL05APRDSL01",
       "Direccion": "CALLE ARTURO PRAT 593",
-      "Comuna": "CALERA"
+      "Comuna": "CALERA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05APRDSL02",
       "Direccion": "CALLE ARTURO PRAT 593",
-      "Comuna": "CALERA"
+      "Comuna": "CALERA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05OBODSL01",
       "Direccion": "OSCAR BONILLA 211",
-      "Comuna": "CASABLANCA"
+      "Comuna": "CASABLANCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05OBOSWT01",
@@ -489,22 +507,26 @@
     {
       "Swtich": "CL07MAIDSL01",
       "Direccion": "CALLE MAIPU 521",
-      "Comuna": "CAUQUENES"
+      "Comuna": "CAUQUENES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07AFUDSL01",
       "Direccion": "CALLE A. FUENTEALBA / ENRIQUE GONZALEZ",
-      "Comuna": "CHANCO"
+      "Comuna": "CHANCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL03CARDSL01",
       "Direccion": "CALLE CARRERA 816",
-      "Comuna": "CHAÑARAL"
+      "Comuna": "CHAÑARAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04COMDSL01",
       "Direccion": "COMBARBALA S/N",
-      "Comuna": "COMBARBALA"
+      "Comuna": "COMBARBALA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04COMSWT01",
@@ -545,7 +567,8 @@
     {
       "Swtich": "CL07FREDSL01",
       "Direccion": "CALLE FREIRE 546",
-      "Comuna": "CONSTITUCION"
+      "Comuna": "CONSTITUCION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL03CGASWT06",
@@ -598,7 +621,8 @@
     {
       "Swtich": "CL03CGADSL04",
       "Direccion": "PASAJE CACIQUE GALDEQUIN 897",
-      "Comuna": "COPIAPO"
+      "Comuna": "COPIAPO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL03CGASWT03",
@@ -609,7 +633,8 @@
     {
       "Swtich": "CL03CGADSL02",
       "Direccion": "PASAJE CACIQUE GALDEQUIN 897",
-      "Comuna": "COPIAPO"
+      "Comuna": "COPIAPO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL03CGASWT01",
@@ -620,7 +645,8 @@
     {
       "Swtich": "CL03CGADSL03",
       "Direccion": "PASAJE CACIQUE GALDEQUIN 897",
-      "Comuna": "COPIAPO"
+      "Comuna": "COPIAPO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL03CAPSWT01",
@@ -709,12 +735,14 @@
     {
       "Swtich": "CL04BBIDSL01",
       "Direccion": "CALLE BIO BIO 499",
-      "Comuna": "COQUIMBO"
+      "Comuna": "COQUIMBO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04LASDSL02",
       "Direccion": "LASTRA ESQUINA ALDUNATE",
-      "Comuna": "COQUIMBO"
+      "Comuna": "COQUIMBO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04ALDSWT01",
@@ -749,22 +777,26 @@
     {
       "Swtich": "CL04LASDSL01",
       "Direccion": "LASTRA ESQUINA ALDUNATE",
-      "Comuna": "COQUIMBO"
+      "Comuna": "COQUIMBO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04LASDSL03",
       "Direccion": "LASTRA ESQUINA ALDUNATE",
-      "Comuna": "COQUIMBO"
+      "Comuna": "COQUIMBO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07CARDSL01",
       "Direccion": "CALLE CARRERA 33",
-      "Comuna": "CUREPTO"
+      "Comuna": "CUREPTO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07CCADSL04",
       "Direccion": "CALLE CARMEN S/N EDIFICIO CORREOS DE CHILE",
-      "Comuna": "CURICO"
+      "Comuna": "CURICO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07CCASWT01",
@@ -793,17 +825,20 @@
     {
       "Swtich": "CL07CCADSL02",
       "Direccion": "CALLE CARMEN S/N EDIFICIO CORREOS DE CHILE",
-      "Comuna": "CURICO"
+      "Comuna": "CURICO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07CCADSL03",
       "Direccion": "CALLE CARMEN S/N EDIFICIO CORREOS DE CHILE",
-      "Comuna": "CURICO"
+      "Comuna": "CURICO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07CCADSL01",
       "Direccion": "CALLE CARMEN S/N EDIFICIO CORREOS DE CHILE",
-      "Comuna": "CURICO"
+      "Comuna": "CURICO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07CCASWT05",
@@ -814,12 +849,14 @@
     {
       "Swtich": "CL03ESADSL01",
       "Direccion": "AVENIDA OHIGGINS/POTRERILLOS",
-      "Comuna": "DIEGO DE ALMAGRO"
+      "Comuna": "DIEGO DE ALMAGRO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04APEDSL01",
       "Direccion": "ALVAREZ PEREZ RECINTO ESTACION",
-      "Comuna": "ILLAPEL"
+      "Comuna": "ILLAPEL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04APESWT01",
@@ -848,7 +885,8 @@
     {
       "Swtich": "CL01SMADSL07",
       "Direccion": "CALLE SAN MARTIN 385 PISO 2",
-      "Comuna": "IQUIQUE"
+      "Comuna": "IQUIQUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01SMASWT04",
@@ -865,12 +903,14 @@
     {
       "Swtich": "CL01SMADSL05",
       "Direccion": "CALLE SAN MARTIN 385 PISO 2",
-      "Comuna": "IQUIQUE"
+      "Comuna": "IQUIQUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01SMADSL06",
       "Direccion": "CALLE SAN MARTIN 385 PISO 2",
-      "Comuna": "IQUIQUE"
+      "Comuna": "IQUIQUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01SMASWT03",
@@ -881,7 +921,8 @@
     {
       "Swtich": "CL01SMADSL03",
       "Direccion": "CALLE SAN MARTIN 385 PISO 2",
-      "Comuna": "IQUIQUE"
+      "Comuna": "IQUIQUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01SMASWT02",
@@ -892,12 +933,14 @@
     {
       "Swtich": "CL01SMADSL04",
       "Direccion": "CALLE SAN MARTIN 385 PISO 2",
-      "Comuna": "IQUIQUE"
+      "Comuna": "IQUIQUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01SMADSL02",
       "Direccion": "CALLE SAN MARTIN 385 PISO 2",
-      "Comuna": "IQUIQUE"
+      "Comuna": "IQUIQUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01SMAROU01",
@@ -920,7 +963,8 @@
     {
       "Swtich": "CL01ZOFDSL07",
       "Direccion": "MANZANA 14 SITIO 27 RECINTO AMURALLADO ZOFRI",
-      "Comuna": "IQUIQUE"
+      "Comuna": "IQUIQUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL01ZOFSWT03",
@@ -967,7 +1011,8 @@
     {
       "Swtich": "CL05IPADSL03",
       "Direccion": "ISLA DE PASCUA HANGA ROA",
-      "Comuna": "ISLA DE PASCUA"
+      "Comuna": "ISLA DE PASCUA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05IPASWT02",
@@ -990,7 +1035,8 @@
     {
       "Swtich": "CL05IPADSL02",
       "Direccion": "ISLA DE PASCUA HANGA ROA",
-      "Comuna": "ISLA DE PASCUA"
+      "Comuna": "ISLA DE PASCUA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05COVSWT01",
@@ -1049,22 +1095,26 @@
     {
       "Swtich": "CL04PRADSL07",
       "Direccion": "PRAT ESQUINA MATTA PISO 4",
-      "Comuna": "LA SERENA"
+      "Comuna": "LA SERENA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04PRADSL02",
       "Direccion": "PRAT ESQUINA MATTA PISO 4",
-      "Comuna": "LA SERENA"
+      "Comuna": "LA SERENA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04PRADSL03",
       "Direccion": "PRAT ESQUINA MATTA PISO 4",
-      "Comuna": "LA SERENA"
+      "Comuna": "LA SERENA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04PRADSL04",
       "Direccion": "PRAT ESQUINA MATTA PISO 4",
-      "Comuna": "LA SERENA"
+      "Comuna": "LA SERENA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04LIBSWT01",
@@ -1123,7 +1173,8 @@
     {
       "Swtich": "CL04MSESWT01",
       "Direccion": "AVDA. ALBERTO SOLARI 1400",
-      "Comuna": "LA SERENA"
+      "Comuna": "LA SERENA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04MSESWT02",
@@ -1176,7 +1227,8 @@
     {
       "Swtich": "CL06CONDSL01",
       "Direccion": "CALLE CONCEPCION 230",
-      "Comuna": "LITUECHE"
+      "Comuna": "LITUECHE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05EFESWT02",
@@ -1229,7 +1281,8 @@
     {
       "Swtich": "CL05LANDSL04",
       "Direccion": "ESTACION EFE LOS ANDES",
-      "Comuna": "LOS ANDES"
+      "Comuna": "LOS ANDES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05ALIDSL04",
@@ -1294,7 +1347,8 @@
     {
       "Swtich": "CL04MONDSL01",
       "Direccion": "MONTEPATRIA S/N",
-      "Comuna": "MONTE PATRIA"
+      "Comuna": "MONTE PATRIA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04MONSWT01",
@@ -1305,12 +1359,14 @@
     {
       "Swtich": "CL06PVADSL01",
       "Direccion": "CALLE PEDRO DE VALDIVIA 14",
-      "Comuna": "NANCAGUA"
+      "Comuna": "NANCAGUA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04MAGDSL01",
       "Direccion": "CALLE MIGUEL AGUIRRE 150",
-      "Comuna": "OVALLE"
+      "Comuna": "OVALLE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04MAGSWT02",
@@ -1339,22 +1395,26 @@
     {
       "Swtich": "CL04MAGDSL03",
       "Direccion": "CALLE MIGUEL AGUIRRE 150",
-      "Comuna": "OVALLE"
+      "Comuna": "OVALLE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL04MAGDSL02",
       "Direccion": "CALLE MIGUEL AGUIRRE 150",
-      "Comuna": "OVALLE"
+      "Comuna": "OVALLE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06MRODSL01",
       "Direccion": "CALLE MANUEL RODRIGUEZ 301",
-      "Comuna": "PERALILLO"
+      "Comuna": "PERALILLO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05SILDSL01",
       "Direccion": "CALLE SILVA 635",
-      "Comuna": "PETORCA"
+      "Comuna": "PETORCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06CLCSWT01",
@@ -1371,7 +1431,8 @@
     {
       "Swtich": "CL05COMDSL01",
       "Direccion": "CALLE COMERCIO 172",
-      "Comuna": "PUTAENDO"
+      "Comuna": "PUTAENDO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05MAYSWT01",
@@ -1424,17 +1485,20 @@
     {
       "Swtich": "CL05VMADSL03",
       "Direccion": "CALLE VICUNA MACKENNA GALERIA FRTE PZA. LOC. 45",
-      "Comuna": "QUILPUE"
+      "Comuna": "QUILPUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05VMADSL02",
       "Direccion": "CALLE VICUNA MACKENNA GALERIA FRTE PZA. LOC. 45",
-      "Comuna": "QUILPUE"
+      "Comuna": "QUILPUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05VMADSL01",
       "Direccion": "CALLE VICUNA MACKENNA GALERIA FRTE PZA. LOC. 45",
-      "Comuna": "QUILPUE"
+      "Comuna": "QUILPUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05VMASWT01",
@@ -1445,7 +1509,8 @@
     {
       "Swtich": "CL05QSNDSL01",
       "Direccion": "QUINTERO S/N",
-      "Comuna": "QUINTERO"
+      "Comuna": "QUINTERO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06MPRSWT02",
@@ -1540,7 +1605,8 @@
     {
       "Swtich": "CL06GRIDSL01",
       "Direccion": "ALCAZAR 782 EX 784",
-      "Comuna": "RANCAGUA"
+      "Comuna": "RANCAGUA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06ALCSWT03",
@@ -1551,7 +1617,8 @@
     {
       "Swtich": "CL06GRIDSL02",
       "Direccion": "ALCAZAR 782 EX 784",
-      "Comuna": "RANCAGUA"
+      "Comuna": "RANCAGUA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06OHISWT01",
@@ -1562,7 +1629,8 @@
     {
       "Swtich": "CL06ALCDSL01",
       "Direccion": "ARTURO PRAT 125",
-      "Comuna": "RENGO"
+      "Comuna": "RENGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06APRSWT01",
@@ -1591,7 +1659,8 @@
     {
       "Swtich": "CL04JJODSL01",
       "Direccion": "CALLE JOSE JOAQUIN PEREZ 598",
-      "Comuna": "SALAMANCA"
+      "Comuna": "SALAMANCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05CCESWT01",
@@ -1632,12 +1701,14 @@
     {
       "Swtich": "CL05CENDSL05",
       "Direccion": "CALLE CENTENARIO 283",
-      "Comuna": "SAN ANTONIO"
+      "Comuna": "SAN ANTONIO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05MERDSL04",
       "Direccion": "CALLE MERCED 220",
-      "Comuna": "SAN FELIPE"
+      "Comuna": "SAN FELIPE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05MERSWT02",
@@ -1660,7 +1731,8 @@
     {
       "Swtich": "CL06BOHDSL03",
       "Direccion": "CALLE BERNARDO OHIGGINS 639",
-      "Comuna": "SAN FERNANDO"
+      "Comuna": "SAN FERNANDO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06BOHSWT01",
@@ -1683,12 +1755,14 @@
     {
       "Swtich": "CL06BOHDSL01",
       "Direccion": "CALLE BERNARDO OHIGGINS 639",
-      "Comuna": "SAN FERNANDO"
+      "Comuna": "SAN FERNANDO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06BOHDSL02",
       "Direccion": "CALLE BERNARDO OHIGGINS 639",
-      "Comuna": "SAN FERNANDO"
+      "Comuna": "SAN FERNANDO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06CCESWT01",
@@ -1705,12 +1779,14 @@
     {
       "Swtich": "CL06TTADSL01",
       "Direccion": "CALLE TAGUA TAGUA 341",
-      "Comuna": "SAN VICENTE"
+      "Comuna": "SAN VICENTE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06ORLDSL01",
       "Direccion": "CALLE ORLANDI 85",
-      "Comuna": "SANTA CRUZ"
+      "Comuna": "SANTA CRUZ",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL06ORLSWT01",
@@ -1727,7 +1803,8 @@
     {
       "Swtich": "CL02MRODSL01",
       "Direccion": "CALLE MANUEL RODRIGUEZ 1337",
-      "Comuna": "TOCOPILLA"
+      "Comuna": "TOCOPILLA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL03TALSWT01",
@@ -1744,7 +1821,8 @@
     {
       "Swtich": "CL03TALDSL01",
       "Direccion": "CALLE TALCA S/N ENTRE SERRANO Y FAEZ",
-      "Comuna": "VALLENAR"
+      "Comuna": "VALLENAR",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL03TALDSL02",
@@ -1881,7 +1959,8 @@
     {
       "Swtich": "CL05SDODSL06 (ELIMINADO)",
       "Direccion": "CALLE SALVADOR DONOSO 1461",
-      "Comuna": "VALPARAISO"
+      "Comuna": "VALPARAISO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05SDOSWT05",
@@ -1898,7 +1977,8 @@
     {
       "Swtich": "CL05SDODSL04",
       "Direccion": "CALLE SALVADOR DONOSO 1461",
-      "Comuna": "VALPARAISO"
+      "Comuna": "VALPARAISO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05SDOSWT02",
@@ -1915,17 +1995,20 @@
     {
       "Swtich": "CL05SDODSL02",
       "Direccion": "CALLE SALVADOR DONOSO 1461",
-      "Comuna": "VALPARAISO"
+      "Comuna": "VALPARAISO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05SDODSL01",
       "Direccion": "CALLE SALVADOR DONOSO 1461",
-      "Comuna": "VALPARAISO"
+      "Comuna": "VALPARAISO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05SDODSL03",
       "Direccion": "CALLE SALVADOR DONOSO 1461",
-      "Comuna": "VALPARAISO"
+      "Comuna": "VALPARAISO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05SDOSWT01",
@@ -1936,7 +2019,8 @@
     {
       "Swtich": "CL04APRDSL01",
       "Direccion": "CALLE ARTURO PRAT 380",
-      "Comuna": "VICUÑA"
+      "Comuna": "VICUÑA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05CONSWT01",
@@ -1959,17 +2043,20 @@
     {
       "Swtich": "CL05CONDSL02",
       "Direccion": "CONCEPCION 1033",
-      "Comuna": "VILLA ALEMANA"
+      "Comuna": "VILLA ALEMANA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05CONDSL01",
       "Direccion": "CONCEPCION 1033",
-      "Comuna": "VILLA ALEMANA"
+      "Comuna": "VILLA ALEMANA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05VDMDSL07 (ELIMINADO)",
       "Direccion": "ESTACION EFE VINA DEL MAR",
-      "Comuna": "VIÑA DEL MAR"
+      "Comuna": "VIÑA DEL MAR",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL05VDMSWT10",
@@ -2184,7 +2271,8 @@
     {
       "Swtich": "CL07CSIDSL01",
       "Direccion": "CALLE CARLOS SILVA S/N",
-      "Comuna": "SAN CLEMENTE"
+      "Comuna": "SAN CLEMENTE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07CLVSWT01",
@@ -2243,7 +2331,8 @@
     {
       "Swtich": "CL07TORDSL07",
       "Direccion": "CALLE 3 ORIENTE 1015",
-      "Comuna": "TALCA"
+      "Comuna": "TALCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07TORROU02",
@@ -2254,17 +2343,20 @@
     {
       "Swtich": "CL07TORDSL05",
       "Direccion": "CALLE 3 ORIENTE 1015",
-      "Comuna": "TALCA"
+      "Comuna": "TALCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07TORDSL06",
       "Direccion": "CALLE 3 ORIENTE 1015",
-      "Comuna": "TALCA"
+      "Comuna": "TALCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07TORDSL04",
       "Direccion": "CALLE 3 ORIENTE 1015",
-      "Comuna": "TALCA"
+      "Comuna": "TALCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMLVISWT01",
@@ -2281,12 +2373,14 @@
     {
       "Swtich": "CL07TORDSL03",
       "Direccion": "CALLE 3 ORIENTE 1015",
-      "Comuna": "TALCA"
+      "Comuna": "TALCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07TORDSL02",
       "Direccion": "CALLE 3 ORIENTE 1015",
-      "Comuna": "TALCA"
+      "Comuna": "TALCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL07TORROU01",
@@ -2297,12 +2391,14 @@
     {
       "Swtich": "CL07TORDSL01",
       "Direccion": "CALLE 3 ORIENTE 1015",
-      "Comuna": "TALCA"
+      "Comuna": "TALCA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VILDSL01",
       "Direccion": "CALLE VILLAGRAN 691",
-      "Comuna": "CAÑETE"
+      "Comuna": "CAÑETE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08LIBSWT04",
@@ -2319,7 +2415,8 @@
     {
       "Swtich": "CL08LIBDSL04",
       "Direccion": "CALLE LIBERTAD 505 EDIFICIO PUBLICO",
-      "Comuna": "CHILLAN"
+      "Comuna": "CHILLAN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08LIBSWT03",
@@ -2330,7 +2427,8 @@
     {
       "Swtich": "CL08LIBDSL05",
       "Direccion": "CALLE LIBERTAD 505 EDIFICIO PUBLICO",
-      "Comuna": "CHILLAN"
+      "Comuna": "CHILLAN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08LIBSWT01",
@@ -2347,12 +2445,14 @@
     {
       "Swtich": "CL08LIBDSL03",
       "Direccion": "CALLE LIBERTAD 505 EDIFICIO PUBLICO",
-      "Comuna": "CHILLAN"
+      "Comuna": "CHILLAN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08LIBDSL02",
       "Direccion": "CALLE LIBERTAD 505 EDIFICIO PUBLICO",
-      "Comuna": "CHILLAN"
+      "Comuna": "CHILLAN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08LIBROU01",
@@ -2363,7 +2463,8 @@
     {
       "Swtich": "CL08LIBDSL01",
       "Direccion": "CALLE LIBERTAD 505 EDIFICIO PUBLICO",
-      "Comuna": "CHILLAN"
+      "Comuna": "CHILLAN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08CPOSWT01",
@@ -2380,12 +2481,14 @@
     {
       "Swtich": "CL08OHIDSL06",
       "Direccion": "CALLE OHIGGINS 799 PISO 4",
-      "Comuna": "CONCEPCION"
+      "Comuna": "CONCEPCION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08OHIDSL07",
       "Direccion": "CALLE OHIGGINS 799 PISO 4",
-      "Comuna": "CONCEPCION"
+      "Comuna": "CONCEPCION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08OHISWT03",
@@ -2396,7 +2499,8 @@
     {
       "Swtich": "CL08OHIDSL02",
       "Direccion": "CALLE OHIGGINS 799 PISO 4",
-      "Comuna": "CONCEPCION"
+      "Comuna": "CONCEPCION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08OHISWT01",
@@ -2413,12 +2517,14 @@
     {
       "Swtich": "CL08OHIDSL01",
       "Direccion": "CALLE OHIGGINS 799 PISO 4",
-      "Comuna": "CONCEPCION"
+      "Comuna": "CONCEPCION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08OHIDSL04",
       "Direccion": "CALLE OHIGGINS 799 PISO 4",
-      "Comuna": "CONCEPCION"
+      "Comuna": "CONCEPCION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08OHISWT08",
@@ -2573,12 +2679,14 @@
     {
       "Swtich": "CL08PUCDSL01",
       "Direccion": "PALOMARES S/N CERRO PUCHOCO RECINTO PORTUARIA CABO",
-      "Comuna": "CORONEL"
+      "Comuna": "CORONEL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08PUCDSL02",
       "Direccion": "PALOMARES S/N CERRO PUCHOCO RECINTO PORTUARIA CABO",
-      "Comuna": "CORONEL"
+      "Comuna": "CORONEL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08CPRSWT05",
@@ -2625,7 +2733,8 @@
     {
       "Swtich": "CL08ESCDSL01",
       "Direccion": "PARQUE ESCUADRON RECINTO FORESTAL TROMEN",
-      "Comuna": "CORONEL"
+      "Comuna": "CORONEL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08COLSWT01",
@@ -2636,7 +2745,8 @@
     {
       "Swtich": "CL08BULDSL01",
       "Direccion": "CALLE BULNES 361",
-      "Comuna": "LEBU"
+      "Comuna": "LEBU",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08MLASWT01",
@@ -2701,17 +2811,20 @@
     {
       "Swtich": "CL08ALEDSL03",
       "Direccion": "AVDA ALEMANIA 321",
-      "Comuna": "LOS ANGELES"
+      "Comuna": "LOS ANGELES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08ALEDSL04",
       "Direccion": "AVDA ALEMANIA 321",
-      "Comuna": "LOS ANGELES"
+      "Comuna": "LOS ANGELES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08ALEDSL02",
       "Direccion": "AVDA ALEMANIA 321",
-      "Comuna": "LOS ANGELES"
+      "Comuna": "LOS ANGELES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08ALESWT01",
@@ -2722,7 +2835,8 @@
     {
       "Swtich": "CL08ALEDSL01",
       "Direccion": "AVDA ALEMANIA 321",
-      "Comuna": "LOS ANGELES"
+      "Comuna": "LOS ANGELES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08NACSWT01",
@@ -2733,7 +2847,8 @@
     {
       "Swtich": "CL08SMADSL01",
       "Direccion": "CALLE SAN MARTIN 345",
-      "Comuna": "QUIRIHUE"
+      "Comuna": "QUIRIHUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08SCADSL01",
@@ -2768,7 +2883,8 @@
     {
       "Swtich": "CL08APRDSL01",
       "Direccion": "CALLE ARTURO PRAT 412",
-      "Comuna": "SANTA BARBARA"
+      "Comuna": "SANTA BARBARA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08ESTSWT02",
@@ -2779,7 +2895,8 @@
     {
       "Swtich": "CL08ESTDSL01",
       "Direccion": "CERRO ESTANQUE",
-      "Comuna": "TALCAHUANO"
+      "Comuna": "TALCAHUANO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08ESTSWT01",
@@ -2802,12 +2919,14 @@
     {
       "Swtich": "CL08DFUDSL02",
       "Direccion": "CERRO DAVID FUENTES",
-      "Comuna": "TALCAHUANO"
+      "Comuna": "TALCAHUANO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08DFUDSL03",
       "Direccion": "CERRO DAVID FUENTES",
-      "Comuna": "TALCAHUANO"
+      "Comuna": "TALCAHUANO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08DFUSWT02",
@@ -2818,7 +2937,8 @@
     {
       "Swtich": "CL08DFUDSL01",
       "Direccion": "CERRO DAVID FUENTES",
-      "Comuna": "TALCAHUANO"
+      "Comuna": "TALCAHUANO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08DFUSWT01",
@@ -2943,22 +3063,26 @@
     {
       "Swtich": "CL08ISEDSL01",
       "Direccion": "CALLE IGNACIO SERRANO 916",
-      "Comuna": "TOME"
+      "Comuna": "TOME",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08BOHDSL01",
       "Direccion": "CALLE OHIGGINS 671",
-      "Comuna": "YUMBEL"
+      "Comuna": "YUMBEL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL08ESMDSL01",
       "Direccion": "CALLE ESMERALDA 470",
-      "Comuna": "YUNGAY"
+      "Comuna": "YUNGAY",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VERDSL01",
       "Direccion": "CALLE VERGARA 402",
-      "Comuna": "ANGOL"
+      "Comuna": "ANGOL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VERSWT01",
@@ -2969,12 +3093,14 @@
     {
       "Swtich": "CL09CAUDSL01",
       "Direccion": "CALLE CAUPOLICAN 306",
-      "Comuna": "CARAHUE"
+      "Comuna": "CARAHUE",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09OHIDSL01",
       "Direccion": "CALLE OHIGGINS 400",
-      "Comuna": "CURACAUTIN"
+      "Comuna": "CURACAUTIN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09CRFSWT01",
@@ -2997,12 +3123,14 @@
     {
       "Swtich": "CL09NIMDSL01",
       "Direccion": "A. PRAT 359",
-      "Comuna": "NUEVA IMPERIAL"
+      "Comuna": "NUEVA IMPERIAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09FUEDSL01",
       "Direccion": "CALLE FUENTES 288",
-      "Comuna": "PADRE LAS CASAS"
+      "Comuna": "PADRE LAS CASAS",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09PERSWT01",
@@ -3019,12 +3147,14 @@
     {
       "Swtich": "CL09GURDSL01",
       "Direccion": "CALLE GENERAL URRUTIA 472",
-      "Comuna": "PUCON"
+      "Comuna": "PUCON",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09URRDSL01",
       "Direccion": "CALLE URRUTIA 439",
-      "Comuna": "PUREN"
+      "Comuna": "PUREN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VMASWT01",
@@ -3047,7 +3177,8 @@
     {
       "Swtich": "CL09VMADSL02",
       "Direccion": "AVDA VICUNA MACKENNA 557",
-      "Comuna": "TEMUCO"
+      "Comuna": "TEMUCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09MPTSWT03",
@@ -3094,7 +3225,8 @@
     {
       "Swtich": "CL09VMADSL03",
       "Direccion": "AVDA VICUNA MACKENNA 557",
-      "Comuna": "TEMUCO"
+      "Comuna": "TEMUCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VMASWT04",
@@ -3117,27 +3249,32 @@
     {
       "Swtich": "CL09VMADSL04",
       "Direccion": "AVDA VICUNA MACKENNA 557",
-      "Comuna": "TEMUCO"
+      "Comuna": "TEMUCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VMADSL05",
       "Direccion": "AVDA VICUNA MACKENNA 557",
-      "Comuna": "TEMUCO"
+      "Comuna": "TEMUCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09ERRDSL01",
       "Direccion": "CALLE ERRAZURIZ 586",
-      "Comuna": "TRAIGUEN"
+      "Comuna": "TRAIGUEN",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VREDSL01",
       "Direccion": "CALLE VICENTE REYES 935",
-      "Comuna": "VILLARRICA"
+      "Comuna": "VILLARRICA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VMADSL07",
       "Direccion": "AVDA VICUNA MACKENNA 557",
-      "Comuna": "TEMUCO"
+      "Comuna": "TEMUCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VMASWT08",
@@ -3148,7 +3285,8 @@
     {
       "Swtich": "CL09VMADSL06",
       "Direccion": "AVDA VICUNA MACKENNA 557",
-      "Comuna": "TEMUCO"
+      "Comuna": "TEMUCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL09VMASWT07",
@@ -3189,12 +3327,14 @@
     {
       "Swtich": "CL09VMADSL01",
       "Direccion": "AVDA VICUNA MACKENNA 557",
-      "Comuna": "TEMUCO"
+      "Comuna": "TEMUCO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10APRDSL01",
       "Direccion": "CALLE ARTURO PRAT 662 SUBTERRANEO",
-      "Comuna": "LA UNION"
+      "Comuna": "LA UNION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10APRSWT01",
@@ -3211,12 +3351,14 @@
     {
       "Swtich": "CL10JLADSL04",
       "Direccion": "PASAJE JUAN LAGOS 865",
-      "Comuna": "OSORNO"
+      "Comuna": "OSORNO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10JLADSL02",
       "Direccion": "PASAJE JUAN LAGOS 865",
-      "Comuna": "OSORNO"
+      "Comuna": "OSORNO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10JLASWT02",
@@ -3227,12 +3369,14 @@
     {
       "Swtich": "CL10JLADSL03",
       "Direccion": "PASAJE JUAN LAGOS 865",
-      "Comuna": "OSORNO"
+      "Comuna": "OSORNO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10JLADSL01",
       "Direccion": "PASAJE JUAN LAGOS 865",
-      "Comuna": "OSORNO"
+      "Comuna": "OSORNO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10JLASWT01",
@@ -3285,7 +3429,8 @@
     {
       "Swtich": "CL10RANDSL04",
       "Direccion": "CALLE RANCAGUA 120",
-      "Comuna": "PUERTO MONTT"
+      "Comuna": "PUERTO MONTT",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10RANSWT01",
@@ -3308,12 +3453,14 @@
     {
       "Swtich": "CL10RANDSL06",
       "Direccion": "CALLE RANCAGUA 120",
-      "Comuna": "PUERTO MONTT"
+      "Comuna": "PUERTO MONTT",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10RANSWT06",
       "Direccion": "CALLE RANCAGUA 120",
-      "Comuna": "PUERTO MONTT"
+      "Comuna": "PUERTO MONTT",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10RANSWT07",
@@ -3336,7 +3483,8 @@
     {
       "Swtich": "CL10CHISWT02",
       "Direccion": "CO CHIN CHIN",
-      "Comuna": "PUERTO MONTT"
+      "Comuna": "PUERTO MONTT",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10CHISWT03",
@@ -3419,7 +3567,8 @@
     {
       "Swtich": "CL10RENDSL01",
       "Direccion": "RENGIFO 798",
-      "Comuna": "PUERTO MONTT"
+      "Comuna": "PUERTO MONTT",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10RENSWT01",
@@ -3436,7 +3585,8 @@
     {
       "Swtich": "CL10APUDSL01",
       "Direccion": "CERRO ALTO PUERTO VARAS",
-      "Comuna": "PUERTO VARAS"
+      "Comuna": "PUERTO VARAS",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10APUSWT01",
@@ -3483,7 +3633,8 @@
     {
       "Swtich": "CL10VPEDSL04",
       "Direccion": "CALLE VICENTE PEREZ ROSALES 712",
-      "Comuna": "VALDIVIA"
+      "Comuna": "VALDIVIA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10VPEROU02",
@@ -3500,7 +3651,8 @@
     {
       "Swtich": "CL10VPEDSL03",
       "Direccion": "CALLE VICENTE PEREZ ROSALES 712",
-      "Comuna": "VALDIVIA"
+      "Comuna": "VALDIVIA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10VPESWT02",
@@ -3511,7 +3663,8 @@
     {
       "Swtich": "CL10VPEDSL02",
       "Direccion": "CALLE VICENTE PEREZ ROSALES 712",
-      "Comuna": "VALDIVIA"
+      "Comuna": "VALDIVIA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10VPEROU01",
@@ -3522,7 +3675,8 @@
     {
       "Swtich": "CL10VPEDSL01",
       "Direccion": "CALLE VICENTE PEREZ ROSALES 712",
-      "Comuna": "VALDIVIA"
+      "Comuna": "VALDIVIA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL11VMAROU01",
@@ -3599,7 +3753,8 @@
     {
       "Swtich": "CL12ETEDSL01",
       "Direccion": "ESTACION TERRENA",
-      "Comuna": "PUNTA ARENAS"
+      "Comuna": "PUNTA ARENAS",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL12ETEROU01",
@@ -3658,7 +3813,8 @@
     {
       "Swtich": "CL12BORDSL06",
       "Direccion": "CALLE BORIES 911",
-      "Comuna": "PUNTA ARENAS"
+      "Comuna": "PUNTA ARENAS",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL12BORSWT01",
@@ -3669,7 +3825,8 @@
     {
       "Swtich": "CL12BORDSL02",
       "Direccion": "CALLE BORIES 911",
-      "Comuna": "PUNTA ARENAS"
+      "Comuna": "PUNTA ARENAS",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMLINSWT01",
@@ -3704,7 +3861,8 @@
     {
       "Swtich": "CLRMMOEDSL02",
       "Direccion": "AVDA. AMERICO VESPUCIO 1501",
-      "Comuna": "CERRILLOS"
+      "Comuna": "CERRILLOS",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMMOESWT03",
@@ -3763,7 +3921,8 @@
     {
       "Swtich": "CLRMLERDSL01",
       "Direccion": "AVDA LO ERRAZURIZ 300",
-      "Comuna": "CERRILLOS"
+      "Comuna": "CERRILLOS",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMLAMSWT03",
@@ -3864,7 +4023,8 @@
     {
       "Swtich": "CLRMBMEDSL02",
       "Direccion": "RUIZ TAGLE 728",
-      "Comuna": "ESTACION CENTRAL"
+      "Comuna": "ESTACION CENTRAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMMPESWT01",
@@ -3893,7 +4053,8 @@
     {
       "Swtich": "CLRMMPEDSL01",
       "Direccion": "SAN BORJA 122",
-      "Comuna": "ESTACION CENTRAL"
+      "Comuna": "ESTACION CENTRAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMVURSWT01",
@@ -3904,7 +4065,8 @@
     {
       "Swtich": "CLRMBMEDSL01",
       "Direccion": "RUIZ TAGLE 728",
-      "Comuna": "ESTACION CENTRAL"
+      "Comuna": "ESTACION CENTRAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMDOLSWT01",
@@ -3915,7 +4077,8 @@
     {
       "Swtich": "CLRMRTADSL03",
       "Direccion": "RUIZ TAGLE 728",
-      "Comuna": "ESTACION CENTRAL"
+      "Comuna": "ESTACION CENTRAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMECESWT01",
@@ -3992,7 +4155,8 @@
     {
       "Swtich": "CLRMPADSL01",
       "Direccion": "AVDA LIBERTADOR BERNARDO OHIGGINS 3470",
-      "Comuna": "ESTACION CENTRAL"
+      "Comuna": "ESTACION CENTRAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMAMASWT01",
@@ -4039,7 +4203,8 @@
     {
       "Swtich": "CLRMRESDSL02",
       "Direccion": "AVDA RINCONADA EL SALTO 202 SE 1BN",
-      "Comuna": "HUECHURABA"
+      "Comuna": "HUECHURABA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLMORS4",
@@ -4050,7 +4215,8 @@
     {
       "Swtich": "CLRMRESDSL01",
       "Direccion": "AVDA RINCONADA EL SALTO 202 SE 1BN",
-      "Comuna": "HUECHURABA"
+      "Comuna": "HUECHURABA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CS5500-L2",
@@ -4187,7 +4353,8 @@
     {
       "Swtich": "CLRMMVESWT09",
       "Direccion": "AVDA. VICUNA MACKENNA ORIENTE 7110",
-      "Comuna": "LA FLORIDA"
+      "Comuna": "LA FLORIDA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMVESSWT05",
@@ -4480,7 +4647,8 @@
     {
       "Swtich": "CLRMMVEDSL02",
       "Direccion": "AVDA. VICUNA MACKENNA ORIENTE 7110",
-      "Comuna": "LA FLORIDA"
+      "Comuna": "LA FLORIDA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMSSOSWT03",
@@ -4545,7 +4713,8 @@
     {
       "Swtich": "CLRMFRODSL01",
       "Direccion": "CALLE FROILAN ROA 6470",
-      "Comuna": "LA FLORIDA"
+      "Comuna": "LA FLORIDA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMMEGSWT09",
@@ -4622,7 +4791,8 @@
     {
       "Swtich": "CLRMRNODSL01",
       "Direccion": "ROSARIO NORTE 615, BODEGA 317, 3ER SUB",
-      "Comuna": "LAS CONDES"
+      "Comuna": "LAS CONDES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMRNOSWT01",
@@ -4663,7 +4833,8 @@
     {
       "Swtich": "CLRMAVEDSL02",
       "Direccion": "AVDA AMERICO VESPUCIO 100 SUB 3 BOD 304",
-      "Comuna": "LAS CONDES"
+      "Comuna": "LAS CONDES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMAVESWT01",
@@ -4674,7 +4845,8 @@
     {
       "Swtich": "CLRMNLCDSL01",
       "Direccion": "NUEVA LAS CONDES EDIFICIO NERUDA",
-      "Comuna": "LAS CONDES"
+      "Comuna": "LAS CONDES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLWTCS13",
@@ -4787,7 +4959,8 @@
     {
       "Swtich": "CLRMLCODSL02",
       "Direccion": "AVDA LAS CONDES 9236",
-      "Comuna": "LAS CONDES"
+      "Comuna": "LAS CONDES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMLCOSWT01",
@@ -4798,7 +4971,8 @@
     {
       "Swtich": "CLRMLCODSL01",
       "Direccion": "AVDA LAS CONDES 9236",
-      "Comuna": "LAS CONDES"
+      "Comuna": "LAS CONDES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMLMISWT01",
@@ -4839,7 +5013,8 @@
     {
       "Swtich": "CLRMMILDSL01",
       "Direccion": "CALLE LOS MILITARES 6958",
-      "Comuna": "LAS CONDES"
+      "Comuna": "LAS CONDES",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMCOBSWT01",
@@ -5048,12 +5223,14 @@
     {
       "Swtich": "CLRMNSMDSL03",
       "Direccion": "AVDA NUEVA SAN MARTIN 83",
-      "Comuna": "MAIPU"
+      "Comuna": "MAIPU",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMNSMDSL01",
       "Direccion": "AVDA NUEVA SAN MARTIN 83",
-      "Comuna": "MAIPU"
+      "Comuna": "MAIPU",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMNOHSWT01",
@@ -5112,7 +5289,8 @@
     {
       "Swtich": "CLRMMERDSL01",
       "Direccion": "CALLE MERCED 606",
-      "Comuna": "MELIPILLA"
+      "Comuna": "MELIPILLA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMMERSWT01",
@@ -5129,7 +5307,8 @@
     {
       "Swtich": "CLRMORTDSL01",
       "Direccion": "CALLE ORTUZAR 609 PISO 2",
-      "Comuna": "MELIPILLA"
+      "Comuna": "MELIPILLA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMORTSWT01",
@@ -5140,7 +5319,8 @@
     {
       "Swtich": "CLRMORTDSL02",
       "Direccion": "CALLE ORTUZAR 609 PISO 2",
-      "Comuna": "MELIPILLA"
+      "Comuna": "MELIPILLA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMEXFSWT04",
@@ -5169,12 +5349,14 @@
     {
       "Swtich": "CLRMEXFDSL02",
       "Direccion": "AVDA EXEQUIEL FERNANDEZ 165",
-      "Comuna": "ÑUÑOA"
+      "Comuna": "ÑUÑOA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMEXFDSL01",
       "Direccion": "AVDA EXEQUIEL FERNANDEZ 165",
-      "Comuna": "ÑUÑOA"
+      "Comuna": "ÑUÑOA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMEXFSWT02",
@@ -5329,7 +5511,8 @@
     {
       "Swtich": "CLRMNLYDSL01",
       "Direccion": "CALLE NUEVA DE LYON 96 SUB 3 BOD 13",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLNDLB1",
@@ -5364,7 +5547,8 @@
     {
       "Swtich": "CLRMBERDSL01",
       "Direccion": "CALLE BARROS ERRAZURIZ 1953 SUB 2",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLNDLS13_TRK9/15",
@@ -5387,7 +5571,8 @@
     {
       "Swtich": "CLRM11SDSL01",
       "Direccion": "AVDA 11 DE SEPTIEMBRE 1881 SUB 1",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLNDLS16",
@@ -5428,27 +5613,32 @@
     {
       "Swtich": "CLRMPRODSL05",
       "Direccion": "AVDA PROVIDENCIA 2653 LOCAL 25",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMPRODSL03",
       "Direccion": "AVDA PROVIDENCIA 2653 LOCAL 25",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMPRODSL01",
       "Direccion": "AVDA PROVIDENCIA 2653 LOCAL 25",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMPRODSL02",
       "Direccion": "AVDA PROVIDENCIA 2653 LOCAL 25",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMPRODSL04",
       "Direccion": "AVDA PROVIDENCIA 2653 LOCAL 25",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMPROSWT01",
@@ -5507,7 +5697,8 @@
     {
       "Swtich": "CLRMWTCDSL01",
       "Direccion": "AVDA TAJAMAR 481 SUB 3",
-      "Comuna": "PROVIDENCiA"
+      "Comuna": "PROVIDENCiA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMWTCSWT01",
@@ -5788,7 +5979,8 @@
     {
       "Swtich": "CLRMSLIDSL01",
       "Direccion": "CALLE SEPTIMO DE LINEA 6",
-      "Comuna": "QUILICURA"
+      "Comuna": "QUILICURA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLATTS3_TRK0/23",
@@ -5823,7 +6015,8 @@
     {
       "Swtich": "CLRMSLIDSL02",
       "Direccion": "CALLE SEPTIMO DE LINEA 6",
-      "Comuna": "QUILICURA"
+      "Comuna": "QUILICURA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMSLISWT03",
@@ -5966,7 +6159,8 @@
     {
       "Swtich": "CLATTS1",
       "Direccion": "CARRETERA PRESIDENTE EDUARDO FREI MONTALVA 9950 BO (Concert)",
-      "Comuna": "QUILICURA"
+      "Comuna": "QUILICURA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLATTS9",
@@ -6055,12 +6249,14 @@
     {
       "Swtich": "CLRMMAPDSL01",
       "Direccion": "CALLE MAPOCHO 4100",
-      "Comuna": "QUINTA NORMAL"
+      "Comuna": "QUINTA NORMAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMMAPDSL02",
       "Direccion": "CALLE MAPOCHO 4100",
-      "Comuna": "QUINTA NORMAL"
+      "Comuna": "QUINTA NORMAL",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMCCHSWT01",
@@ -6137,12 +6333,14 @@
     {
       "Swtich": "CLRMEFEDSL02",
       "Direccion": "ESTACION EFE SAN BERNARDO",
-      "Comuna": "SAN BERNARDO"
+      "Comuna": "SAN BERNARDO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMEFEDSL01",
       "Direccion": "ESTACION EFE SAN BERNARDO",
-      "Comuna": "SAN BERNARDO"
+      "Comuna": "SAN BERNARDO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMOLFSWT01",
@@ -6207,7 +6405,8 @@
     {
       "Swtich": "CLRMUSUDSL01",
       "Direccion": "CALLE UNO SUR 198",
-      "Comuna": "SAN JOSE DE MAIPO"
+      "Comuna": "SAN JOSE DE MAIPO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMFVESWT16",
@@ -6242,7 +6441,8 @@
     {
       "Swtich": "CLRMPLESWT03",
       "Direccion": "CALLE PEDRO LEON UGALDE 1787",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMPLESWT04",
@@ -6295,12 +6495,14 @@
     {
       "Swtich": "CLRMPLEDSL05",
       "Direccion": "CALLE PEDRO LEON UGALDE 1787",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMPLEDSL01",
       "Direccion": "CALLE PEDRO LEON UGALDE 1787",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMSROSWT_SPARE",
@@ -6467,7 +6669,8 @@
     {
       "Swtich": "CLRMSRODSL01",
       "Direccion": "AVDA SANTA ROSA 76 SUB 1",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMSROROU02",
@@ -6598,7 +6801,8 @@
     {
       "Swtich": "CLRMMORDSL01",
       "Direccion": "CALLE HUERFANOS 1178 OF 405",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLMORR1",
@@ -6651,7 +6855,8 @@
     {
       "Swtich": "CLRMESTDSL01",
       "Direccion": "CALLE ESTADO 42 GALERIA COMERCIAL",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMMEMSWT02",
@@ -6668,7 +6873,8 @@
     {
       "Swtich": "CLRMFVEDSL04",
       "Direccion": "CALLE FANOR VELASCO 50",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMFVEROU01",
@@ -6691,12 +6897,14 @@
     {
       "Swtich": "CLRMFVEDSL03",
       "Direccion": "CALLE FANOR VELASCO 50",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMFVEDSL02",
       "Direccion": "CALLE FANOR VELASCO 50",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMFVEROU02",
@@ -6737,7 +6945,8 @@
     {
       "Swtich": "CLRMFVEDSL05",
       "Direccion": "CALLE FANOR VELASCO 50",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMMIVSWT01",
@@ -6748,7 +6957,8 @@
     {
       "Swtich": "CLRMFVEDSL01",
       "Direccion": "CALLE FANOR VELASCO 50",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMFVESWT10",
@@ -6783,7 +6993,8 @@
     {
       "Swtich": "CLRMMIVDSL01",
       "Direccion": "CALLE MAC.IVER 254",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMLBOSWT01",
@@ -6860,7 +7071,8 @@
     {
       "Swtich": "CLRMFVEDSL06",
       "Direccion": "CALLE FANOR VELASCO 50",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMFVESWT014",
@@ -7033,7 +7245,8 @@
     {
       "Swtich": "CLRMMCIDSL01",
       "Direccion": "CALLE HUERFANOS 757 OF 416",
-      "Comuna": "SANTIAGO"
+      "Comuna": "SANTIAGO",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLMCIS1",
@@ -7110,7 +7323,8 @@
     {
       "Swtich": "CLRMTABDSL01",
       "Direccion": "AVDA TABANCURA 1515 BOD 8 SUB 1",
-      "Comuna": "VITACURA"
+      "Comuna": "VITACURA",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLWTCS24_TRK0/22",
@@ -7271,7 +7485,8 @@
     {
       "Swtich": "CL08OHIDSL07",
       "Direccion": "CALLE OHIGGINS 799 PISO 4",
-      "Comuna": "CONCEPCION"
+      "Comuna": "CONCEPCION",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CL10VPEROU03",
@@ -7292,7 +7507,10 @@
       "Ip_Administracion": "192.168.63.118"
     },
     {
-      "Swtich": "FNR-IGR-R"
+      "Swtich": "FNR-IGR-R",
+      "Direccion": "",
+      "Comuna": "",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "CLRMRNOSWT06",
@@ -7463,7 +7681,10 @@
       "Ip_Administracion": "172.31.184.4"
     },
     {
-      "Swtich": "PEAGG5_FNR"
+      "Swtich": "PEAGG5_FNR",
+      "Direccion": "",
+      "Comuna": "",
+      "Ip_Administracion": ""
     },
     {
       "Swtich": "PE3-DCL",
@@ -8074,7 +8295,7 @@
       "Wan": "172.18.14.104/30",
       "Nodo": "CLRMMVESWT13",
       "Puerta": "port 21",
-      "Ip_Admin_Switch": "Nulo"
+      "Ip_Admin_Switch": "192.168.61.26"
     },
     {
       "Codigo_Servicio": "02-25-0010128296",
@@ -9344,6 +9565,15 @@
       "Ip_Gestion": "10.156.8.211",
       "Vrf": "hle",
       "Wan": "172.17.0.0 /30"
+    },
+    {
+      "Codigo_Servicio": "02-25-0010079785",
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
+      "Direccion": "CALLE YUNGAY 540",
+      "Comuna": "VALDIVIA",
+      "Ip_Gestion": "10.156.10.109",
+      "Vrf": "isl",
+      "Wan": "172.20.21.104 /30"
     },
     {
       "Codigo_Servicio": "02-25-0000033552",
@@ -11686,14 +11916,10 @@
       "Codigo_Servicio": "02-25-0000031664",
       "Cliente": "KENTUCKY FOODS CHILE S.A.",
       "Direccion": "AV. AMERICO VESPUCIO 3300 LOCAL 1058",
-      "Comuna": "PENALOLEN | SANTIAGO | RM",
+      "Comuna": "PENALOLEN",
       "Ip_Gestion": "10.156.21.203",
       "Vrf": "kfc",
-      "Wan": "172.10.12.0/30",
-      "Nodo": "Sw_LoCanas_5_CLRMSSOSWT06",
-      "Puerta": "Fa0/11",
-      "Ip_Admin_Switch": "192.168.53.85",
-      "Proveedor": ""
+      "Wan": "172.10.12.0/30"
     },
     {
       "Codigo_Servicio": "02-25-0010044206",
@@ -27728,12 +27954,8 @@
       "Direccion": "AVDA LOS CONQUISTADORES 2397 EDIF.",
       "Comuna": "PROVIDENCIA | SANTIAGO | RM",
       "Ip_Gestion": "192.168.137.110",
-      "Vrf": "telmex-int",
-      "Wan": "192.168.137.108/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
+      "Vrf": "NULL",
+      "Wan": "192.168.137.108/30"
     },
     {
       "Codigo_Servicio": "06-01-0010309847",
@@ -38008,9 +38230,8 @@
       "Vrf": "guante",
       "Wan": "10.18.80.0/30",
       "Nodo": "CLRMAMBSWT01",
-      "Puerta": "Gi1/34",
-      "Ip_Admin_Switch": "192.168.66.62",
-      "Proveedor": ""
+      "Puerta": "Nulo",
+      "Ip_Admin_Switch": "192.168.66.62"
     },
     {
       "Codigo_Servicio": "02-25-0010288761",
@@ -39523,6 +39744,18 @@
       "Nodo": "CLRMPLESWT10",
       "Puerta": "port 26",
       "Ip_Admin_Switch": "Nulo"
+    },
+    {
+      "Codigo_Servicio": "02-25-0010079782",
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
+      "Direccion": "CALLE SAN PABLO 2471",
+      "Comuna": "SANTIAGO | SANTIAGO | RM",
+      "Ip_Gestion": "10.156.48.205",
+      "Vrf": "isl",
+      "Wan": "172.20.21.132/30",
+      "Nodo": "CLRMFVESWT10",
+      "Puerta": "Gi1/10",
+      "Ip_Admin_Switch": "192.168.56.19"
     },
     {
       "Codigo_Servicio": "06-01-0010231089",
@@ -50524,13 +50757,12 @@
       "Cliente": "SISTEMA NACIONAL DE COMUNICACIONES FINANCIERA S.A",
       "Direccion": "AVDA DEL VALLE 928",
       "Comuna": "HUECHURABA | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.58.5",
+      "Ip_Gestion": "Nulo",
       "Vrf": "Nulo",
       "Wan": "Nulo",
       "Nodo": "Nulo",
       "Puerta": "Nulo",
-      "Ip_Admin_Switch": "Nulo",
-      "Proveedor": ""
+      "Ip_Admin_Switch": "Nulo"
     },
     {
       "Codigo_Servicio": "06-01-0010422986",
@@ -52165,6 +52397,18 @@
       "Ip_Admin_Switch": "192.168.60.170"
     },
     {
+      "Codigo_Servicio": "02-25-0010417791",
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
+      "Direccion": "AVDA TEATINOS 950",
+      "Comuna": "SANTIAGO | SANTIAGO | RM",
+      "Ip_Gestion": "10.156.94.34",
+      "Vrf": "isl",
+      "Wan": "Nulo",
+      "Nodo": "Nulo",
+      "Puerta": "Nulo",
+      "Ip_Admin_Switch": "Nulo"
+    },
+    {
       "Codigo_Servicio": "06-01-0010311530",
       "Cliente": "DIRECCION GENERAL DE MOVILIZACION NACIONAL",
       "Direccion": "CALLE VERGARA 262",
@@ -52553,13 +52797,12 @@
       "Cliente": "ADMINISTRACION Y PROCESOS SPA",
       "Direccion": "AVDA PAJARITOS 1790 LOCAL 3032",
       "Comuna": "MAIPU | SANTIAGO | RM",
-      "Ip_Gestion": "172.16.14.158",
-      "Vrf": "telmex-int",
+      "Ip_Gestion": "Nulo",
+      "Vrf": "Nulo",
       "Wan": "172.16.14.156/30",
       "Nodo": "Nulo",
       "Puerta": "Nulo",
-      "Ip_Admin_Switch": "Nulo",
-      "Proveedor": ""
+      "Ip_Admin_Switch": "Nulo"
     },
     {
       "Codigo_Servicio": "02-25-0010239108",
@@ -54911,6 +55154,18 @@
       "Ip_Admin_Switch": "Nulo"
     },
     {
+      "Codigo_Servicio": "02-25-0000020050",
+      "Cliente": "KENTUCKY FOODS CHILE S.A.",
+      "Direccion": "AVDA 11 DE SEPTIEMBRE 2226  0  0",
+      "Comuna": "PROVIDENCIA | SANTIAGO | RM",
+      "Ip_Gestion": "Nulo",
+      "Vrf": "Nulo",
+      "Wan": "Nulo",
+      "Nodo": "Nulo",
+      "Puerta": "Nulo",
+      "Ip_Admin_Switch": "Nulo"
+    },
+    {
       "Codigo_Servicio": "06-01-0000341172",
       "Cliente": "INGENIERIA SERVICIOS Y COMUNICACIONES SPA",
       "Direccion": "AVDA ELIODORO YANEZ 1163     / NODO TELMEX",
@@ -55590,10 +55845,9 @@
       "Ip_Gestion": "10.156.21.49",
       "Vrf": "aduanafss",
       "Wan": "172.22.30.0/30",
-      "Nodo": "Sw_4948_M.Tobalaba_CLRMMTBSWT02",
-      "Puerta": "Gi1/29",
-      "Ip_Admin_Switch": "192.168.51.9",
-      "Proveedor": ""
+      "Nodo": "Nulo",
+      "Puerta": "Nulo",
+      "Ip_Admin_Switch": "Nulo"
     },
     {
       "Codigo_Servicio": "06-01-0010450273",
@@ -55725,8 +55979,7 @@
       "Wan": "Nulo",
       "Nodo": "Nulo",
       "Puerta": "Nulo",
-      "Ip_Admin_Switch": "Nulo",
-      "Proveedor": "ONNET  || DIR05792143"
+      "Ip_Admin_Switch": "Nulo"
     },
     {
       "Codigo_Servicio": "06-01-0010360907",
@@ -55829,13 +56082,12 @@
       "Cliente": "CAMARA DE DIPUTADOS",
       "Direccion": "AVDA AV. PEDRO MONTT 2890",
       "Comuna": "VALPARAISO | VALPARAISO | R V",
-      "Ip_Gestion": "172.16.7.114",
+      "Ip_Gestion": "Nulo",
       "Vrf": "claro-internet",
-      "Wan": "172.16.7.112/30",
+      "Wan": "172.16.7.113/30",
       "Nodo": "CL05SDOSWT18",
       "Puerta": "port 7",
-      "Ip_Admin_Switch": "192.168.65.110",
-      "Proveedor": ""
+      "Ip_Admin_Switch": "192.168.65.110"
     },
     {
       "Codigo_Servicio": "02-25-0010428118",
@@ -56116,15 +56368,11 @@
     {
       "Codigo_Servicio": "06-01-0010153488",
       "Cliente": "EMPRESA EL MERCURIO S A P",
-      "Direccion": "AVENIDA SANTA MARIA 5542 EDIF CORP",
-      "Comuna": "VITACURA | SANTIAGO | RM",
-      "Ip_Gestion": "192.168.8.190",
+      "Direccion": "",
+      "Comuna": "AVENIDA SANTA MARIA 5542 EDIF CORP",
+      "Ip_Gestion": "",
       "Vrf": "claro-internet",
-      "Wan": "192.168.8.188/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
+      "Wan": "192.168.8.188/30"
     },
     {
       "Codigo_Servicio": "06-01-0010442828",
@@ -56201,94 +56449,43 @@
     },
     {
       "Codigo_Servicio": "02-25-0010079779",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "CALLE PLAZA DE LOS HEROES 389",
-      "Comuna": "RANCAGUA | CACHAPOAL | R VI",
-      "Ip_Gestion": "10.156.48.204",
-      "Vrf": "isl",
-      "Wan": "172.20.21.60/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
     },
     {
       "Codigo_Servicio": "02-25-0010079783",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "AVDA 4 NORTE 1154",
-      "Comuna": "TALCA | TALCA | R VII",
-      "Ip_Gestion": "10.156.48.76",
-      "Vrf": "isl",
-      "Wan": "172.20.21.64/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
     },
     {
       "Codigo_Servicio": "02-25-0010079766",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "CALLE SAN MARTÍN 742 DIR03808625",
-      "Comuna": "CONCEPCION | CONCEPCION | R VIII",
-      "Ip_Gestion": "10.156.48.180",
-      "Vrf": "isl",
-      "Wan": "172.20.21.84/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
     },
     {
       "Codigo_Servicio": "02-25-0010079765",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "CALLE FRANCISCO BILBAO 1203 DIR06714856",
-      "Comuna": "COIHAIQUE | COIHAIQUE | R XI",
-      "Ip_Gestion": "10.156.48.99",
-      "Vrf": "isl",
-      "Wan": "172.20.21.120/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
     },
     {
       "Codigo_Servicio": "02-25-0010424328",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "AVDA OHIGGINS 824",
-      "Comuna": "PUNTA ARENAS | MAGALLANES | R XII",
-      "Ip_Gestion": "10.156.48.103",
-      "Vrf": "isl",
-      "Wan": "172.20.21.128/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": "ONNET Fibra || QUOL00034385"
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
+    },
+    {
+      "Codigo_Servicio": "02-25-0010417791",
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
+    },
+    {
+      "Codigo_Servicio": "02-25-0010079782",
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
+    },
+    {
+      "Codigo_Servicio": "02-25-0010079785",
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
     },
     {
       "Codigo_Servicio": "02-25-0010079762",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "MANUEL THOMPSON 276 CASA",
-      "Comuna": "ARICA | ARICA | RXV",
-      "Ip_Gestion": "10.156.47.177",
-      "Vrf": "isl",
-      "Wan": "172.20.21.4/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": "MOVISTAR || LLACLA19283"
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
     },
     {
       "Codigo_Servicio": "02-25-0010221532",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "CALLE MAIPON 451 DIR02035049",
-      "Comuna": "CHILLAN | DIGUILLIN | RXVI",
-      "Ip_Gestion": "10.156.65.124",
-      "Vrf": "isl",
-      "Wan": "172.20.21.216/30",
-      "Nodo": "RC2948_HUB_CL08BRASWT04",
-      "Puerta": "port 24",
-      "Ip_Admin_Switch": "192.168.63.114",
-      "Proveedor": ""
+      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL"
     },
     {
       "Codigo_Servicio": "02-25-0010367774",
@@ -56342,234 +56539,26 @@
       "Cliente": "IDEMIA IDENTITY & SECURITY CHILE"
     },
     {
-      "Codigo_Servicio": "06-01-0010443432",
-      "Cliente": "LEVI STRAUSS CHILE LIMITADA",
-      "Direccion": "AVDA PRESIDENTE JORGE ALESSANDRI RODRIGUEZ 20040 LOCAL B-1046 / B-1042 / B-1044 PSU",
+      "Codigo_Servicio": "06-01-0010276158",
+      "Cliente": "TRECK S.A.",
+      "Direccion": "CALLE AVENIDA EL ROBLE 970  BODEGA10/11",
+      "Comuna": "LAMPA | CHACABUCO | RM",
+      "Ip_Gestion": "172.16.16.214",
+      "Vrf": "telmex-int",
+      "Wan": "172.16.16.212/30",
+      "Nodo": "CLRMEFMSWT06",
+      "Puerta": "port 10",
+      "Ip_Admin_Switch": "192.168.64.130",
+      "Proveedor": ""
+    },
+    {
+      "Codigo_Servicio": "02-25-0010205194",
+      "Cliente": "UNIVERSIDAD NACIONAL ANDRES BELLO",
+      "Direccion": "AVDA PADRE HURTADO 13560",
       "Comuna": "SAN BERNARDO | MAIPO | RM",
-      "Ip_Gestion": "10.159.8.12",
-      "Vrf": "claro-internet",
+      "Ip_Gestion": "10.156.71.229",
+      "Vrf": "unab-admin",
       "Wan": "",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "02-25-0010450212",
-      "Cliente": "ILUSTRE MUNICIPALIDAD DE QUINTA NORMAL",
-      "Direccion": "CALLE ELOY ROSALES 4550",
-      "Comuna": "QUINTA NORMAL | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.78.206",
-      "Vrf": "imqn",
-      "Wan": "172.17.0.24/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": "ONNET Fibra || DIR05161505"
-    },
-    {
-      "Codigo_Servicio": "02-25-0010417791",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "AVDA TEATINOS 950",
-      "Comuna": "SANTIAGO | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.94.34",
-      "Vrf": "isl",
-      "Wan": "172.20.21.232/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": "ONNET Fibra || DIR03582639"
-    },
-    {
-      "Codigo_Servicio": "02-25-0010079782",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "CALLE SAN PABLO 2471",
-      "Comuna": "SANTIAGO | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.48.205",
-      "Vrf": "isl",
-      "Wan": "172.20.21.132/30",
-      "Nodo": "CLRMFVESWT10",
-      "Puerta": "Gi1/10",
-      "Ip_Admin_Switch": "192.168.56.19",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "02-25-0010079785",
-      "Cliente": "INSTITUTO DE SEGURIDAD LABORAL",
-      "Direccion": "CALLE YUNGAY 540     DIR03709309",
-      "Comuna": "VALDIVIA | VALDIVIA | RXIV",
-      "Ip_Gestion": "10.156.10.109",
-      "Vrf": "isl",
-      "Wan": "172.20.21.104/30",
-      "Nodo": "172.20.21.104/30",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "06-01-0010220041",
-      "Cliente": "FUNDACION RED DE SALUD DE LA UNIVERSIDAD DE ANTOFAGASTA",
-      "Direccion": "AVDA ARGENTINA 1962",
-      "Comuna": "ANTOFAGASTA | ANTOFAGASTA | R II",
-      "Ip_Gestion": "172.26.11.174",
-      "Vrf": "telmex-int",
-      "Wan": "172.26.11.172/30",
-      "Nodo": "AFS-PEAGG2_CL02URISWT08",
-      "Puerta": "Gi1/44",
-      "Ip_Admin_Switch": "172.31.131.34",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "06-01-0010004047",
-      "Cliente": "CUNLOGAN S A",
-      "Direccion": "CALLE ALMIRANTE SENORET 70 EDIF CORP70OFIC74",
-      "Comuna": "VALPARAISO | VALPARAISO | R V",
-      "Ip_Gestion": "172.16.19.138",
-      "Vrf": "telmex-int",
-      "Wan": "172.16.19.136/30",
-      "Nodo": "CL05SDOSWT07",
-      "Puerta": "Gi1/26",
-      "Ip_Admin_Switch": "192.168.52.4",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "02-25-0000023742",
-      "Cliente": "DETROIT S.A",
-      "Direccion": "AVDA BARON DE JURAS REALES 5250",
-      "Comuna": "CONCHALI | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.32.34",
-      "Vrf": "detroit",
-      "Wan": "192.168.46.4/30",
-      "Nodo": "CLRMRESSWT04",
-      "Puerta": "Gi1/35",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "06-01-0010437801",
-      "Cliente": "BRINK S CHILE SPA.",
-      "Direccion": "CALLE EL SALITRE 3210",
-      "Comuna": "ARICA | ARICA | RXV",
-      "Ip_Gestion": "192.168.138.242",
-      "Vrf": "telmex-int",
-      "Wan": "192.168.138.240/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": "ONNET || DIR05792143"
-    },
-    {
-      "Codigo_Servicio": "02-37-0010457075",
-      "Cliente": "CONSTRUCTORA SALFA S A",
-      "Direccion": "AVDA AV. PRESIDENTE REISCO 5335",
-      "Comuna": "LAS CONDES | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.94.195",
-      "Vrf": "salfagestion",
-      "Wan": "172.15.19.0/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": "ONNET || QUOL00060627"
-    },
-    {
-      "Codigo_Servicio": "02-25-0009986604",
-      "Cliente": "INTEGRAMEDICA S.A",
-      "Direccion": "AVDA ..AMERICO VESPUCIO 1501",
-      "Comuna": "CERRILLOS | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.40.31",
-      "Vrf": "integramedica",
-      "Wan": "172.17.0.28/30",
-      "Nodo": "4948-1_Cerrillos_CLRMLERSWT02",
-      "Puerta": "Gi1/12",
-      "Ip_Admin_Switch": "192.168.56.59",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "02-25-0010192100",
-      "Cliente": "GTD LARGA DISTANCIA S.A. (GUANTE)",
-      "Direccion": "AVDA AMERICO VESPUCIO 1501 MALL LOCAL156",
-      "Comuna": "CERRILLOS | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.39.230",
-      "Vrf": "guante",
-      "Wan": "10.18.80.0/30",
-      "Nodo": "4948_AEROP-13i054_CLRMAMBSWT01",
-      "Puerta": "Gi1/34",
-      "Ip_Admin_Switch": "192.168.66.62",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "02-25-0010438009",
-      "Cliente": "I MUNICIPALIDAD DE CERRILLOS",
-      "Direccion": "AVDA PILOTO LAZO 90",
-      "Comuna": "CERRILLOS | SANTIAGO | RM",
-      "Ip_Gestion": "10.156.83.111",
-      "Vrf": "muni_cerrillos",
-      "Wan": "172.16.7.28/30",
-      "Nodo": "4948E-Las_Americas_CLRMLAMSWT01",
-      "Puerta": "Gi1/12",
-      "Ip_Admin_Switch": "192.168.56.22",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "06-01-0010453653",
-      "Cliente": "ARZOBISPADO DE LA SERENA",
-      "Direccion": "CALLE LOS CARRERA 450",
-      "Comuna": "LA SERENA | ELQUI | R IV",
-      "Ip_Gestion": "192.168.146.94",
-      "Vrf": "claro-internet",
-      "Wan": "192.168.146.92/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": "ONNET || DIR02066790"
-    },
-    {
-      "Codigo_Servicio": "06-01-0010418109",
-      "Cliente": "ADMINISTRACION Y PROCESOS SPA",
-      "Direccion": "AVDA CAMILO HENRIQUEZ 3296 MALL LOCALA-204",
-      "Comuna": "PUENTE ALTO | CORDILLERA | RM",
-      "Ip_Gestion": "",
-      "Vrf": "telmex-int",
-      "Wan": "192.168.147.0/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "06-01-0010418046",
-      "Cliente": "ADMINISTRACION Y PROCESOS SPA",
-      "Direccion": "AVDA INMACULADA CONCEPCION 47",
-      "Comuna": "COLINA | CHACABUCO | RM",
-      "Ip_Gestion": "172.18.11.74",
-      "Vrf": "telmex-int",
-      "Wan": "172.18.11.72/30",
-      "Nodo": "",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "06-01-0010052460",
-      "Cliente": "COMERCIAL E INVERSIONES CROSUR LTDA",
-      "Direccion": "PRESIDENTE CARLOS IBAÑEZ DEL CAMPO 5741",
-      "Comuna": "PUNTA ARENAS | MAGALLANES | R XII",
-      "Ip_Gestion": "172.16.22.126",
-      "Vrf": "telmex-int",
-      "Wan": "172.16.22.124/30",
-      "Nodo": "CL12BORSWT01",
-      "Puerta": "",
-      "Ip_Admin_Switch": "",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "06-01-0010372883",
-      "Cliente": "ELITE BRANDS INTERNATIONAL CHILE SPA",
-      "Direccion": "AVDA BALMACEDA 3242 MALL LOCAL122",
-      "Comuna": "CALAMA | EL LOA | R II",
-      "Ip_Gestion": "172.16.19.210",
-      "Vrf": "claro-internet",
-      "Wan": "172.16.19.208/29",
       "Nodo": "",
       "Puerta": "",
       "Ip_Admin_Switch": "",
@@ -92482,7 +92471,7 @@
       "OLT": "CLRMMPAOLT01 (Mall_Plaza_Alameda)"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92491,7 +92480,7 @@
       "CODIGO": "MALL PLAZA_MPSUR_50Mbps_NODO"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92500,7 +92489,7 @@
       "CODIGO": "02-25-0010408368_AUTOSUM_10Mbps_17375052"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92509,7 +92498,7 @@
       "CODIGO": "06-01-0010371973_DBS_4Mbps_15653394"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92518,7 +92507,7 @@
       "CODIGO": "06-01-0010215021_MAIPO_40Mbps_11306600"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92527,7 +92516,7 @@
       "CODIGO": "06-01-0010415921_MINISO_10Mbps_17422195"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92536,7 +92525,7 @@
       "CODIGO": "02-25-0010226581_CANON_2Mbps_11486667"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92545,7 +92534,7 @@
       "CODIGO": "06-01-0010371860_CIC_6Mbps_15825405"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92554,7 +92543,7 @@
       "CODIGO": "02-25-0010177092_BELS_10Mbps_15825405"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92563,7 +92552,7 @@
       "CODIGO": "06-01-0010366398_POLLIN_40Mbps_15616104"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92572,7 +92561,7 @@
       "CODIGO": "02-25-0010191152_BOLD_10Mbps_11006923"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92581,7 +92570,7 @@
       "CODIGO": "02-25-0010197048_OPALINE_10Mbps_11081799"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92590,7 +92579,7 @@
       "CODIGO": "06-01-0010212154_ADIDAS_4Mbps_14009885"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92599,7 +92588,7 @@
       "CODIGO": "02-25-0010313648_ANTAR_10Mbps_13901125"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92608,7 +92597,7 @@
       "CODIGO": "06-01-0010225473_FERRAC_2Mbps_11456533"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92617,7 +92606,7 @@
       "CODIGO": "02-25-0010435009_NATURA_50Mbps_17509951"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92626,7 +92615,7 @@
       "CODIGO": "02-25-0010196416_CAFFA_4Mbps_11074330"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92635,7 +92624,7 @@
       "CODIGO": "02-25-0010065250_BATA_20Mbps_16341404"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92644,7 +92633,7 @@
       "CODIGO": "06-01-0010277537_CELA_20Mbps_16417565"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92653,7 +92642,7 @@
       "CODIGO": "06-01-0010232527_BARBIZ_2Mbps_11612852"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92662,7 +92651,7 @@
       "CODIGO": "06-01-0010410542_SAMSU_20Mbps_17400493"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92671,7 +92660,7 @@
       "CODIGO": "DA_02-25-0010369550_INT_06-01-0010419304_FEROUCH_Solot17447822"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92680,7 +92669,7 @@
       "CODIGO": "02-25-0010090403_RIPCUL_4Mbps_xx"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92689,7 +92678,7 @@
       "CODIGO": "INT_06-01-0010427595_AHUMADA_10Mbps_solot17476286"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92698,7 +92687,7 @@
       "CODIGO": "06-01-0010207248_CHURR_2Mbps_11196143"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92707,7 +92696,7 @@
       "CODIGO": "02-25-0010403674_GUANTE_10Mbps_17225033"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92716,7 +92705,7 @@
       "CODIGO": "02-25-0010211468_FLORES_5Mbps_11256489"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92725,7 +92714,7 @@
       "CODIGO": "06-01-0010382031_MAMUT_2Mbps_16398084"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92734,7 +92723,7 @@
       "CODIGO": "06-01-0010424602_CORY_10Mbps_17461836"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92743,7 +92732,7 @@
       "CODIGO": "06-01-0010388957_GMO_10Mbps_16725133"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92752,7 +92741,7 @@
       "CODIGO": "06-01-0010379810_FASH_20Mbps_16244099"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92761,7 +92750,7 @@
       "CODIGO": "02-25-0010090422_MAUI_4Mbps_XXX"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "0",
@@ -92770,7 +92759,7 @@
       "CODIGO": "06-01-0010212260_ADID_4Mbps_14009886"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92779,7 +92768,7 @@
       "CODIGO": "06-01-0010193098_HOUSE_2Mbps_11037207"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92788,7 +92777,7 @@
       "CODIGO": "06-01-0010228723_WEPLAY_2Mbps_11530630"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92797,7 +92786,7 @@
       "CODIGO": "02-25-0010237457_ROYAL_40Mbps_11651994"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92806,7 +92795,7 @@
       "CODIGO": "06-01-0010436917_QUINCH_10Mbps_17515930"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92815,7 +92804,7 @@
       "CODIGO": "06-01-0010237987_PALET_2Mbps_10911491"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92824,7 +92813,7 @@
       "CODIGO": "06-01-0010220232_BLOCKS_2Mbps_11297379"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92833,7 +92822,7 @@
       "CODIGO": "06-01-0010214283_BELL_2Mbps_11293108"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92842,7 +92831,7 @@
       "CODIGO": "02-25-0010098536_FUNSPO_10Mbps_17413767"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92851,7 +92840,7 @@
       "CODIGO": "06-01-0010397904_Bresle_2Mbps_17056364"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92860,7 +92849,7 @@
       "CODIGO": "02-25-0010176375_BKING_15Mbps_10783269"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92869,7 +92858,7 @@
       "CODIGO": "06-01-0010354261_PILLIN_2Mbps_15056933"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92878,7 +92867,7 @@
       "CODIGO": "02-25-0010377008_SALCO1_10Mbps_16083147"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92887,7 +92876,7 @@
       "CODIGO": "06-01-0010232529_BUFFAL_2Mbps_11612990"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92896,7 +92885,7 @@
       "CODIGO": "02-25-0010377009_SALCO2_10Mbps_16083148"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92905,7 +92894,7 @@
       "CODIGO": "06-01-0010418153_TOMMYB_2Mbps_17438650"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92914,7 +92903,7 @@
       "CODIGO": "02-25-0010420312_PREUNI_2Mbps_17454280"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92923,7 +92912,7 @@
       "CODIGO": "02-25-0010259859_TOP_2Mbps_12182244"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92932,7 +92921,7 @@
       "CODIGO": "06-01-0010229601_MONARC_2Mbps_11563434"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92941,7 +92930,7 @@
       "CODIGO": "02-25-0010277916_BATA_20Mbps_12675463"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92950,7 +92939,7 @@
       "CODIGO": "06-01-0010250209_LEONIS_4Mbps_13737484"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92959,7 +92948,7 @@
       "CODIGO": "06-01-0010389145_OPV_10Mbps_16725111"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92968,7 +92957,7 @@
       "CODIGO": "06-01-0010410922_HOLLYC_10Mbps_17385415"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92977,7 +92966,7 @@
       "CODIGO": "02-25-0010226609_CAT_10Mbps_12038570"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92986,7 +92975,7 @@
       "CODIGO": "06-01-0010423794_MORA_50Mbps_17458400"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -92995,7 +92984,7 @@
       "CODIGO": "02-25-0010401347_TARRAG_10Mbps_17182702"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -93004,7 +92993,7 @@
       "CODIGO": "06-01-0010208139_FICCUS_2Mbps_11212749"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -93013,7 +93002,7 @@
       "CODIGO": "02-25-0010185566_KFC_10Mbps_12882531"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -93022,7 +93011,7 @@
       "CODIGO": "06-01-0010217490_WOLFF_2Mbps_11330178"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -93031,7 +93020,7 @@
       "CODIGO": "10-49-228578189_PICHARA_2Mbps_11330179"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -93040,7 +93029,7 @@
       "CODIGO": "06-01-0010224728_COFELY_2Mbps_11456509"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "1",
@@ -93049,7 +93038,7 @@
       "CODIGO": "02-25-0010178000_MAICAO_6Mbps_11456509"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93058,7 +93047,7 @@
       "CODIGO": "02-25-0010174426_STARBU_50Mbps_11584676"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93067,7 +93056,7 @@
       "CODIGO": "06-01-0010397618_ENERGY_40Mbps_16991165"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93076,7 +93065,7 @@
       "CODIGO": "02-25-0010413088_CHEVRO_10Mbps_17412091"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93085,7 +93074,7 @@
       "CODIGO": "06-01-0010297177_CHUCKY_10Mbps_13203223"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93094,7 +93083,7 @@
       "CODIGO": "02-25-0010364640_HYUNDAI_10Mbps_15508025"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93103,7 +93092,7 @@
       "CODIGO": "02-25-0010217152_POLAR_100Mbps_11339605"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93112,7 +93101,7 @@
       "CODIGO": "06-01-0010404980_CARLJR_10Mbps_17231623"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93121,7 +93110,7 @@
       "CODIGO": "02-25-0010205187_HAPPYL_10Mbps_11171564"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93130,7 +93119,7 @@
       "CODIGO": "06-01-0010205088_TUADUN_20Mbps_15043385"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93139,7 +93128,7 @@
       "CODIGO": "06-01-0010436910_TUALID_20Mbps_17515855"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93148,7 +93137,7 @@
       "CODIGO": "06-01-0010315607_DRSIM1_4Mbps_13949045"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93157,7 +93146,7 @@
       "CODIGO": "02-25-0010200267_LINE_2Mbps_11120947"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93166,7 +93155,7 @@
       "CODIGO": "06-01-0010222484_BEAUTY_10Mbps_11428863"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93175,7 +93164,7 @@
       "CODIGO": "02-25-0010382763_BABY_2Mbps_16406047"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93184,7 +93173,7 @@
       "CODIGO": "02-25-0010418253_ENTEL_30Mbps_17443886"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93193,7 +93182,7 @@
       "CODIGO": "02-25-0010418252_ENTEL_30Mbps_17443885"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93202,7 +93191,7 @@
       "CODIGO": "02-25-0010426988_SHOPDO_10Mbps_17473153"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93211,7 +93200,7 @@
       "CODIGO": "10-49-228578129_HAPPYL_VOZ_11607516"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93220,7 +93209,7 @@
       "CODIGO": "02-25-0010254083_COLUMB_10Mbps_12038570"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93229,7 +93218,7 @@
       "CODIGO": "06-01-0010231201_BARON_2Mbps_11613405"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93238,7 +93227,7 @@
       "CODIGO": "06-01-0010423831_AFEX_4Mbps_17480496"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93247,7 +93236,7 @@
       "CODIGO": "02-25-0010284345_WENDYS_10Mbps_11212749"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93256,7 +93245,7 @@
       "CODIGO": "06-01-0010267930_SUBWAY_2Mbps_12358868"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93265,7 +93254,7 @@
       "CODIGO": "06-01-0010230951_WADOS_2Mbps_11590443"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93274,7 +93263,7 @@
       "CODIGO": "02-25-0010226600_MCDONA_2Mbps_11486686"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93283,7 +93272,7 @@
       "CODIGO": "02-25-0010311505_MARUBE_100Mbps_13811424"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93292,7 +93281,7 @@
       "CODIGO": "DA_02-25-0010425296_WOM_300Mbps_10969415"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93301,7 +93290,7 @@
       "CODIGO": "06-01-0010379643_CINEPO_50Mbps_16226373"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93310,7 +93299,7 @@
       "CODIGO": "06-01-0010408204_SKECHE_50Mbps_17488377"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93319,7 +93308,7 @@
       "CODIGO": "10-49-228578006_HUELLAS_VOZ_11303359"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "2",
@@ -93328,7 +93317,7 @@
       "CODIGO": "06-01-0010425755_SMARTFIT_50Mbps_17465001"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93337,7 +93326,7 @@
       "CODIGO": "06-01-0010228879_SCHILL_2Mbps_11540593"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93346,7 +93335,7 @@
       "CODIGO": "06-01-0010214983_YAMAHA_4Mbps_11303151"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93355,7 +93344,7 @@
       "CODIGO": "06-01-0010234089_DERCO_100Mbps_11622429"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93364,7 +93353,7 @@
       "CODIGO": "02-25-0010418770_NISSAN_100Mbps_17448558"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93373,7 +93362,7 @@
       "CODIGO": "10-49-228578276_DERCO_VOZ_11395344"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93382,7 +93371,7 @@
       "CODIGO": "06-01-0010397367_MABEL_2Mbps_17028005"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93391,7 +93380,7 @@
       "CODIGO": "06-01-0010434654_FASTMECHANIC_4Mbps_17505887"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93400,7 +93389,7 @@
       "CODIGO": "06-01-0010384845_CLICKCOLLECT_2Mbps_16534185"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93409,7 +93398,7 @@
       "CODIGO": "02-25-0010386533_AUTOSUMMIT_20Mbps_16601264"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93418,7 +93407,7 @@
       "CODIGO": "DA_02-25-0010417456_KIA_100Mbps_solot17434049"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93427,7 +93416,7 @@
       "CODIGO": "DA_02-25-0010194929_PORTILLO_10Mbps_solot11049852"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93436,7 +93425,7 @@
       "CODIGO": "DA_02-25-0010438618_POMPEYO_100Mbps_solot17522993"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93445,7 +93434,7 @@
       "CODIGO": "DA_02-25-0010216461_KIA2_10Mbps_solot11322505"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93454,7 +93443,7 @@
       "CODIGO": "02-25-0010128948_BUFFET_4Mbps_17207896"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93463,7 +93452,7 @@
       "CODIGO": "02-25-0010195912_CIDEF_100Mbps_11066231"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93472,7 +93461,7 @@
       "CODIGO": "02-25-0010410962_KOVACS_20Mbps_"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93481,7 +93470,7 @@
       "CODIGO": "02-25-0010394119_FAMILYSHOP_10Mbps_16894645"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93490,7 +93479,7 @@
       "CODIGO": "06-01-0010251660_FAMILYSHOP_10Mbps_11929267"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93499,7 +93488,7 @@
       "CODIGO": "06-01-0010217555_DERCO_10Mbps_15950885"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93508,7 +93497,7 @@
       "CODIGO": "INT_06-01-0010440476_EMPORIO_10Mbps_solot"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93517,7 +93506,7 @@
       "CODIGO": "INT-06-01-0010443432_LEVISTRAUSS_Solot17548873"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93526,7 +93515,7 @@
       "CODIGO": "INT_06-01-0010412688_H&M_50Mbps_solot"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93535,7 +93524,7 @@
       "CODIGO": "DA_02-25-0010388551_FORCENTER_SOLOT17583946"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93544,7 +93533,7 @@
       "CODIGO": "DA_02-25-0010418769_SUBARU_Solot17448557"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93553,7 +93542,7 @@
       "CODIGO": "DA_02-25-0010259613_INTIME_Solot12179171"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93562,7 +93551,7 @@
       "CODIGO": "NGN_10-49-228578028_CHILEXPRESS_1Mbps_solot11563213"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93571,7 +93560,7 @@
       "CODIGO": "DA_02-25-0010226583_CHILEXPRESS_2Mbps_solot11486669"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93580,7 +93569,7 @@
       "CODIGO": "DA_02-25-0010251212_CRUZVERDE_Solot13343851"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93589,7 +93578,7 @@
       "CODIGO": "TLF_10-49-228578170_CRUZVERDE_Solot11302724"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93598,7 +93587,7 @@
       "CODIGO": "INT_06-01-0010435262_MRBACLAWA_Solot17547007"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93607,7 +93596,7 @@
       "CODIGO": "DA_02-25-0010222495_RIPLEY_10Mbps_solot11439080"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "3",
@@ -93616,7 +93605,7 @@
       "CODIGO": "INT_06-01-0010443951_Solot17528912_DA_02-25-0010436624_Solot17514747_DA_02-26-0010440311_Solot17528913_CLAROCHILE"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93625,7 +93614,7 @@
       "CODIGO": "INT_06-01-0010444011_NUEVOSDESARROLLOS_10Mbps_solot17551034"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93634,7 +93623,7 @@
       "CODIGO": "DA_15-02-0010101168_02-25-0010090200_02-26-0010358466_GTD_2Mbps_solot17274850"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93643,7 +93632,7 @@
       "CODIGO": "INT_06-01-0010444238_15-01-228982459_NDESAROLLOS_10Mbps_solot17551895"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93652,7 +93641,7 @@
       "CODIGO": "DA_02-25-0010226608_IMEDICA_100Mbps_solot11486694"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93661,7 +93650,7 @@
       "CODIGO": "DA_02-37-0010177754_BANCOESTADO"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93670,7 +93659,7 @@
       "CODIGO": "INT-06-01-0010404520_SANTANDER"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93679,7 +93668,7 @@
       "CODIGO": "INT_06-01-0010401404_SANTANDER"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93688,7 +93677,7 @@
       "CODIGO": "DA_02-25-0010371813_SANTANDER"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93697,7 +93686,7 @@
       "CODIGO": "DA_02-25-0010445773_MOVISTAR"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93706,7 +93695,7 @@
       "CODIGO": "INT_06-01-0010445981_Solot17561840_LASDOCAS"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93715,7 +93704,7 @@
       "CODIGO": "DA_02-25-0010206183_solot11181785"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93724,7 +93713,7 @@
       "CODIGO": "INT_06-01-0010449453_CURIFOR_Solot17574495"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93733,7 +93722,7 @@
       "CODIGO": "DA_02-25-0010206206_BECH_2Mbps_solot17576013"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93742,7 +93731,7 @@
       "CODIGO": "INT_06-01-0010452640_MIC_SOLOT17594068"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93751,7 +93740,7 @@
       "CODIGO": "INT_02-25-0010373801_REDBANK_Solot17586023"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93760,7 +93749,7 @@
       "CODIGO": "INT_02-25-0010262477_REDBANK_Solot16015846"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93769,7 +93758,7 @@
       "CODIGO": "INT_06-01-0010450840_PUMA_SOLOT17584011"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93778,7 +93767,7 @@
       "CODIGO": "DA_33-70-0010452986_ARDORADOS_Solot17589872"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93787,7 +93776,7 @@
       "CODIGO": "DA_33-70-0010452985_ARDORADOS_Solot17593264"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93796,7 +93785,7 @@
       "CODIGO": "INT_06-01-0010453649_DERMOTIENDA_SOLOT17598746"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93805,7 +93794,7 @@
       "CODIGO": "INT_06-01-0010453650_PLAZAOESTE_SOLOT17598747"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93814,7 +93803,7 @@
       "CODIGO": "INT_06-01-0010454858_COMERCILIZADORA17601170"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93823,7 +93812,7 @@
       "CODIGO": "06-01-0010456157_CENTRO ESTETICO LASER_10Mbps_17604117"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93832,7 +93821,7 @@
       "CODIGO": "DA_02-25-0010457088_GTD_Solot17607824"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "4",
@@ -93841,7 +93830,7 @@
       "CODIGO": "DA_02-25-0010449057_REG-CIVIL_solot17576108"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "7",
@@ -93850,7 +93839,7 @@
       "CODIGO": "DA_02-25-0010440559_CIRION_500Mbps_solot17530470"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "7",
@@ -93859,7 +93848,7 @@
       "CODIGO": "INT_06-01-0010457579_PLATANITOS_SOLOT17610579"
     },
     {
-      "OLT": "CLRMMPSOLT01 (Mall_Plaza_Sur)",
+      "OLT": "CLRMMPSOLT01  (Mall_Plaza_Sur)",
       "FRAME": "0",
       "SLOT": "1",
       "PORT": "7",
@@ -103185,60 +103174,60 @@
       "Local": "-",
       "Direccion": "AVDA PV USYA REGION DE ANTOFAGASTA CALAMA CHILE SN EDIF CORP  22°29'38.89\"S   68°50'4.36\"O",
       "Comuna": "ANTOFAGASTA | ANTOFAGASTA | R II",
-      "Hostname": "ACCIONA_USYA",
-      "Detalle_Dirección": "PV USYA",
+      "Hostname": "-",
+      "Detalle_Dirección": "-",
       "Ip_Gestion": "10.158.44.218",
-      "Lan": "192.168.1.1/24",
-      "Cliente": "ACCIONA ENERGIA CHILE S.P.A.",
-      "Proveedor": "STARLINK || KITP00329009"
+      "Lan": "",
+      "Cliente": "Acciona",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "34-71-0010434891",
       "Local": "-",
       "Direccion": "CALLE PV MALGARIDA REGION DE ATACAMA DIEGO DE ALMAGRO,CHILE SN EDIF CORP  26°16'9.63\"S   69°57'33.90",
       "Comuna": "VALLENAR | HUASCO | R III",
-      "Hostname": "ACCIONA_MALGARIDA",
-      "Detalle_Dirección": "PV MALGARIDA",
+      "Hostname": "-",
+      "Detalle_Dirección": "-",
       "Ip_Gestion": "10.158.44.185",
-      "Lan": "192.168.1.1/24",
-      "Cliente": "ACCIONA ENERGIA CHILE S.P.A.",
-      "Proveedor": "STARLINK || KITP00294040"
+      "Lan": "",
+      "Cliente": "Acciona",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "34-71-0010434890",
       "Local": "-",
-      "Direccion": "AVDA PE TOLPAN SUR REGION DE LA ARAUCANIA RENAICO CHILE .",
-      "Comuna": "RENAICO | MALLECO | R IX-",
-      "Hostname": "ACCIONA_PE_TOLPAN",
-      "Detalle_Dirección": "PE TOPAN SUR",
+      "Direccion": "-",
+      "Comuna": "-",
+      "Hostname": "-",
+      "Detalle_Dirección": "-",
       "Ip_Gestion": "10.158.44.208",
-      "Lan": "192.168.1.1/24",
-      "Cliente": "ACCIONA ENERGIA CHILE S.P.A.",
-      "Proveedor": "STARLINK || KITP00328989"
+      "Lan": "",
+      "Cliente": "Acciona",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "34-71-0010434892",
       "Local": "-",
-      "Direccion": "CALLE PV EL ROMERAL , REGION DE ATACAMA VALLENAR CHILE SN EDIF CORP  29° 6'49.56\"S   70°55'25.74\"O",
-      "Comuna": "VALLENAR | HUASCO | R III",
-      "Hostname": "ACCIONA_ELROMERO",
+      "Direccion": "-",
+      "Comuna": "-",
+      "Hostname": "-",
       "Detalle_Dirección": "-",
       "Ip_Gestion": "sin dato de IP gestión remota",
-      "Lan": "192.168.1.1/24",
-      "Cliente": "ACCIONA ENERGIA CHILE S.P.A.",
-      "Proveedor": "STARLINK || KITP00293982"
+      "Lan": "",
+      "Cliente": "Acciona",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "34-71-0010434893",
       "Local": "-",
-      "Direccion": "-AVDA PE SAN GABRIEL SUR REGION DE LA ARAUCANA RENAICO CHILE SN EDIF CORP  37°41'6.50\"S   72°29'13.67",
-      "Comuna": "RENAICO | MALLECO | R IX",
-      "Hostname": "ACCIONA_SAN_GABRIEL",
-      "Detalle_Dirección": "PE SAN GABRIEL SUR",
+      "Direccion": "-",
+      "Comuna": "-",
+      "Hostname": "-",
+      "Detalle_Dirección": "-",
       "Ip_Gestion": "10.158.44.207",
-      "Lan": "192.168.1.1/24",
-      "Cliente": "ACCIONA ENERGIA CHILE S.P.A.",
-      "Proveedor": "STARLINK || KITP00293977"
+      "Lan": "",
+      "Cliente": "Acciona",
+      "Proveedor": ""
     },
     {
       "Codigo_Servicio": "-",
@@ -106734,14 +106723,14 @@
     },
     {
       "Codigo_Servicio": "33-61-0010400816",
-      "Local": "-",
-      "Direccion": "AVDA AVENIDA MANUEL MONTT N?2222 LOCAL N?1A, NUNOA",
-      "Comuna": "",
+      "Local": "LOCAL N°1A",
+      "Direccion": "AVDA AVENIDA MANUEL MONTT N°2222",
+      "Comuna": "NUNOA | SANTIAGO | RM",
       "Hostname": "-",
       "Detalle_Dirección": "-",
       "Ip_Gestion": "10.158.36.65",
       "Lan": "-",
-      "Cliente": "Fagase_Dunkin",
+      "Cliente": "FAGASE S.A",
       "Proveedor": ""
     },
     {
@@ -107385,10 +107374,10 @@
       "Local": "Local 4",
       "Direccion": "CALLE TENDERINI 38",
       "Comuna": "SANTIAGO | SANTIAGO | RM",
-      "Hostname": "Tarragona_L4",
+      "Hostname": "",
       "Detalle_Dirección": "Paseo Tenderini",
       "Ip_Gestion": "10.156.29.73",
-      "Lan": "10.211.4.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107397,10 +107386,10 @@
       "Local": "-",
       "Direccion": "CALLE PASEO PHILLIPS 423",
       "Comuna": "SANTIAGO | SANTIAGO | RM",
-      "Hostname": "Tarragona-PolloStop_221_5",
+      "Hostname": "",
       "Detalle_Dirección": "Paseo Phillips",
       "Ip_Gestion": "10.156.58.190",
-      "Lan": "10.221.5.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107409,10 +107398,10 @@
       "Local": "",
       "Direccion": "CALLE MATIAS COUSIÑO 62",
       "Comuna": "SANTIAGO | SANTIAGO | RM",
-      "Hostname": "Tarragona_L7",
+      "Hostname": "",
       "Detalle_Dirección": "Matías Cousiño",
       "Ip_Gestion": "10.158.11.65",
-      "Lan": "10.221.7.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107433,10 +107422,10 @@
       "Local": "LOCAL 5",
       "Direccion": "AVDA AV. DIEGO PORTALES 1001",
       "Comuna": "PUERTO MONTT | LLANQUIHUE | R X",
-      "Hostname": "Tarragona_L9",
+      "Hostname": "",
       "Detalle_Dirección": "Terminal Puerto Montt",
       "Ip_Gestion": "10.158.11.66",
-      "Lan": "10.221.9.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107445,22 +107434,22 @@
       "Local": "LOCAL 2",
       "Direccion": "AVDA AV. LAS INDUSTRIAS 450",
       "Comuna": "PUERTO MONTT | LLANQUIHUE | R X",
-      "Hostname": "Tarragona_L107",
+      "Hostname": "",
       "Detalle_Dirección": "Paseo Rotonda",
       "Ip_Gestion": "10.158.11.67",
-      "Lan": "10.221.10.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
     {
       "Codigo_Servicio": "33-61-0010414830",
-      "Local": "Local 122",
+      "Local": "",
       "Direccion": "CALLE AV. VOLCAN PUNTIAGUDO 100 LOCAL 12 100  LOCAL12",
       "Comuna": "PUERTO MONTT | LLANQUIHUE | R X",
       "Hostname": "",
       "Detalle_Dirección": "Paseo Paloma",
       "Ip_Gestion": "10.156.69.252",
-      "Lan": "10.221.11.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107472,7 +107461,7 @@
       "Hostname": "",
       "Detalle_Dirección": "Portal El Belloto",
       "Ip_Gestion": "10.158.11.68",
-      "Lan": "10.211.13.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107670,13 +107659,13 @@
     },
     {
       "Codigo_Servicio": "33-61-0010410322",
-      "Local": "Local FC 520",
+      "Local": "",
       "Direccion": "AVDA AVENIDA JUAN SOLER MANFREDINI 41",
       "Comuna": "PUERTO MONTT | LLANQUIHUE | R X",
-      "Hostname": "Tarragona_L97",
-      "Detalle_Dirección": "Mall Paseo Costanera 2",
-      "Ip_Gestion": "-",
-      "Lan": "10.221.97.1/24",
+      "Hostname": "",
+      "Detalle_Dirección": "Paseo Costanera Pto. Montt",
+      "Ip_Gestion": "10.158.11.76",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107685,10 +107674,10 @@
       "Local": "LOCAL319",
       "Direccion": "AVDA URMENETA 580",
       "Comuna": "PUERTO MONTT | LLANQUIHUE | R X",
-      "Hostname": "Tarragona_L35",
+      "Hostname": "",
       "Detalle_Dirección": "Paseo del Mar Pto.Montt",
       "Ip_Gestion": "10.158.11.77",
-      "Lan": "10.211.35.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -107712,7 +107701,7 @@
       "Hostname": "",
       "Detalle_Dirección": "Mall Plaza Calama",
       "Ip_Gestion": "10.156.47.245",
-      "Lan": "10.211.37.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -108126,13 +108115,13 @@
     },
     {
       "Codigo_Servicio": "33-61-0010402861",
-      "Local": "Local 1164",
-      "Direccion": "AVDA CARLOS PRAT 0901",
+      "Local": "",
+      "Direccion": "AVDA CARLOS PRAT 0901  LOCAL1164",
       "Comuna": "CORONEL | CONCEPCION | R VIII",
-      "Hostname": "MCP-TARRAGONA_L80",
+      "Hostname": "",
       "Detalle_Dirección": "Arauco Coronel",
       "Ip_Gestion": "10.156.93.33",
-      "Lan": "10.211.80.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -108186,25 +108175,25 @@
     },
     {
       "Codigo_Servicio": "33-61-0010417765",
-      "Local": "LOCAL FC-306",
-      "Direccion": "CALLE PUENTE 689",
+      "Local": "",
+      "Direccion": "CALLE PUENTE 689 LOCAL FC-306 689  LOCAL306",
       "Comuna": "SANTIAGO | SANTIAGO | RM",
-      "Hostname": "Tarragona_L85",
+      "Hostname": "",
       "Detalle_Dirección": "Mall Vivo Centro",
       "Ip_Gestion": "10.156.93.192",
-      "Lan": "10.211.85.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
     {
       "Codigo_Servicio": "33-61-0010402852",
-      "Local": "Local FC 520",
-      "Direccion": "CALLE AV. ARGENTINA 540",
+      "Local": "",
+      "Direccion": "CALLE AV. ARGENTINA 540 LOCAL FC 520 540  LOCAL520",
       "Comuna": "VALPARAISO | VALPARAISO | R V",
-      "Hostname": "Tarragona_COD_87",
+      "Hostname": "",
       "Detalle_Dirección": "Mall Paseo Ross Valparaíso",
       "Ip_Gestion": "10.158.11.92",
-      "Lan": "10.211.87.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -108432,7 +108421,7 @@
       "Hostname": "",
       "Detalle_Dirección": "",
       "Ip_Gestion": "",
-      "Lan": "10.211.34.0/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -108486,25 +108475,25 @@
     },
     {
       "Codigo_Servicio": "33-61-0010402853",
-      "Local": "Local 1070",
-      "Direccion": "AVDA AV. ALESSANDRI 4085",
+      "Local": "",
+      "Direccion": "AVDA AV. ALESSANDRI 4085 LOCAL 1070 4085  LOCAL1070 ",
       "Comuna": "VINA DEL MAR | VALPARAISO | R V",
-      "Hostname": "Tarragona_L46",
-      "Detalle_Dirección": "Tottus Viña Santa Julia",
+      "Hostname": "",
+      "Detalle_Dirección": "",
       "Ip_Gestion": "",
-      "Lan": "10.211.46.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
     {
       "Codigo_Servicio": "33-61-0010444491",
-      "Local": "Local FC-09",
+      "Local": "",
       "Direccion": "CALLE 1 SUR 1537",
       "Comuna": "TALCA | TALCA | R VII",
-      "Hostname": "Tarragona_L109",
-      "Detalle_Dirección": "Portal Centro Talca",
-      "Ip_Gestion": "10.158.11.115",
-      "Lan": "10.211.109.1/24",
+      "Hostname": "",
+      "Detalle_Dirección": "",
+      "Ip_Gestion": "",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -108514,21 +108503,21 @@
       "Direccion": "AVDA VARELA 1524",
       "Comuna": "COQUIMBO | ELQUI | R IV",
       "Hostname": "",
-      "Detalle_Dirección": "Vivo Coquimbo",
+      "Detalle_Dirección": "",
       "Ip_Gestion": "",
-      "Lan": "10.211.110.1/24",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
     {
       "Codigo_Servicio": "33-61-0010445995",
       "Local": "",
-      "Direccion": "CALLE OHIGGINS 201",
+      "Direccion": "CALLE OHIGGINS",
       "Comuna": "CURICO | CURICO | R VII",
-      "Hostname": "Tarragona_L111",
-      "Detalle_Dirección": "Curico",
-      "Ip_Gestion": "10.158.11.117",
-      "Lan": "10.211.111.1/24",
+      "Hostname": "",
+      "Detalle_Dirección": "",
+      "Ip_Gestion": "",
+      "Lan": "",
       "Cliente": "Tarragona",
       "Proveedor": ""
     },
@@ -109531,7 +109520,7 @@
     {
       "Codigo_Servicio": "33-61-0010425658",
       "Local": "Block FCDEPTO4004",
-      "Direccion": "AVDA LIB.BDO.OHIGGINS 3470 ",
+      "Direccion": "AVDA LIB.BDO.OHIGGINS 3470",
       "Comuna": "ESTACION CENTRAL | SANTIAGO | RM",
       "Hostname": "",
       "Detalle_Dirección": "",
@@ -109701,10 +109690,10 @@
       "Local": "Las Palmas",
       "Direccion": "AVDA 11 DE SEPTIEMBRE 2226",
       "Comuna": "PROVIDENCIA | SANTIAGO | RM",
-      "Hostname": "KENTUCKY_LAS_PALMAS",
+      "Hostname": "",
       "Detalle_Dirección": "",
       "Ip_Gestion": "10.156.16.232",
-      "Lan": "192.168.7.1/24",
+      "Lan": "",
       "Cliente": "KFC",
       "Proveedor": ""
     },
@@ -110978,54 +110967,6 @@
       "Ip_Gestion": "10.158.37.233",
       "Lan": "",
       "Cliente": "All Nutricion",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "33-61-0010446601",
-      "Local": "",
-      "Direccion": "AVDA PAJARITOS 3000",
-      "Comuna": "MAIPU | SANTIAGO | RM",
-      "Hostname": "",
-      "Detalle_Dirección": "Pajaritos",
-      "Ip_Gestion": "",
-      "Lan": "10.211.107.1/24",
-      "Cliente": "Tarragona",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "33-61-0010402840",
-      "Local": "Local 1059",
-      "Direccion": "AVDA COLLIN 0635",
-      "Comuna": "TALCA | TALCA | R VII",
-      "Hostname": "",
-      "Detalle_Dirección": "Talca Sur",
-      "Ip_Gestion": "",
-      "Lan": "10.211.102.1/24",
-      "Cliente": "Tarragona",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "33-61-0010418017",
-      "Local": "LOCAL 3008",
-      "Direccion": "AVDA AV. LOS PAJARITOS 1790",
-      "Comuna": "MAIPU | SANTIAGO | RM",
-      "Hostname": "",
-      "Detalle_Dirección": "Lider Plaza Maipu",
-      "Ip_Gestion": "",
-      "Lan": "10.221.8.1/24",
-      "Cliente": "",
-      "Proveedor": ""
-    },
-    {
-      "Codigo_Servicio": "33-61-0010429871",
-      "Local": "Local 1058",
-      "Direccion": "AV. AMERICO VESPUCIO 3300 LOCAL 1058",
-      "Comuna": "PENALOLEN | SANTIAGO | RM",
-      "Hostname": "KFC_PASEOQUILIN",
-      "Detalle_Dirección": "",
-      "Ip_Gestion": "10.156.21.203",
-      "Lan": "192.168.40.1/24",
-      "Cliente": "KENTUCKY FOODS CHILE S.A.",
       "Proveedor": ""
     }
   ],

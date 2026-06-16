@@ -603,604 +603,604 @@
   ],
   "1780117166219": [
     {
-      "avg": 3.75,
+      "avg": 3.665,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:16:05 a. m."
-    },
-    {
-      "avg": 3.605,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:17:06 a. m."
-    },
-    {
-      "avg": 3.694,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:18:07 a. m."
-    },
-    {
-      "avg": 3.743,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:19:08 a. m."
-    },
-    {
-      "avg": 3.681,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:20:09 a. m."
-    },
-    {
-      "avg": 3.788,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:21:09 a. m."
-    },
-    {
-      "avg": 3.708,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:22:09 a. m."
-    },
-    {
-      "avg": 3.716,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:23:09 a. m."
-    },
-    {
-      "avg": 6.761,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:24:09 a. m."
-    },
-    {
-      "avg": 3.661,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:25:09 a. m."
-    },
-    {
-      "avg": 3.883,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:26:09 a. m."
-    },
-    {
-      "avg": 7.871,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:27:09 a. m."
-    },
-    {
-      "avg": 3.672,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:28:09 a. m."
-    },
-    {
-      "avg": 3.709,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:29:09 a. m."
-    },
-    {
-      "avg": 3.847,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:30:09 a. m."
-    },
-    {
-      "avg": 3.685,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:31:09 a. m."
-    },
-    {
-      "avg": 3.669,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:32:09 a. m."
-    },
-    {
-      "avg": 3.647,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:33:09 a. m."
-    },
-    {
-      "avg": 3.719,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:34:09 a. m."
-    },
-    {
-      "avg": 3.786,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:35:09 a. m."
+      "hora": "3:42:09 p. m."
     },
     {
       "avg": 3.612,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:36:09 a. m."
+      "hora": "3:43:09 p. m."
     },
     {
-      "avg": 3.626,
+      "avg": 3.908,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:37:09 a. m."
+      "hora": "3:43:18 p. m."
     },
     {
-      "avg": 3.633,
+      "avg": 3.622,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:38:09 a. m."
-    },
-    {
-      "avg": 3.614,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:39:09 a. m."
-    },
-    {
-      "avg": 3.761,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:40:09 a. m."
-    },
-    {
-      "avg": 3.603,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:41:09 a. m."
-    },
-    {
-      "avg": 3.602,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:42:09 a. m."
-    },
-    {
-      "avg": 3.602,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:43:09 a. m."
-    },
-    {
-      "avg": 3.575,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:44:09 a. m."
-    },
-    {
-      "avg": 3.739,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:45:09 a. m."
-    },
-    {
-      "avg": 3.603,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:46:09 a. m."
-    },
-    {
-      "avg": 3.634,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:47:09 a. m."
-    },
-    {
-      "avg": 3.611,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:48:09 a. m."
-    },
-    {
-      "avg": 3.648,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:48:33 a. m."
-    },
-    {
-      "avg": 3.743,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:48:48 a. m."
-    },
-    {
-      "avg": 3.862,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:49:18 a. m."
-    },
-    {
-      "avg": 3.586,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:50:09 a. m."
-    },
-    {
-      "avg": 3.611,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:51:09 a. m."
-    },
-    {
-      "avg": 3.616,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:52:09 a. m."
-    },
-    {
-      "avg": 3.653,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:53:09 a. m."
-    },
-    {
-      "avg": 3.642,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:54:09 a. m."
-    },
-    {
-      "avg": 3.638,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:54:59 a. m."
-    },
-    {
-      "avg": 3.604,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:55:30 a. m."
-    },
-    {
-      "avg": 3.616,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:56:00 a. m."
-    },
-    {
-      "avg": 3.822,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "10:56:30 a. m."
+      "hora": "3:43:49 p. m."
     },
     {
       "avg": 3.605,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:56:59 a. m."
+      "hora": "3:44:19 p. m."
     },
     {
-      "avg": 4.071,
+      "avg": 3.632,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:57:30 a. m."
+      "hora": "3:45:09 p. m."
     },
     {
-      "avg": 3.609,
+      "avg": 3.652,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:58:00 a. m."
+      "hora": "3:46:09 p. m."
     },
     {
-      "avg": 3.661,
+      "avg": 3.599,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:58:30 a. m."
+      "hora": "3:47:03 p. m."
     },
     {
-      "avg": 3.609,
+      "avg": 3.618,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:59:09 a. m."
+      "hora": "3:47:19 p. m."
     },
     {
-      "avg": 3.814,
+      "avg": 3.585,
       "loss": 0,
       "estado": "verde",
-      "hora": "10:59:59 a. m."
+      "hora": "3:47:49 p. m."
     },
     {
-      "avg": 3.631,
+      "avg": 3.779,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:00:29 a. m."
+      "hora": "3:48:50 p. m."
     },
     {
-      "avg": 3.645,
+      "avg": 3.84,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:01:00 a. m."
-    },
-    {
-      "avg": 3.736,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:01:30 a. m."
-    },
-    {
-      "avg": 3.639,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:02:00 a. m."
-    },
-    {
-      "avg": 4.217,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:03:01 a. m."
-    },
-    {
-      "avg": 3.674,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:03:44 a. m."
-    },
-    {
-      "avg": 3.65,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:04:15 a. m."
-    },
-    {
-      "avg": 3.648,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:04:44 a. m."
-    },
-    {
-      "avg": 4.796,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:05:14 a. m."
-    },
-    {
-      "avg": 3.663,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:05:44 a. m."
-    },
-    {
-      "avg": 3.66,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:06:14 a. m."
-    },
-    {
-      "avg": 3.643,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:06:45 a. m."
-    },
-    {
-      "avg": 3.749,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:07:15 a. m."
-    },
-    {
-      "avg": 3.665,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:07:44 a. m."
-    },
-    {
-      "avg": 3.678,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:08:14 a. m."
-    },
-    {
-      "avg": 3.631,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:08:44 a. m."
-    },
-    {
-      "avg": 3.637,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:09:14 a. m."
-    },
-    {
-      "avg": 3.748,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:09:44 a. m."
-    },
-    {
-      "avg": 3.655,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:10:14 a. m."
-    },
-    {
-      "avg": 3.714,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:10:44 a. m."
-    },
-    {
-      "avg": 3.605,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:11:15 a. m."
-    },
-    {
-      "avg": 3.635,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:11:45 a. m."
-    },
-    {
-      "avg": 3.709,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:12:15 a. m."
-    },
-    {
-      "avg": 3.8,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:13:09 a. m."
-    },
-    {
-      "avg": 3.878,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:14:09 a. m."
-    },
-    {
-      "avg": 3.8,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:14:18 a. m."
-    },
-    {
-      "avg": 3.664,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:14:49 a. m."
-    },
-    {
-      "avg": 3.678,
-      "loss": 0,
-      "estado": "verde",
-      "hora": "11:15:19 a. m."
+      "hora": "3:49:51 p. m."
     },
     {
       "avg": 3.679,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:15:49 a. m."
+      "hora": "3:50:52 p. m."
     },
     {
-      "avg": 3.615,
+      "avg": 3.684,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:16:04 a. m."
+      "hora": "3:51:53 p. m."
     },
     {
-      "avg": 3.663,
+      "avg": 3.664,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:16:34 a. m."
+      "hora": "3:52:54 p. m."
     },
     {
-      "avg": 3.696,
+      "avg": 3.642,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:17:05 a. m."
+      "hora": "3:53:55 p. m."
     },
     {
-      "avg": 3.576,
+      "avg": 3.627,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:17:35 a. m."
+      "hora": "3:54:56 p. m."
     },
     {
-      "avg": 3.657,
+      "avg": 3.866,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:18:03 a. m."
+      "hora": "3:55:57 p. m."
     },
     {
-      "avg": 3.681,
+      "avg": 3.654,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:18:33 a. m."
+      "hora": "3:56:18 p. m."
     },
     {
-      "avg": 3.685,
+      "avg": 3.642,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:19:04 a. m."
+      "hora": "3:56:48 p. m."
     },
     {
-      "avg": 3.725,
+      "avg": 3.635,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:19:34 a. m."
+      "hora": "3:57:18 p. m."
     },
     {
-      "avg": 3.621,
+      "avg": 3.66,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:20:04 a. m."
+      "hora": "3:57:48 p. m."
     },
     {
-      "avg": 3.625,
+      "avg": 3.593,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:20:34 a. m."
+      "hora": "3:58:18 p. m."
     },
     {
-      "avg": 3.791,
+      "avg": 3.695,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:21:04 a. m."
+      "hora": "3:58:49 p. m."
     },
     {
-      "avg": 3.628,
+      "avg": 3.688,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:21:33 a. m."
+      "hora": "3:59:19 p. m."
     },
     {
-      "avg": 3.621,
+      "avg": 3.777,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:22:02 a. m."
+      "hora": "3:59:48 p. m."
     },
     {
-      "avg": 3.827,
+      "avg": 3.665,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:22:33 a. m."
+      "hora": "4:00:18 p. m."
+    },
+    {
+      "avg": 3.684,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "4:00:49 p. m."
     },
     {
       "avg": 3.637,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:23:03 a. m."
+      "hora": "4:01:19 p. m."
+    },
+    {
+      "avg": 7.003,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "4:02:09 p. m."
+    },
+    {
+      "avg": 3.66,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "4:03:09 p. m."
+    },
+    {
+      "avg": 3.633,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "4:04:09 p. m."
     },
     {
       "avg": 3.631,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:23:33 a. m."
+      "hora": "4:05:10 p. m."
     },
     {
-      "avg": 3.553,
+      "avg": 3.617,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:24:03 a. m."
+      "hora": "4:06:09 p. m."
     },
     {
-      "avg": 3.701,
+      "avg": 3.823,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:24:33 a. m."
+      "hora": "11:20:17 p. m."
     },
     {
-      "avg": 3.643,
+      "avg": 3.756,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:25:03 a. m."
+      "hora": "11:20:47 p. m."
     },
     {
-      "avg": 3.621,
+      "avg": 3.682,
       "loss": 0,
       "estado": "verde",
-      "hora": "11:26:04 a. m."
+      "hora": "11:21:18 p. m."
+    },
+    {
+      "avg": 3.794,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:21:48 p. m."
+    },
+    {
+      "avg": 3.66,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:22:18 p. m."
+    },
+    {
+      "avg": 3.737,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:22:48 p. m."
+    },
+    {
+      "avg": 3.74,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:23:18 p. m."
+    },
+    {
+      "avg": 3.691,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:23:48 p. m."
+    },
+    {
+      "avg": 3.773,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:24:49 p. m."
+    },
+    {
+      "avg": 3.782,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:25:50 p. m."
+    },
+    {
+      "avg": 3.713,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:26:51 p. m."
+    },
+    {
+      "avg": 3.792,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:27:52 p. m."
+    },
+    {
+      "avg": 3.762,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:28:53 p. m."
+    },
+    {
+      "avg": 3.766,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:29:54 p. m."
+    },
+    {
+      "avg": 3.757,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:30:55 p. m."
+    },
+    {
+      "avg": 3.752,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:31:56 p. m."
+    },
+    {
+      "avg": 3.687,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:32:57 p. m."
+    },
+    {
+      "avg": 3.751,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:33:58 p. m."
+    },
+    {
+      "avg": 3.697,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:34:59 p. m."
+    },
+    {
+      "avg": 3.856,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:36:00 p. m."
+    },
+    {
+      "avg": 3.745,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:37:01 p. m."
+    },
+    {
+      "avg": 3.698,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:38:02 p. m."
+    },
+    {
+      "avg": 3.836,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:39:03 p. m."
+    },
+    {
+      "avg": 3.759,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:40:04 p. m."
+    },
+    {
+      "avg": 3.794,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:40:49 p. m."
+    },
+    {
+      "avg": 3.737,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "11:41:19 p. m."
+    },
+    {
+      "avg": 3.733,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:47:46 p. m."
+    },
+    {
+      "avg": 3.967,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:48:16 p. m."
+    },
+    {
+      "avg": 3.813,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:48:46 p. m."
+    },
+    {
+      "avg": 3.782,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:49:17 p. m."
+    },
+    {
+      "avg": 3.749,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:49:47 p. m."
+    },
+    {
+      "avg": 3.778,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:50:16 p. m."
+    },
+    {
+      "avg": 3.742,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:50:46 p. m."
+    },
+    {
+      "avg": 3.767,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:51:41 p. m."
+    },
+    {
+      "avg": 3.767,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:51:46 p. m."
+    },
+    {
+      "avg": 3.746,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:52:16 p. m."
+    },
+    {
+      "avg": 3.868,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:52:46 p. m."
+    },
+    {
+      "avg": 3.772,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:53:47 p. m."
+    },
+    {
+      "avg": 3.787,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:54:49 p. m."
+    },
+    {
+      "avg": 3.73,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:55:50 p. m."
+    },
+    {
+      "avg": 3.758,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:56:51 p. m."
+    },
+    {
+      "avg": 3.788,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:57:52 p. m."
+    },
+    {
+      "avg": 3.729,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:58:52 p. m."
+    },
+    {
+      "avg": 3.71,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:59:54 p. m."
+    },
+    {
+      "avg": 3.709,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:00:55 p. m."
+    },
+    {
+      "avg": 3.802,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:01:10 p. m."
+    },
+    {
+      "avg": 3.787,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:01:40 p. m."
+    },
+    {
+      "avg": 3.836,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:02:10 p. m."
+    },
+    {
+      "avg": 3.794,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:02:41 p. m."
+    },
+    {
+      "avg": 3.787,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:03:10 p. m."
+    },
+    {
+      "avg": 3.76,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:03:40 p. m."
+    },
+    {
+      "avg": 3.769,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:04:10 p. m."
+    },
+    {
+      "avg": 3.897,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:05:08 p. m."
+    },
+    {
+      "avg": 8.643,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:06:09 p. m."
+    },
+    {
+      "avg": 3.726,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:07:05 p. m."
+    },
+    {
+      "avg": 3.724,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:07:35 p. m."
+    },
+    {
+      "avg": 3.768,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:08:05 p. m."
+    },
+    {
+      "avg": 3.812,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:08:35 p. m."
+    },
+    {
+      "avg": 3.76,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:09:05 p. m."
+    },
+    {
+      "avg": 3.778,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:09:35 p. m."
+    },
+    {
+      "avg": 3.777,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:10:05 p. m."
+    },
+    {
+      "avg": 3.77,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:10:35 p. m."
+    },
+    {
+      "avg": 3.735,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "9:11:05 p. m."
+    },
+    {
+      "avg": 10.655,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:34:46 a. m."
+    },
+    {
+      "avg": 3.647,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:35:16 a. m."
+    },
+    {
+      "avg": 3.746,
+      "loss": 0,
+      "estado": "verde",
+      "hora": "8:35:47 a. m."
     }
   ],
   "1780972545895": [
