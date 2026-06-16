@@ -224,6 +224,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
     <div class="nav-brand">
       <div class="logo-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
       <span>NetQuery</span>
+      <span style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);background:var(--bg3);padding:2px 6px;border-radius:4px;margin-left:4px">v3.2</span>
     </div>
     <div class="nav-tabs" id="nav-tabs">
       <button class="nav-tab active" onclick="showPage('consulta',this)">Consulta</button>
@@ -574,14 +575,21 @@ let esmax_charts={},esmax_monitoreando=false,esmax_interval=null,esmax_historico
 let ipdbCols=[],lastIPDB=null,editIPDB=false,allIPDB=[];
 
 // AUTH──
+let loginIntentos = 0;
+const LOGIN_MAX_INTENTOS = 5;
 async function doLogin(){
   const username=document.getElementById('login-user').value.trim();
   const password=document.getElementById('login-pass').value;
   const errEl=document.getElementById('login-error');
   errEl.style.display='none';
   if(!username||!password){showAlert(errEl,'Complete todos los campos','error');return;}
+  if(loginIntentos >= LOGIN_MAX_INTENTOS){
+    showAlert(errEl,'Demasiados intentos fallidos. Recargue la página para intentar nuevamente.','error');
+    return;
+  }
   const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})}).then(r=>r.json());
-  if(!r.success){showAlert(errEl,r.message,'error');return;}
+  if(!r.success){loginIntentos++;showAlert(errEl,r.message+' (intento '+loginIntentos+'/'+LOGIN_MAX_INTENTOS+')','error');return;}
+  loginIntentos=0;
   currentUser=r.user;
   if(currentUser.mustChangePassword){document.getElementById('login-screen').style.display='none';document.getElementById('change-pass-screen').style.display='flex';}
   else initApp();
@@ -748,7 +756,12 @@ async function doSearch(){
   let html='';
   Object.entries(r.data).forEach(([sheet,rows])=>{
     const cleanSheet = sheet.replace('BD_','');
-    html+='<div style="margin-bottom:8px;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px">'+escHtml(cleanSheet)+'</div>';
+    const sheetColors = {
+      'Servicios':'#3b82f6','Clientes_OLT':'#10b981','Intralot':'#f59e0b',
+      'Loteria':'#8b5cf6','Equipos':'#06b6d4','Sdwan':'#ec4899','Ipo':'#f97316'
+    };
+    const sheetColor = sheetColors[cleanSheet] || 'var(--muted)';
+    html+='<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:'+sheetColor+';display:inline-block"></span><span style="font-size:12px;font-weight:500;color:'+sheetColor+';text-transform:uppercase;letter-spacing:1px">'+escHtml(cleanSheet)+'</span></div>';
     rows.forEach((row,idx)=>{
       const MONO=['Codigo','IP','Ip','Wan','Vrf','OLT','FRAME','SLOT','PORT'];
       const fields=Object.keys(row).map(k=>{
@@ -903,6 +916,8 @@ async function guardarServicio(){
   });
   const codigo = data.Codigo_Servicio||'';
   if(!codigo){showAlert(errEl,'El campo Codigo_Servicio es obligatorio','error');return;}
+  if(data.Ip_Gestion && !validarIP(data.Ip_Gestion)){showAlert(errEl,'IP Gestión no tiene formato válido (ej: 192.168.1.1 o https://...)','error');return;}
+  if(data.Ip_Admin_Switch && !validarIP(data.Ip_Admin_Switch)){showAlert(errEl,'Ip_Admin_Switch no tiene formato válido','error');return;}
   let r;
   const sheet = window._servicioSheet || 'BD_Servicios';
   if(window._modalEditMode){
@@ -1395,6 +1410,12 @@ function buscarIpPorNodo(nodo){
   const n = nodo.trim().toUpperCase();
   const eq = equiposData.find(e=>(e.Swtich||'').toUpperCase()===n);
   return eq ? (eq.Ip_Administracion||'') : '';
+}
+function validarIP(ip){
+  if(!ip) return true; // vacío es válido
+  const ipv4 = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/;
+  const url = /^https?:\/\/.+/;
+  return ipv4.test(ip) || url.test(ip);
 }
 function onNodoInput(inputEl){
   const ip = buscarIpPorNodo(inputEl.value);
