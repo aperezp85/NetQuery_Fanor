@@ -619,6 +619,7 @@ function initApp(){
   cargarEquipos();
   cargarDatosSdwan();
   cargarDatosFw();
+  if(window._startSessionTimer) window._startSessionTimer();
   setTimeout(()=>{
     cargarSitiosEsmax().then(()=>{
       if(!esmax_monitoreando){
@@ -1400,6 +1401,72 @@ function onNodoInput(inputEl){
   const ipEl = document.getElementById('field-srv-Ip_Admin_Switch');
   if(ipEl&&ip){ ipEl.value=ip; ipEl.style.borderColor='var(--success)'; setTimeout(()=>ipEl.style.borderColor='',2000); }
 }
+
+// ── CONTROL DE SESIÓN POR INACTIVIDAD ──
+(function(){
+  const INACTIVIDAD_AVISO = 15 * 60 * 1000;  // 15 min
+  const INACTIVIDAD_CIERRE = 17 * 60 * 1000; // 17 min
+  let timerAviso, timerCierre, avisando = false;
+
+  // Modal de aviso
+  const overlay = document.createElement('div');
+  overlay.id = 'session-overlay';
+  overlay.style = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:2000;align-items:center;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid rgba(245,158,11,0.4);border-radius:16px;padding:32px;width:400px;max-width:95vw;text-align:center">
+      <div style="font-size:36px;margin-bottom:12px">⏰</div>
+      <div style="font-size:18px;font-weight:600;margin-bottom:8px">Sesión por expirar</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:24px">Tu sesión cerrará por inactividad en <strong id="session-countdown" style="color:#fcd34d">2:00</strong></div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onclick="extenderSesion()" style="padding:10px 24px;border-radius:8px;background:var(--accent);color:white;border:none;cursor:pointer;font-size:14px;font-family:inherit">Continuar sesión</button>
+        <button onclick="doLogout()" style="padding:10px 24px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:14px;font-family:inherit">Cerrar sesión</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let countdownInterval;
+
+  function mostrarAviso(){
+    avisando = true;
+    overlay.style.display = 'flex';
+    let segundos = 120;
+    const el = document.getElementById('session-countdown');
+    countdownInterval = setInterval(()=>{
+      segundos--;
+      const m = Math.floor(segundos/60);
+      const s = segundos%60;
+      if(el) el.textContent = m+':'+(s<10?'0':'')+s;
+      if(segundos <= 0){ clearInterval(countdownInterval); doLogout(); }
+    }, 1000);
+  }
+
+  window.extenderSesion = function(){
+    overlay.style.display = 'none';
+    clearInterval(countdownInterval);
+    avisando = false;
+    resetTimers();
+    // Ping al servidor para mantener sesión viva
+    fetch('/api/me').catch(()=>{});
+  };
+
+  function resetTimers(){
+    clearTimeout(timerAviso);
+    clearTimeout(timerCierre);
+    if(!currentUser) return;
+    timerAviso = setTimeout(mostrarAviso, INACTIVIDAD_AVISO);
+    timerCierre = setTimeout(()=>{ if(!avisando) doLogout(); }, INACTIVIDAD_CIERRE);
+  }
+
+  // Detectar actividad del usuario
+  ['click','keydown','mousemove','scroll','touchstart'].forEach(ev=>{
+    document.addEventListener(ev, ()=>{ if(!avisando) resetTimers(); }, {passive:true});
+  });
+
+  // Iniciar timers cuando el usuario hace login
+  const _initApp = window.initApp;
+  // Se llamará desde initApp al final
+  window._startSessionTimer = resetTimers;
+})();
 </script>
 
 <!-- MODAL CONFIRMACION -->
