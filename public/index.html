@@ -467,10 +467,11 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             <button class="filter-btn" onclick="filtrarUsuarios('inactivo',this)">Inactivos</button>
           </div>
         </div>
+        <button class="btn btn-red" id="btn-eliminar-masivo" onclick="confirmarEliminacionMasiva()" style="display:none">Eliminar seleccionados</button>
         <button class="btn btn-blue" onclick="openModalUser()">+ Nuevo usuario</button>
       </div>
       <div class="table-wrap">
-        <table><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Última actividad</th><th>Acciones</th></tr></thead>
+        <table><thead><tr><th style="width:36px"><input type="checkbox" id="chk-todos" onchange="toggleSeleccionTodos(this)" style="width:auto"></th><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Última actividad</th><th>Acciones</th></tr></thead>
         <tbody id="users-tbody"></tbody></table>
       </div>
     </div>
@@ -539,6 +540,28 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
     <div class="btn-row">
       <button class="btn-cancel" onclick="closeModal('modal-user')">Cancelar</button>
       <button class="btn-save" onclick="saveUser()">Guardar usuario</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-user-edit">
+  <div class="modal">
+    <div class="modal-title">Editar usuario</div>
+    <div class="form-row">
+      <div class="field"><label>Nombre completo</label><input type="text" id="ue-nombre" placeholder="Juan Perez"></div>
+      <div class="field"><label>Usuario</label><input type="text" id="ue-username" placeholder="jperez" disabled style="opacity:0.6;cursor:not-allowed"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Rol</label>
+        <select id="ue-role">
+          <option value="consulta">Consulta (solo lectura)</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+    </div>
+    <div id="modal-user-edit-error" class="alert error" style="margin-top:12px"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-user-edit')">Cancelar</button>
+      <button class="btn-save" onclick="guardarEdicionUsuario()">Guardar cambios</button>
     </div>
   </div>
 </div>
@@ -753,8 +776,16 @@ async function doSearch(){
   lastResult=null;
   const r=await fetch('/api/consulta/'+encodeURIComponent(q)).then(r=>r.json());
   if(!r.found){container.innerHTML='<div class="not-found"><p>No se encontro el codigo <strong style="color:var(--text);font-family:Space Mono,monospace">'+escHtml(q)+'</strong></p></div>';return;}
+  // Fusionar BD_Clientes_OLT en BD_Servicios si comparten CODIGO
+  const oltRows = (r.data['BD_Clientes_OLT']||[]);
+  const oltMap = {};
+  oltRows.forEach(row=>{ const k=String(row.CODIGO||'').trim().toUpperCase(); if(k) oltMap[k]=row; });
+  const sheetsToSkip = new Set();
+  if(oltRows.length && r.data['BD_Servicios']) sheetsToSkip.add('BD_Clientes_OLT');
+
   let html='';
   Object.entries(r.data).forEach(([sheet,rows])=>{
+    if(sheetsToSkip.has(sheet)) return;
     const cleanSheet = sheet.replace('BD_','');
     const sheetColors = {
       'Servicios':'#3b82f6','Clientes_OLT':'#10b981','Intralot':'#f59e0b',
@@ -764,12 +795,23 @@ async function doSearch(){
     html+='<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:'+sheetColor+';display:inline-block"></span><span style="font-size:12px;font-weight:500;color:'+sheetColor+';text-transform:uppercase;letter-spacing:1px">'+escHtml(cleanSheet)+'</span></div>';
     rows.forEach((row,idx)=>{
       const MONO=['Codigo','IP','Ip','Wan','Vrf','OLT','FRAME','SLOT','PORT'];
-      const fields=Object.keys(row).map(k=>{
+      const codigoCS=String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||'');
+      // Buscar OLT coincidente
+      const oltMatch = sheet==='BD_Servicios' ? oltMap[codigoCS.trim().toUpperCase()] : null;
+      const oltExcluir = oltMatch ? new Set(['Puerta','Ip_Admin_Switch','Proveedor']) : new Set();
+      let fields=Object.keys(row).filter(k=>!oltExcluir.has(k)).map(k=>{
         const val=row[k]!==undefined&&row[k]!==''?row[k]:null;
         const isMono=MONO.some(m=>k.toLowerCase().includes(m.toLowerCase()));
         return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
       }).join('');
-      const codigoCS=String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||'');
+      // Si hay OLT coincidente, agregar separador y campos FRAME/SLOT/PORT/ONU ID
+      if(oltMatch){
+        const oltFields = ['FRAME','SLOT','PORT','ONU ID'].map(k=>{
+          const val=oltMatch[k]!==undefined&&oltMatch[k]!==''?oltMatch[k]:null;
+          return '<div class="result-field"><div class="rf-label" style="color:#10b981">'+escHtml(k)+'</div><div class="rf-value mono">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
+        }).join('');
+        fields += '<div style="grid-column:1/-1;border-top:0.5px solid #10b981;margin:8px 0 4px;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:10px;color:#10b981;text-transform:uppercase;letter-spacing:1px">OLT</span></div>'+oltFields;
+      }
       const rowId='card-'+sheet+'-'+idx;
       html+='<div class="result-card" id="'+rowId+'" data-row="'+escHtml(JSON.stringify(row))+'" data-sheet="'+escHtml(sheet)+'" style="margin-bottom:16px;cursor:pointer;border:1px solid var(--border);transition:border-color 0.2s" onclick="seleccionarCard(this)"><div class="result-header"><div class="result-code">'+escHtml(codigoCS)+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
     });
@@ -845,9 +887,10 @@ async function openModalAgregar(){
   }catch(e){}
   if(!cols.length) cols = ['Codigo_Servicio','Cliente','Direccion','Comuna','Ip_Gestion','Vrf','Wan','Nodo','Puerta','Ip_Admin_Switch'];
   window._servicioCols = cols;
+  const oltHtml = '<div id="olt-section" style="display:none;margin-top:14px;border:0.5px solid #10b981;border-radius:8px;padding:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:11px;font-weight:500;color:#10b981;text-transform:uppercase;letter-spacing:1px">Datos OLT — BD_Clientes_OLT</span><span style="font-size:11px;color:var(--muted);margin-left:4px">— opcional</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>OLT</label><input type="text" id="olt-OLT" placeholder="CLRMMVEOLT01 (...)"></div><div class="field"><label>FRAME</label><input type="text" id="olt-FRAME" placeholder="0"></div><div class="field"><label>SLOT</label><input type="text" id="olt-SLOT" placeholder="1"></div><div class="field"><label>PORT</label><input type="text" id="olt-PORT" placeholder="11"></div><div class="field"><label>ONU ID</label><input type="text" id="olt-ONU_ID" placeholder="3"></div></div></div>';
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' placeholder="'+escHtml(c)+'"></div>'
-  ).join('');
+  ).join('') + oltHtml;
   document.getElementById('modal-registro').classList.add('open');
   window._modalEditMode=false;
   document.getElementById('modal-registro-save-btn').onclick=guardarServicio;
@@ -867,9 +910,16 @@ async function openModalEditar(){
   const cols = Object.keys(lastResult).filter(c=>c!=='_sheet');
   window._servicioCols = cols;
   window._servicioSheet = lastSheet || 'BD_Servicios';
+  const oltHtmlE = '<div id="olt-section" style="display:none;margin-top:14px;border:0.5px solid #10b981;border-radius:8px;padding:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:11px;font-weight:500;color:#10b981;text-transform:uppercase;letter-spacing:1px">Datos OLT — BD_Clientes_OLT</span><span style="font-size:11px;color:var(--muted);margin-left:4px">— opcional</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>OLT</label><input type="text" id="olt-OLT" placeholder="CLRMMVEOLT01 (...)"></div><div class="field"><label>FRAME</label><input type="text" id="olt-FRAME" placeholder="0"></div><div class="field"><label>SLOT</label><input type="text" id="olt-SLOT" placeholder="1"></div><div class="field"><label>PORT</label><input type="text" id="olt-PORT" placeholder="11"></div><div class="field"><label>ONU ID</label><input type="text" id="olt-ONU_ID" placeholder="3"></div></div></div>';
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' value="'+escHtml(String(lastResult[c]||''))+'"></div>'
-  ).join('');
+  ).join('') + oltHtmlE;
+  // Si Nodo ya tiene valor, mostrar sección OLT inmediatamente
+  const nodoVal = lastResult['Nodo']||'';
+  if(nodoVal){
+    const oltSec = document.getElementById('olt-section');
+    if(oltSec){ oltSec.style.display='block'; const oltInput=document.getElementById('olt-OLT'); if(oltInput&&!oltInput.value) oltInput.value=nodoVal; }
+  }
   document.getElementById('modal-registro').classList.add('open');
   window._modalEditMode=true;
   window._modalEditValue=codigo;
@@ -930,6 +980,24 @@ async function guardarServicio(){
     }).then(r=>r.json());
   }
   if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
+  // Guardar OLT en paralelo si campo OLT está lleno
+  const oltNombre = (document.getElementById('olt-OLT')||{}).value||'';
+  if(oltNombre.trim()){
+    const codigoSrv = (document.getElementById('field-srv-Codigo_Servicio')||{}).value||data.Codigo_Servicio||'';
+    const nodoSrv = (document.getElementById('field-srv-Nodo')||{}).value||data.Nodo||'';
+    const oltData = {
+      OLT: oltNombre.trim(),
+      FRAME: (document.getElementById('olt-FRAME')||{}).value||'',
+      SLOT: (document.getElementById('olt-SLOT')||{}).value||'',
+      PORT: (document.getElementById('olt-PORT')||{}).value||'',
+      'ONU ID': (document.getElementById('olt-ONU_ID')||{}).value||'',
+      NAME: nodoSrv,
+      CODIGO: codigoSrv
+    };
+    await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Clientes_OLT',data:oltData})
+    }).catch(()=>{});
+  }
   closeModal('modal-registro');
   if(window._modalEditMode) doSearch();
 }
@@ -955,7 +1023,7 @@ async function eliminarResultado(){
   document.getElementById('confirm-ok-btn').textContent='Confirmar';
   document.getElementById('confirm-ok-btn').onclick = async function(){
     closeModal('modal-confirm');
-    const sheetE = lastResult._sheet || 'BD_Servicios';
+    const sheetE = lastSheet || 'BD_Servicios';
     const r = await fetch('/api/multisheet',{
       method:'DELETE',
       headers:{'Content-Type':'application/json'},
@@ -1310,17 +1378,61 @@ function renderUsers(){
   if(filtroActual==='activo')users=allUsers.filter(u=>u.activo);
   if(filtroActual==='inactivo')users=allUsers.filter(u=>!u.activo);
   document.getElementById('users-tbody').innerHTML=users.map(u=>`<tr>
+    <td>${u.role!=='admin'?`<input type="checkbox" class="chk-user" data-id="${u.id}" onchange="actualizarBotonMasivo()" style="width:auto">`:''}</td>
     <td><strong>${escHtml(u.nombre)}</strong></td>
     <td style="font-family:Space Mono,monospace;font-size:13px">${escHtml(u.username)}</td>
     <td><span class="tag ${u.role}">${u.role==='admin'?'Administrador':'Consulta'}</span></td>
     <td><span class="tag ${u.activo?'active':'inactive'}">${u.activo?'Activo':'Inactivo'}</span>${u.mustChangePassword?'<span class="tag temporal" style="margin-left:4px">Temporal</span>':''}</td>
     <td style="font-size:12px;color:var(--muted)">${formatActividad(u.lastActivity)}</td>
     <td>
+      <button class="btn-icon" onclick='abrirEdicionUsuario(${JSON.stringify(u)})' title="Editar usuario" style="font-size:14px;color:#818cf8;border-color:rgba(129,140,248,0.4)">&#9998;&#65039;</button>
       <button class="btn-icon warn" onclick="openModalReset(${u.id})" title="Restablecer contrasena">&#128273;</button>
       <button class="btn-icon" onclick="toggleUser(${u.id},${!u.activo})" title="${u.activo?'Desactivar':'Activar'}">${u.activo?'&#9646;&#9646;':'&#9654;'}</button>
       ${u.username!=='admin'?'<button class="btn-icon danger" onclick="deleteUser('+u.id+')" title="Eliminar">&#10005;</button>':''}
     </td>
   </tr>`).join('');
+  actualizarBotonMasivo();
+}
+function toggleSeleccionTodos(chk){
+  document.querySelectorAll('.chk-user').forEach(c=>c.checked=chk.checked);
+  actualizarBotonMasivo();
+}
+function actualizarBotonMasivo(){
+  const seleccionados=document.querySelectorAll('.chk-user:checked').length;
+  const btn=document.getElementById('btn-eliminar-masivo');
+  if(btn) btn.style.display = seleccionados>0 ? 'inline-block' : 'none';
+  if(btn) btn.textContent = 'Eliminar seleccionados ('+seleccionados+')';
+}
+function confirmarEliminacionMasiva(){
+  const ids=Array.from(document.querySelectorAll('.chk-user:checked')).map(c=>c.dataset.id);
+  if(ids.length===0)return;
+  document.getElementById('confirm-msg').textContent='¿Eliminar '+ids.length+' usuario(s) seleccionado(s)? Esta accion no se puede deshacer.';
+  document.getElementById('confirm-ok-btn').textContent='Eliminar';
+  document.getElementById('confirm-ok-btn').onclick=async function(){
+    closeModal('modal-confirm');
+    for(const id of ids){
+      await fetch('/api/usuarios/'+id,{method:'DELETE'});
+    }
+    loadUsers();
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
+function abrirEdicionUsuario(u){
+  document.getElementById('ue-nombre').value=u.nombre;
+  document.getElementById('ue-username').value=u.username;
+  document.getElementById('ue-role').value=u.role;
+  document.getElementById('modal-user-edit-error').style.display='none';
+  window._editUserId=u.id;
+  document.getElementById('modal-user-edit').classList.add('open');
+}
+async function guardarEdicionUsuario(){
+  const nombre=document.getElementById('ue-nombre').value.trim();
+  const role=document.getElementById('ue-role').value;
+  const errEl=document.getElementById('modal-user-edit-error');errEl.style.display='none';
+  if(!nombre){showAlert(errEl,'El nombre es requerido','error');return;}
+  const r=await fetch('/api/usuarios/'+window._editUserId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,role})}).then(r=>r.json());
+  if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
+  closeModal('modal-user-edit');loadUsers();
 }
 function openModalUser(){
   document.getElementById('u-nombre').value='';document.getElementById('u-username').value='';
@@ -1421,6 +1533,16 @@ function onNodoInput(inputEl){
   const ip = buscarIpPorNodo(inputEl.value);
   const ipEl = document.getElementById('field-srv-Ip_Admin_Switch');
   if(ipEl&&ip){ ipEl.value=ip; ipEl.style.borderColor='var(--success)'; setTimeout(()=>ipEl.style.borderColor='',2000); }
+  const oltSection = document.getElementById('olt-section');
+  if(oltSection){
+    if(inputEl.value.trim()){
+      oltSection.style.display='block';
+      const oltInput = document.getElementById('olt-OLT');
+      if(oltInput && !oltInput.value) oltInput.value = inputEl.value.trim();
+    } else {
+      oltSection.style.display='none';
+    }
+  }
 }
 
 // ── CONTROL DE SESIÓN POR INACTIVIDAD ──
