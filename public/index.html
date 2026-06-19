@@ -795,7 +795,7 @@ async function doSearch(){
     html+='<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:'+sheetColor+';display:inline-block"></span><span style="font-size:12px;font-weight:500;color:'+sheetColor+';text-transform:uppercase;letter-spacing:1px">'+escHtml(cleanSheet)+'</span></div>';
     rows.forEach((row,idx)=>{
       const MONO=['Codigo','IP','Ip','Wan','Vrf','OLT','FRAME','SLOT','PORT'];
-      const codigoCS=String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||'');
+      const codigoCS=String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||'');const clienteCS=String(row.Cliente||row.Razon_Social||'');
       // Buscar OLT coincidente
       const oltMatch = sheet==='BD_Servicios' ? oltMap[codigoCS.trim().toUpperCase()] : null;
       const oltExcluir = oltMatch ? new Set(['Puerta','Ip_Admin_Switch','Proveedor']) : new Set();
@@ -813,7 +813,7 @@ async function doSearch(){
         fields += '<div style="grid-column:1/-1;border-top:0.5px solid #10b981;margin:8px 0 4px;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:10px;color:#10b981;text-transform:uppercase;letter-spacing:1px">OLT</span></div>'+oltFields;
       }
       const rowId='card-'+sheet+'-'+idx;
-      html+='<div class="result-card" id="'+rowId+'" data-row="'+escHtml(JSON.stringify(row))+'" data-sheet="'+escHtml(sheet)+'" style="margin-bottom:16px;cursor:pointer;border:1px solid var(--border);transition:border-color 0.2s" onclick="seleccionarCard(this)"><div class="result-header"><div class="result-code">'+escHtml(codigoCS)+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
+      html+='<div class="result-card" id="'+rowId+'" data-row="'+escHtml(JSON.stringify(row))+'" data-sheet="'+escHtml(sheet)+'" data-olt="'+escHtml(JSON.stringify(oltMatch||{}))+'" style="margin-bottom:16px;cursor:pointer;border:1px solid var(--border);transition:border-color 0.2s" onclick="seleccionarCard(this)"><div class="result-header"><div class="result-code" data-codigo="'+escHtml(codigoCS)+'" data-cliente="'+escHtml(clienteCS)+'">'+escHtml(codigoCS)+(clienteCS?'<span style="color:var(--muted);font-weight:400;margin:0 8px">||</span><span style="color:#f87171;font-size:14px">'+escHtml(clienteCS)+'</span>':'')+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
     });
   });
   container.innerHTML=html;
@@ -846,7 +846,11 @@ function copiarResultado(btn){
   let txt = '';
   allCards.forEach(card => {
     const header = card.querySelector('.result-code');
-    if(header) txt += '=== '+header.textContent+' ===\n';
+    if(header){
+      const cod = header.dataset.codigo||header.textContent.trim();
+      const cli = header.dataset.cliente||'';
+      txt += '=== '+cod+(cli?' || '+cli:'')+' ===\n\n';
+    }
     const fields = card.querySelectorAll('.result-field');
     fields.forEach(f=>{
       const label = f.querySelector('.rf-label').textContent;
@@ -914,11 +918,24 @@ async function openModalEditar(){
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' value="'+escHtml(String(lastResult[c]||''))+'"></div>'
   ).join('') + oltHtmlE;
-  // Si Nodo ya tiene valor, mostrar sección OLT inmediatamente
+  // Si Nodo ya tiene valor, mostrar sección OLT y pre-llenar con datos existentes
   const nodoVal = lastResult['Nodo']||'';
   if(nodoVal){
     const oltSec = document.getElementById('olt-section');
-    if(oltSec){ oltSec.style.display='block'; const oltInput=document.getElementById('olt-OLT'); if(oltInput&&!oltInput.value) oltInput.value=nodoVal; }
+    if(oltSec){
+      oltSec.style.display='block';
+      // Pre-llenar desde data-olt de la card seleccionada
+      const selectedCard = document.querySelector('#search-result .result-card[data-olt]');
+      let oltExistente = {};
+      try{ oltExistente = JSON.parse((selectedCard||{}).dataset?.olt||'{}'); }catch(e){}
+      const setOlt = (id, key) => { const el=document.getElementById(id); if(el) el.value=oltExistente[key]||''; };
+      const oltInput = document.getElementById('olt-OLT');
+      if(oltInput) oltInput.value = oltExistente['OLT']||nodoVal;
+      setOlt('olt-FRAME','FRAME');
+      setOlt('olt-SLOT','SLOT');
+      setOlt('olt-PORT','PORT');
+      setOlt('olt-ONU_ID','ONU ID');
+    }
   }
   document.getElementById('modal-registro').classList.add('open');
   window._modalEditMode=true;

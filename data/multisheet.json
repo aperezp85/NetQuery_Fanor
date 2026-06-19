@@ -13717,12 +13717,12 @@
     },
     {
       "Codigo_Servicio": "06-01-0010366390",
-      "Cliente": "FABRICA DE CALZADOS GINO S A",
+      "Cliente": "FABRICA DE CALZADOS GINO S A (MINGO)",
       "Direccion": "AVDA AV. JORGE ALESSANDRI 3177    LOCAL F146 ZAPPA",
-      "Comuna": "TALCAHUANO",
-      "Ip_Gestion": "192.168.141.62",
-      "Vrf": "Nulo",
-      "Wan": "192.168.141.60/30",
+      "Comuna": "TALCAHUANO | CONCEPCION | R VIII",
+      "Ip_Gestion": "0.0.0.0",
+      "Vrf": "claro-internet",
+      "Wan": "200.27.17.40/29",
       "Nodo": "CL08MTROLT01",
       "Puerta": "",
       "Ip_Admin_Switch": "10.193.0.62"
@@ -98013,6 +98013,42 @@
       "ONU ID": "1",
       "NAME": "CL02BAMOLT01",
       "CODIGO": "02-25-0010374239"
+    },
+    {
+      "OLT": "CL08MTROLT01",
+      "FRAME": "0",
+      "SLOT": "1",
+      "PORT": "7",
+      "ONU ID": "7",
+      "NAME": "CL08MTROLT01",
+      "CODIGO": "06-01-0010366390"
+    },
+    {
+      "OLT": "CL08MTROLT01",
+      "FRAME": "",
+      "SLOT": "",
+      "PORT": "",
+      "ONU ID": "",
+      "NAME": "CL08MTROLT01",
+      "CODIGO": "06-01-0010366390"
+    },
+    {
+      "OLT": "CL08MTROLT01",
+      "FRAME": "0",
+      "SLOT": "1",
+      "PORT": "7",
+      "ONU ID": "7",
+      "NAME": "CL08MTROLT01",
+      "CODIGO": "06-01-0010366390"
+    },
+    {
+      "OLT": "CL08MTROLT01",
+      "FRAME": "0",
+      "SLOT": "1",
+      "PORT": "7",
+      "ONU ID": "7",
+      "NAME": "CL08MTROLT01",
+      "CODIGO": "06-01-0010366390"
     }
   ],
   "BD_Ipo": [
