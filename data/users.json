@@ -9,139 +9,128 @@
     "passwordHash": "$2a$10$KgyFmhIj2WLrdYjBgd2C1OPekI9eXrBtz7WUO2sTBiRfBAtX.4lL."
   },
   {
-    "id": 1780055445840,
-    "username": "BFigueroa",
-    "nombre": "Bryan Figueroa",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false,
-    "passwordHash": "$2b$12$eSE6XhqPgq4zIYo3EnbRjOtZL9nV2MG299yg0cEC1awYF.iRU7L3m"
-  },
-  {
-    "id": 1780056770008,
-    "username": "SCarrasco",
+    "id": 1781711331291,
+    "username": "sebastian.carrasco",
     "nombre": "Sebastian Carrasco",
+    "passwordHash": "$2a$10$2EOU5So.gaVkV2Lz.zuLH.9GPp0k3PWWiOYeueTpGgFFVdA42GL2O",
     "role": "consulta",
     "activo": true,
     "mustChangePassword": false,
-    "passwordHash": "$2b$12$axg6axeF8H/Ei9M5lpOWxOtdC9G.5JJf/P0GUD57TD9K5LGp2YD2G"
+    "lastActivity": "2026-06-17T15:49:29.191Z"
   },
   {
-    "id": 1780060093710,
-    "username": "JPalma",
-    "nombre": "Jose Palma",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": true,
-    "passwordHash": "$2b$12$WhfHEsGMiZN4bCmJ/uvLkeRP5HGqWYXbX2BsHYapNv/CNJvQH0LIC"
-  },
-  {
-    "id": 1780534140367,
-    "username": "ETamayo",
-    "nombre": "Edgar Tamayo",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": true,
-    "passwordHash": "$2b$12$bQ9P3OJi40PME4axvAoPQ.WsayP20OlOk/Et4S404dj4njJqtwRoW"
-  },
-  {
-    "id": 1780538268807,
-    "username": "prueba",
-    "nombre": "Ale Prueba",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false,
-    "passwordHash": "$2a$10$raNbRellLi6TKNAMFQD2j.0Itr7Cm8iNW0/iANYEVqblFl49gzBlS"
-  },
-  {
-    "id": 1780577006178,
-    "username": "DGonzalez",
-    "nombre": "Dann Gonzalez",
-    "passwordHash": "$2a$10$bX1aQwodbYlXuyWLsRjAfO5RTubPWjPKVD5Gt9ez/dgiAuDNC/QL6",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false
-  },
-  {
-    "id": 1780578821657,
-    "username": "DGacitua",
-    "nombre": "Daniel Gacitua",
-    "passwordHash": "$2a$10$xM8/vg9fMf6z0fu0wDCz8u0PLGSnZFdgUGbBML4t6ydpmO7wRyyS6",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false
-  },
-  {
-    "id": 1780584554239,
-    "username": "NPerez",
-    "nombre": "Nicole Pérez",
-    "passwordHash": "$2a$10$I3xjeqE.lovEjpuieY516.WUpQyRoP8D53TMx23EwxwyofoFsL9ie",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false
-  },
-  {
-    "id": 1780584638957,
-    "username": "JRivas",
-    "nombre": "Josua Rivas",
-    "passwordHash": "$2a$10$YSn/3ZfsaHjVYYlrtyVZxOXSj.MIeq5VTHJaK5bQFJwGkXsf5dAHa",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false
-  },
-  {
-    "id": 1780585361537,
-    "username": "BOsorio",
-    "nombre": "Benjamin Osorio",
-    "passwordHash": "$2a$10$OqwKdUn8b4zmuhoLST7OLey3emc49kaT7GXORLO.dLxcZJ8zt/Q9i",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": true
-  },
-  {
-    "id": 1780585436627,
-    "username": "SNahuelan",
-    "nombre": "Simon Nahuelan",
-    "passwordHash": "$2a$10$yVSXrgEN.92abAWx27noZe9g/lUK.YaVsl2Pg/7.GBSvu5CPlzb6u",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": true
-  },
-  {
-    "id": 1780585611435,
-    "username": "GVilla",
-    "nombre": "Gonzalo Villa",
-    "passwordHash": "$2a$10$9lA9GNbqBUS6dqUVjVHvqeoWWHsWKWJqQavYKD8VFGo5WIaeJjtQe",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false
-  },
-  {
-    "id": 1780585704324,
-    "username": "DAravena",
-    "nombre": "David Aravena",
-    "passwordHash": "$2a$10$XXgRi/orTcsF8C1B2GQpn.1hy2mMYvK1wxQ/wpf3agjOC17mzE4yW",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false
-  },
-  {
-    "id": 1781030015968,
-    "username": "SBerrios",
-    "nombre": "Sergio Berrios",
-    "passwordHash": "$2a$10$Kboip6yAqZkAW7zEE1aqzeiqki2R.RF//pjWxE.2qBw3PcEFnAV2O",
-    "role": "consulta",
-    "activo": true,
-    "mustChangePassword": false
-  },
-  {
-    "id": 1781030072590,
-    "username": "aperez",
+    "id": 1781711462671,
+    "username": "alejandro.perez",
     "nombre": "Alejandro Perez",
-    "passwordHash": "$2a$10$MKS/kqJcXFy7WH/1ftNjCef.DQeSfJil/cf3qJi3l/VLvCXp1NEVC",
+    "passwordHash": "$2a$10$Lubdpsfi6lYafotBp2YPvOdOImhAexOXbrdzHn5sTITb8TyCZkszy",
     "role": "admin",
     "activo": true,
     "mustChangePassword": false,
-    "lastActivity": "2026-06-16T12:34:41.104Z"
+    "lastActivity": "2026-06-19T19:29:11.777Z"
+  },
+  {
+    "id": 1781711837727,
+    "username": "daniel.gacitua",
+    "nombre": "Daniel Gacitua",
+    "passwordHash": "$2a$10$FyRp8wEx.hKB8rrdA4yxpunFTkKZ5uo6Uv1NMRlc0xaryPnTdgeHS",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false,
+    "lastActivity": "2026-06-17T16:02:58.307Z"
+  },
+  {
+    "id": 1781712301366,
+    "username": "lisandro.escalona",
+    "nombre": "Lisandro Escalona",
+    "passwordHash": "$2a$10$kWAaanWp/L5FHvbDfo1KaeN1S2NYurgnJPlNYqxig0wB81Wph4d.y",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false,
+    "lastActivity": "2026-06-17T16:07:05.374Z"
+  },
+  {
+    "id": 1781712319925,
+    "username": "marcelo.alvarez",
+    "nombre": "Marcelo Alvarez",
+    "passwordHash": "$2a$10$SfbO8ENw7dLn0a6tA517LOhll0vf/7Sj4XEb9sVGCYy6hVTdWVBwa",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": true
+  },
+  {
+    "id": 1781712423061,
+    "username": "gonzalo.villa",
+    "nombre": "Gonzalo Villa",
+    "passwordHash": "$2a$10$svZjYWHa/pUjwyO1iXbluO4hMES0oQJplCOTSdxMPdfUUHiZHlEKC",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": true
+  },
+  {
+    "id": 1781712442478,
+    "username": "sergio.berrios",
+    "nombre": "Sergio Berrios",
+    "passwordHash": "$2a$10$5U2/OzYKF4s/pmUAzoBjjOsYc2GTlfGKikeL7l5lLVEL9qDVWC/uW",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false,
+    "lastActivity": "2026-06-19T16:33:20.658Z"
+  },
+  {
+    "id": 1781712528192,
+    "username": "camilo.mundaca",
+    "nombre": "Camilo Mundaca",
+    "passwordHash": "$2a$10$xGkXxzkBCtcE38TjpaO0JeNpbyOTGKwi6InIwLCHwC9x/gKOz22W.",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false,
+    "lastActivity": "2026-06-17T16:13:16.055Z"
+  },
+  {
+    "id": 1781712694642,
+    "username": "franz.soto",
+    "nombre": "Franz Soto",
+    "passwordHash": "$2a$10$WaVjMA/3u3O6pqQLv6rHleMMuItB5LKG01tZ5t3BuAt67trn7fyzW",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": true
+  },
+  {
+    "id": 1781712732090,
+    "username": "brian.figueroa",
+    "nombre": "Brian Figueroa",
+    "passwordHash": "$2a$10$1rQrO/lvkUtbhrEqDI.VYufagujOS7nmJ7kBhzovvpZkyh0MDF.SG",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": true
+  },
+  {
+    "id": 1781714205935,
+    "username": "ambar.gonzalez",
+    "nombre": "Ambar Gonzalez",
+    "passwordHash": "$2a$10$X/vRME0sD/8WrDXO.PD7OuJ8W2VUXc1WXYZg7/F8mkxQ3noxsCKTO",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false,
+    "lastActivity": "2026-06-19T18:03:55.903Z"
+  },
+  {
+    "id": 1781715410693,
+    "username": "martin.belmar",
+    "nombre": "Martin Belmar",
+    "passwordHash": "$2a$10$oTWgYqrX71R4EDtx1b/Yau5hEOGHXQnmFQHKNBBlXNPQyp5nk.que",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": false,
+    "lastActivity": "2026-06-17T16:57:55.241Z"
+  },
+  {
+    "id": 1781886624679,
+    "username": "jose.palma",
+    "nombre": "Jose Palma",
+    "passwordHash": "$2a$10$q2nlSFlpWrRJgqvPU4m1JehBqnt7rtIUDY2Fff9GCWy1S7yol9Cdu",
+    "role": "consulta",
+    "activo": true,
+    "mustChangePassword": true
   }
 ]
