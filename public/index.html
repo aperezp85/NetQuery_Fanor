@@ -235,6 +235,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
       <button class="nav-tab admin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
       <button class="nav-tab admin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
+      <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button>
     </div>
     <div class="nav-user">
       <div class="user-badge"><span id="nav-username"></span><span class="role-pill" id="nav-role"></span></div>
@@ -498,6 +499,64 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <div id="ipo-result"></div>
     </div>
 
+    <!-- FORTINET -->
+    <div class="page" id="page-fortinet">
+      <div class="page-title" style="display:flex;align-items:center;gap:12px">
+        <img src="/img/fortinet-logo.svg" alt="Fortinet" style="height:32px;object-fit:contain">
+      </div>
+      <div class="page-sub">Ruta de actualización y descarga de firmware FortiGate</div>
+      <div style="display:flex;gap:6px;margin-bottom:24px">
+        <button class="filter-btn active" id="subtab-fw-btn" onclick="showFnTab('fw',this)">&#11015; Firmware</button>
+        <button class="filter-btn admin-only" id="subtab-admin-btn" onclick="showFnTab('admin',this)" style="display:none">&#8593; Administrar <span style="font-size:10px;padding:1px 6px;border-radius:10px;background:rgba(245,158,11,0.15);color:#fcd34d;margin-left:4px">Admin</span></button>
+      </div>
+      <div id="fn-tab-fw">
+
+      <!-- SECCIÓN 1: RUTA DE ACTUALIZACIÓN -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px">
+        <div class="section-title" style="margin-bottom:14px">Ruta de actualización FortiGate</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="field">
+            <label>Modelo</label>
+            <select id="fnt-model" onchange="onFntModelChange()" style="padding:8px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
+              <option value="">Cargando modelos...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Versión actual</label>
+            <select id="fnt-from" onchange="actualizarUrlFortinet()" style="padding:8px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
+              <option value="">Seleccionar modelo primero...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Versión destino</label>
+            <select id="fnt-to" onchange="actualizarUrlFortinet()" style="padding:8px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
+              <option value="">Seleccionar modelo primero...</option>
+            </select>
+          </div>
+        </div>
+        <div id="fnt-resultado" style="margin-top:16px;display:none"></div>
+      </div>
+
+      </div><!-- /fn-tab-fw -->
+      <div id="fn-tab-admin" style="display:none">
+      <!-- SECCIÓN 2: FIRMWARE -->
+      <div class="section-header" style="margin-bottom:16px">
+        <div class="section-title">Firmware disponibles</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="admin-only" style="display:none;gap:8px;align-items:center">
+            <select id="fortinet-model-select" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
+              <option value="">Seleccionar modelo...</option>
+            </select>
+            <input type="file" id="fortinet-file-input" style="display:none" onchange="subirFirmware()">
+            <button class="btn btn-green" onclick="document.getElementById('fortinet-file-input').click()">&#8593; Subir firmware</button>
+          </div>
+          <button class="btn btn-blue" onclick="cargarFortinet()">&#8635; Actualizar lista</button>
+        </div>
+      </div>
+      <div id="fortinet-upload-msg" style="margin-bottom:12px"></div>
+      <div id="fortinet-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
+      </div><!-- /fn-tab-admin -->
+    </div>
     </main>
 </div>
 <!-- MODAL REGISTRO -->
@@ -698,8 +757,267 @@ function showPage(name,btn){
   if(name==='ipo') cargarDatosIpo();
   if(name==='sdwan') cargarDatosSdwan();
   if(name==='fwonpremise') cargarDatosFw();
+  if(name==='fortinet') cargarFortinet();
 }
 
+// FORTINET
+function showFnTab(tab, btn){
+  document.getElementById('fn-tab-fw').style.display = tab==='fw' ? '' : 'none';
+  document.getElementById('fn-tab-admin').style.display = tab==='admin' ? '' : 'none';
+  document.querySelectorAll('#subtab-fw-btn,#subtab-admin-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function actualizarUrlFortinet(){
+  const model = document.getElementById('fnt-model').value;
+  const from = document.getElementById('fnt-from').value;
+  const to = document.getElementById('fnt-to').value;
+  const resultado = document.getElementById('fnt-resultado');
+  if(!resultado) return;
+  const [modelKey, subKey] = model.split('|');
+  const modelData = fortinetData.filter(m => m.model.toUpperCase() === (modelKey||'').toUpperCase());
+  // Filtrar subcarpeta si aplica
+  if(modelData.length && subKey){
+    const allFiles = modelData[0].files;
+    const filteredBySub = allFiles.filter(f => {
+      const parts = f.path.split('/');
+      const sub = parts.length > 1 ? parts[0] : '';
+      return sub === subKey;
+    });
+    modelData[0] = { ...modelData[0], files: filteredBySub.length ? filteredBySub : allFiles };
+  }
+  // Siempre filtrar lista inferior por modelo/submodelo seleccionado
+  if(modelKey && modelData.length){
+    renderFortinet(modelData);
+  } else {
+    renderFortinet(fortinetData);
+  }
+  if(!model || !from || !to){
+    resultado.style.display='none';
+    return;
+  }
+  // Mostrar firmware filtrados abajo del formulario
+  if(modelData.length){
+    const esAdmin = document.querySelector('.role-pill') && !document.querySelector('.role-pill.consulta');
+    let files = modelData[0].files;
+    // Filtrar por versiones si hay from y to
+    if(from && to){
+      const verToNum = v => {
+        const p = v.replace(/[MF]$/,'').split('.').map(Number);
+        return p[0]*10000 + (p[1]||0)*100 + (p[2]||0);
+      };
+      const numFrom = verToNum(from);
+      const numTo = verToNum(to);
+      const [numMin, numMax] = numFrom < numTo ? [numFrom, numTo] : [numTo, numFrom];
+      files = files.filter(f => {
+        const ver = extraerVersion(f.file);
+        if(!ver) return false;
+        const n = verToNum(ver);
+        return n >= numMin && n <= numMax;
+      });
+    }
+    // Agrupar por subcarpeta
+    const grupos = {};
+    files.forEach(f => {
+      const parts = f.path.split('/');
+      const sub = parts.length > 1 ? parts[0] : 'General';
+      if(!grupos[sub]) grupos[sub]=[];
+      grupos[sub].push(f);
+    });
+    resultado.style.display='block';
+    // Ordenar archivos por versión y extraer build
+    const extraerBuild = fn => { const m = fn.match(/build(\d+)/); return m ? m[1] : ''; };
+    const verToNum2 = v => { const p = (v||'').split('.').map(Number); return p[0]*10000+(p[1]||0)*100+(p[2]||0); };
+    resultado.innerHTML = '<div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted)">Firmware disponibles para '+escHtml(model)+(from&&to?' ('+escHtml(from)+' → '+escHtml(to)+')':'')+'</div>'+
+      (files.length===0 ? '<div style="color:var(--muted);font-size:13px">No hay firmware para esas versiones.</div>' :
+      Object.entries(grupos).map(([sub,flist])=>{
+        const sorted = [...flist].sort((a,b)=>verToNum2(extraerVersion(a.file))-verToNum2(extraerVersion(b.file)));
+        return `<div style="margin-bottom:16px">
+          <div style="font-size:11px;color:#f0a639;font-weight:500;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">${escHtml(sub)}</div>
+          <table style="width:100%;border-collapse:collapse">
+            <thead><tr style="border-bottom:1px solid var(--border)">
+              <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 12px;font-weight:500">Versión</th>
+              <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 12px;font-weight:500">Build</th>
+              <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 12px;font-weight:500">Archivo</th>
+              <th></th>
+            </tr></thead>
+            <tbody>${sorted.map((f,i)=>{
+              const ver = extraerVersion(f.file);
+              const build = extraerBuild(f.file);
+              const isFrom = ver === from.replace(/[MF]$/,'');
+              const isTo = ver === to.replace(/[MF]$/,'');
+              const rowColor = isTo ? 'rgba(239,68,68,0.08)' : isFrom ? 'rgba(59,130,246,0.06)' : '';
+              return `<tr style="border-bottom:1px solid var(--border);background:${rowColor}">
+                <td style="padding:8px 12px;font-size:13px;font-weight:500;color:${isTo?'#fca5a5':isFrom?'#60a5fa':'var(--text)'}">${escHtml(ver)}${isFrom?' <span style="font-size:10px;background:rgba(59,130,246,0.2);color:#60a5fa;padding:1px 6px;border-radius:4px">ACTUAL</span>':''}${isTo?' <span style="font-size:10px;background:rgba(239,68,68,0.2);color:#fca5a5;padding:1px 6px;border-radius:4px">TARGET</span>':''}</td>
+                <td style="padding:8px 12px;font-size:13px;color:var(--muted);font-family:'Space Mono',monospace">${escHtml(build)}</td>
+                <td style="padding:8px 12px;font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;word-break:break-all">${escHtml(f.file)}</td>
+                <td style="padding:8px 12px;white-space:nowrap">
+                  <a href="/fortinet/${escHtml(modelData[0].model)}/${escHtml(f.path)}" download style="font-size:12px;padding:4px 12px;border-radius:6px;background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);text-decoration:none">↓ Descargar</a>
+                  ${esAdmin?`<button onclick="eliminarFirmware('${escHtml(modelData[0].model)}','${escHtml(f.path)}')" style="font-size:12px;padding:4px 8px;border-radius:6px;background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);cursor:pointer;margin-left:6px">✕</button>`:''}
+                </td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>`;
+      }).join(''));
+  } else {
+    resultado.style.display='block';
+    resultado.innerHTML='<div style="color:var(--muted);font-size:13px">No hay firmware cargados para '+escHtml(model)+'</div>';
+  }
+  // Actualizar listado principal
+  renderFortinet(modelData.length ? modelData : fortinetData);
+  // Filtrar firmware por modelo y versiones de salto si hay datos cargados
+  if(model && fortinetData.length){
+    const modelKey = model.replace('FortiGate-','');
+    const modelData = fortinetData.filter(m => m.model.toUpperCase() === modelKey.toUpperCase());
+    const filtroVer = (from && to) ? [from, to] : null;
+    renderFortinet(modelData.length ? modelData : fortinetData, filtroVer);
+  } else {
+    renderFortinet(fortinetData);
+  }
+}
+let fortinetData = [];
+function poblarComboboxFortinet(data){
+  const sel = document.getElementById('fnt-model');
+  const selUp = document.getElementById('fortinet-model-select');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— Seleccionar modelo —</option>';
+  if(selUp) selUp.innerHTML = '<option value="">Seleccionar modelo...</option>';
+  data.forEach(m => {
+    // Ver si tiene subcarpetas
+    const subs = [...new Set(m.files.map(f => {
+      const parts = f.path.split('/');
+      return parts.length > 1 ? parts[0] : null;
+    }).filter(Boolean))];
+    if(subs.length > 0){
+      // Agregar optgroup con submodelos
+      const grp = document.createElement('optgroup');
+      grp.label = m.model;
+      subs.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = m.model + '|' + sub;
+        opt.textContent = m.model + ' › ' + sub;
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
+    } else {
+      const opt = document.createElement('option');
+      opt.value = m.model + '|';
+      opt.textContent = m.model;
+      sel.appendChild(opt);
+    }
+    // Combobox upload
+    if(selUp){
+      const opt2 = document.createElement('option');
+      opt2.value = m.model;
+      opt2.textContent = m.model;
+      selUp.appendChild(opt2);
+    }
+  });
+}
+
+function onFntModelChange(){
+  const sel = document.getElementById('fnt-model');
+  const val = sel ? sel.value : '';
+  const [modelKey, subKey] = val.split('|');
+  // Obtener versiones disponibles para este submodelo
+  const modelData = fortinetData.find(m => m.model === modelKey);
+  const fromSel = document.getElementById('fnt-from');
+  const toSel = document.getElementById('fnt-to');
+  if(!modelData || !fromSel || !toSel){
+    actualizarUrlFortinet();
+    return;
+  }
+  let files = modelData.files;
+  if(subKey){
+    files = files.filter(f => f.path.split('/')[0] === subKey);
+  }
+  // Extraer versiones únicas ordenadas
+  const versiones = [...new Set(files.map(f => extraerVersion(f.file)).filter(Boolean))].sort((a,b)=>{
+    const n = v => { const p=v.split('.').map(Number); return p[0]*10000+(p[1]||0)*100+(p[2]||0); };
+    return n(a)-n(b);
+  });
+  fromSel.innerHTML = '<option value="">Versión actual...</option>' + versiones.map(v=>'<option>'+v+'</option>').join('');
+  toSel.innerHTML = '<option value="">Versión destino...</option>' + versiones.map(v=>'<option>'+v+'</option>').join('');
+  actualizarUrlFortinet();
+}
+
+async function cargarFortinet(){
+  const cont = document.getElementById('fortinet-list');
+  cont.innerHTML = '<div style="color:var(--muted);padding:20px">Cargando...</div>';
+  try {
+    fortinetData = await fetch('/api/fortinet/list').then(r=>r.json());
+    poblarComboboxFortinet(fortinetData);
+    renderFortinet(fortinetData);
+  } catch(e){ cont.innerHTML='<div style="color:var(--muted)">Error al cargar firmware.</div>'; }
+}
+function extraerVersion(filename){
+  const m = filename.match(/v(\d+\.\d+\.\d+)/);
+  return m ? m[1] : '';
+}
+function renderFortinet(data, filtroVersiones){
+  const cont = document.getElementById('fortinet-list');
+  const esAdmin = document.querySelector('.role-pill') && !document.querySelector('.role-pill.consulta');
+  if(!data.length){ cont.innerHTML='<div style="color:var(--muted);padding:20px">No hay firmware cargados aún.</div>'; return; }
+  cont.innerHTML = data.map(m=>{
+    let files = m.files;
+    if(filtroVersiones && filtroVersiones.length){
+      files = files.filter(f => {
+        const ver = extraerVersion(f.file);
+        return filtroVersiones.some(v => ver.startsWith(v.replace(/[MF]$/,'')));
+      });
+    }
+    if(!files.length && filtroVersiones) return '';
+    // Agrupar por subcarpeta
+    const grupos = {};
+    files.forEach(f => {
+      const parts = f.path.split('/');
+      const sub = parts.length > 1 ? parts[0] : '';
+      if(!grupos[sub]) grupos[sub]=[];
+      grupos[sub].push(f);
+    });
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#f0a639;display:inline-block"></span>
+        <span style="font-size:13px;font-weight:500">${escHtml(m.model)}</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:auto">${files.length} archivo${files.length!==1?'s':''}</span>
+      </div>
+      ${Object.entries(grupos).map(([sub,flist])=>`
+        ${sub?`<div style="font-size:11px;color:#f0a639;margin:8px 0 4px;font-weight:500">${escHtml(sub)}</div>`:''}
+        ${flist.map(f=>`
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border)">
+            <span style="font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;flex:1;word-break:break-all">${escHtml(f.file)}</span>
+            <div style="display:flex;gap:6px">
+              <a href="/fortinet/${escHtml(m.model)}/${escHtml(f.path)}" download style="font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);text-decoration:none;white-space:nowrap">↓ Descargar</a>
+              ${esAdmin?`<button onclick="eliminarFirmware('${escHtml(m.model)}','${escHtml(f.path)}')" style="font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);cursor:pointer;white-space:nowrap">✕ Eliminar</button>`:''}
+            </div>
+          </div>`).join('')}`).join('')}
+    </div>`;
+  }).join('');
+}
+async function subirFirmware(){
+  const model = document.getElementById('fortinet-model-select').value;
+  const file = document.getElementById('fortinet-file-input').files[0];
+  const msg = document.getElementById('fortinet-upload-msg');
+  if(!model){ msg.innerHTML='<span style="color:#fca5a5">Seleccione un modelo primero.</span>'; return; }
+  if(!file){ return; }
+  const fd = new FormData();
+  fd.append('file', file);
+  msg.innerHTML='<span style="color:var(--muted)">Subiendo...</span>';
+  const r = await fetch('/api/fortinet/upload/'+encodeURIComponent(model),{method:'POST',body:fd}).then(r=>r.json());
+  if(r.success){
+    msg.innerHTML='<span style="color:#34d399">✓ '+escHtml(r.filename)+' subido correctamente.</span>';
+    document.getElementById('fortinet-file-input').value='';
+    cargarFortinet();
+  } else {
+    msg.innerHTML='<span style="color:#fca5a5">Error: '+escHtml(r.message||'No se pudo subir')+'</span>';
+  }
+}
+async function eliminarFirmware(model, filename){
+  if(!confirm('¿Eliminar '+filename+'?')) return;
+  const r = await fetch('/api/fortinet/'+encodeURIComponent(model)+'/'+encodeURIComponent(filename),{method:'DELETE'}).then(r=>r.json());
+  if(r.success) cargarFortinet();
+  else alert('Error al eliminar: '+(r.message||''));
+}
 // AUTOCOMPLETE
 let acTimeout = null;
 let acIndex = -1;
@@ -797,7 +1115,7 @@ async function doSearch(){
       const MONO=['Codigo','IP','Ip','Wan','Vrf','OLT','FRAME','SLOT','PORT'];
       const codigoCS=String(row.Codigo_Servicio||row.CODIGO||row.Cod_Local||'');const clienteCS=String(row.Cliente||row.Razon_Social||'');
       // Buscar OLT coincidente
-      const oltMatch = sheet==='BD_Servicios' ? oltMap[codigoCS.trim().toUpperCase()] : null;
+      const oltMatch = sheet==='BD_Servicios' && (row.Nodo||'').toUpperCase().includes('OLT') ? oltMap[codigoCS.trim().toUpperCase()] : null;
       const oltExcluir = oltMatch ? new Set(['Puerta','Ip_Admin_Switch','Proveedor']) : new Set();
       let fields=Object.keys(row).filter(k=>!oltExcluir.has(k)).map(k=>{
         const val=row[k]!==undefined&&row[k]!==''?row[k]:null;
@@ -825,10 +1143,12 @@ function seleccionarCard(el){
   document.querySelectorAll('#search-result .result-card').forEach(c=>{
     c.style.borderColor='var(--border)';
     c.style.background='';
+    c.classList.remove('card-activa');
   });
   el.style.borderColor='#f0a639';
   el.style.background='rgba(240,166,57,0.08)';
   el.style.boxShadow='0 0 0 2px rgba(240,166,57,0.3)';
+  el.classList.add('card-activa');
   lastResult=JSON.parse(el.dataset.row);
   lastSheet=el.dataset.sheet;
 }
@@ -842,7 +1162,9 @@ function copiarIPO(btn, ipo, ip, razon, fqdn){
   setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
 }
 function copiarResultado(btn){
-  const allCards = document.querySelectorAll('#search-result .result-card');
+  // Copiar solo la card seleccionada (borde naranja), si no hay seleccionada usar la del botón
+  const cardActiva = document.querySelector('#search-result .result-card.card-activa') || btn.closest('.result-card');
+  const allCards = cardActiva ? [cardActiva] : [];
   let txt = '';
   allCards.forEach(card => {
     const header = card.querySelector('.result-code');
@@ -866,14 +1188,8 @@ function copiarResultado(btn){
   ta.select();
   document.execCommand('copy');
   document.body.removeChild(ta);
-  document.querySelectorAll('#search-result .btn').forEach(b=>{
-    if(b.textContent==='Copiar'){ b.textContent='¡Copiado!'; b.style.color='#34d399'; }
-  });
-  setTimeout(()=>{
-    document.querySelectorAll('#search-result .btn').forEach(b=>{
-      if(b.textContent==='¡Copiado!'){ b.textContent='Copiar'; b.style.color=''; }
-    });
-  },2000);
+  btn.textContent='¡Copiado!'; btn.style.color='#34d399';
+  setTimeout(()=>{ btn.textContent='Copiar'; btn.style.color=''; },2000);
 }
 
 
@@ -920,7 +1236,7 @@ async function openModalEditar(){
   ).join('') + oltHtmlE;
   // Si Nodo ya tiene valor, mostrar sección OLT y pre-llenar con datos existentes
   const nodoVal = lastResult['Nodo']||'';
-  if(nodoVal){
+  if(nodoVal && nodoVal.toUpperCase().includes('OLT')){
     const oltSec = document.getElementById('olt-section');
     if(oltSec){
       oltSec.style.display='block';
@@ -1552,7 +1868,7 @@ function onNodoInput(inputEl){
   if(ipEl&&ip){ ipEl.value=ip; ipEl.style.borderColor='var(--success)'; setTimeout(()=>ipEl.style.borderColor='',2000); }
   const oltSection = document.getElementById('olt-section');
   if(oltSection){
-    if(inputEl.value.trim()){
+    if(inputEl.value.trim().toUpperCase().includes('OLT')){
       oltSection.style.display='block';
       const oltInput = document.getElementById('olt-OLT');
       if(oltInput && !oltInput.value) oltInput.value = inputEl.value.trim();

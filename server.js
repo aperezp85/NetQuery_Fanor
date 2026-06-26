@@ -501,6 +501,60 @@ app.get('/api/ipo/search', requireAuth, (req, res) => {
   res.json(result.slice(0, 500));
 });
 
+// ── FORTINET FIRMWARE ────────────────────────────────────────────────────────
+const fortinetUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const model = req.params.model;
+      const dir = path.join(__dirname, 'public', 'fortinet', model);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => cb(null, file.originalname)
+  }),
+  limits: { fileSize: 500 * 1024 * 1024 }
+});
+
+app.post('/api/fortinet/upload/:model', requireAdmin, (req, res, next) => {
+  fortinetUpload.single('file')(req, res, (err) => {
+    if (err) return res.json({ success: false, message: err.message });
+    if (!req.file) return res.json({ success: false, message: 'No se recibió archivo' });
+    res.json({ success: true, filename: req.file.originalname });
+  });
+});
+
+app.delete('/api/fortinet/:model/:filename', requireAdmin, (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'fortinet', req.params.model, req.params.filename);
+  if (!fs.existsSync(filePath)) return res.json({ success: false, message: 'Archivo no encontrado' });
+  fs.unlinkSync(filePath);
+  res.json({ success: true });
+});
+
+app.get('/api/fortinet/list', requireAuth, (req, res) => {
+  const base = path.join(__dirname, 'public', 'fortinet');
+  if (!fs.existsSync(base)) return res.json([]);
+  const getAllFiles = (dir, prefix) => {
+    const entries = fs.readdirSync(dir);
+    let files = [];
+    entries.forEach(e => {
+      const full = path.join(dir, e);
+      const rel = prefix ? prefix+'/'+e : e;
+      if (fs.statSync(full).isDirectory()) {
+        files = files.concat(getAllFiles(full, rel));
+      } else {
+        files.push({ file: e, path: rel });
+      }
+    });
+    return files;
+  };
+  const models = fs.readdirSync(base).filter(f => fs.statSync(path.join(base, f)).isDirectory());
+  const result = models.map(model => {
+    const files = getAllFiles(path.join(base, model), '');
+    return { model, files };
+  }).filter(m => m.files.length > 0);
+  res.json(result);
+});
+
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 app.listen(PORT, () => { console.log('NetQuery corriendo en http://localhost:' + PORT); });
 

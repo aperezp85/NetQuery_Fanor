@@ -9,3 +9,8 @@ data/*.json
 node_modules/
 logs/
 *.bak*
+# Ignorar los archivos pesados de firmware en el servidor
+public/fortinet/*.out
+public/fortinet/*.bin
+public/fortinet/*.zip
+public/fortinet/*.iso
