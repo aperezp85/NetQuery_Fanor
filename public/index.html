@@ -767,7 +767,7 @@ function showFnTab(tab, btn){
   document.querySelectorAll('#subtab-fw-btn,#subtab-admin-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
-function actualizarUrlFortinet(){
+async function actualizarUrlFortinet(){
   const model = document.getElementById('fnt-model').value;
   const from = document.getElementById('fnt-from').value;
   const to = document.getElementById('fnt-to').value;
@@ -795,12 +795,50 @@ function actualizarUrlFortinet(){
     resultado.style.display='none';
     return;
   }
+  // Consultar saltos reales desde Fortinet
+  resultado.style.display='block';
+  resultado.innerHTML='<div style="color:var(--muted);padding:10px">Consultando ruta en Fortinet...</div>';
+  let versionesSalto = [];
+  try {
+    const ruta = await fetch('/api/fortinet/upgrade-path', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:modelKey, current_version:from, target_version:to})
+    }).then(r=>r.json());
+    if(ruta.success && ruta.path.length){
+      // path viene como [{version:"7.0.7 F", build_number:"0367", hop:"current"}, ...]
+      versionesSalto = ruta.path.map(s=>s.version.split(' ')[0]);
+      // Diagrama de saltos
+      const hopsHtml = ruta.path.map((s,i)=>{
+        const ver = s.version;
+        const isFirst = s.hop==='current';
+        const isLast = s.hop==='target';
+        const color = isFirst?'#60a5fa':isLast?'#fca5a5':'var(--muted)';
+        const bg = isFirst?'rgba(59,130,246,0.1)':isLast?'rgba(239,68,68,0.1)':'var(--bg3)';
+        const border = isFirst?'1px solid #3b82f6':isLast?'1px solid #ef4444':'1px solid var(--border)';
+        return (i>0?'<span style="color:var(--muted);margin:0 6px">→</span>':'')
+          +'<span style="padding:5px 14px;border-radius:20px;font-size:13px;font-weight:500;font-family:Space Mono,monospace;background:'+bg+';color:'+color+';border:'+border+'">'+escHtml(ver)+'</span>';
+      }).join('');
+      resultado.innerHTML = '<div style="font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">'
+        +'Ruta recomendada — '+(ruta.path.length-1)+' saltos</div>'
+        +'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:16px">'+hopsHtml+'</div>';
+    } else {
+      resultado.innerHTML='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No se encontró ruta para esas versiones.</div>';
+    }
+  } catch(e){
+    resultado.innerHTML='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">Error al consultar Fortinet.</div>';
+  }
   // Mostrar firmware filtrados abajo del formulario
   if(modelData.length){
     const esAdmin = document.querySelector('.role-pill') && !document.querySelector('.role-pill.consulta');
     let files = modelData[0].files;
-    // Filtrar por versiones si hay from y to
-    if(from && to){
+    // Filtrar solo por versiones de salto si las hay, sino por rango
+    if(versionesSalto.length){
+      files = files.filter(f => {
+        const ver = extraerVersion(f.file);
+        return versionesSalto.some(v=>ver===v);
+      });
+    } else if(from && to){
       const verToNum = v => {
         const p = v.replace(/[MF]$/,'').split('.').map(Number);
         return p[0]*10000 + (p[1]||0)*100 + (p[2]||0);
