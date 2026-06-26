@@ -14,3 +14,4 @@ public/fortinet/*.out
 public/fortinet/*.bin
 public/fortinet/*.zip
 public/fortinet/*.iso
+public/fortinet/
