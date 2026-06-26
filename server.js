@@ -501,6 +501,40 @@ app.get('/api/ipo/search', requireAuth, (req, res) => {
   res.json(result.slice(0, 500));
 });
 
+// ── FORTINET UPGRADE PATH ────────────────────────────────────────────────────
+app.post('/api/fortinet/upgrade-path', requireAuth, async (req, res) => {
+  const { model, current_version, target_version } = req.body;
+  if (!model || !current_version || !target_version)
+    return res.json({ success: false, message: 'Faltan parámetros' });
+  try {
+    const https = require('https');
+    const postData = 'product_slug=fortigate&model='+encodeURIComponent(model)+'&current_version='+encodeURIComponent(current_version)+'&target_version='+encodeURIComponent(target_version);
+    const options = {
+      hostname: 'docs.fortinet.com',
+      path: '/upgrade-tool/upgrade-path',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
+    const data = await new Promise((resolve, reject) => {
+      const req2 = https.request(options, r => {
+        let body = '';
+        r.on('data', chunk => body += chunk);
+        r.on('end', () => resolve(body));
+      });
+      req2.on('error', reject);
+      req2.write(postData);
+      req2.end();
+    });
+    const json = JSON.parse(data);
+    res.json({ success: true, path: json.result.path || [] });
+  } catch(e) {
+    res.json({ success: false, message: e.message });
+  }
+});
+
 // ── FORTINET FIRMWARE ────────────────────────────────────────────────────────
 const fortinetUpload = multer({
   storage: multer.diskStorage({
