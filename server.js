@@ -501,6 +501,15 @@ app.get('/api/ipo/search', requireAuth, (req, res) => {
   res.json(result.slice(0, 500));
 });
 
+// ── BACKUP GOOGLE DRIVE ──────────────────────────────────────────────────────
+app.post('/api/backup/drive', requireAdmin, (req, res) => {
+  const { exec } = require('child_process');
+  exec('/home/ubuntu/backup_queulat.sh', (error, stdout, stderr) => {
+    if (error) return res.json({ success: false, message: stderr || error.message });
+    res.json({ success: true, message: stdout.trim() });
+  });
+});
+
 // ── FORTINET UPGRADE PATH ────────────────────────────────────────────────────
 app.post('/api/fortinet/upgrade-path', requireAuth, async (req, res) => {
   const { model, current_version, target_version } = req.body;

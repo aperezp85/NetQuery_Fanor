@@ -449,7 +449,11 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
           <button class="btn btn-blue" onclick="descargarBackupBD()" style="width:100%;padding:14px;font-size:14px;justify-content:center">
             &#11015; Descargar backup seleccionado
           </button>
+          <button class="btn btn-green" onclick="backupDrive()" style="width:100%;padding:14px;font-size:14px;justify-content:center;margin-top:10px">
+            &#9650; Subir backup a Google Drive
+          </button>
           <div id="backup-msg" style="margin-top:10px;font-size:13px;color:#34d399;text-align:center;display:none">Backup creado correctamente</div>
+          <div id="drive-backup-msg" style="margin-top:10px;font-size:13px;text-align:center;display:none"></div>
         </div>
       </div>
 
@@ -1055,6 +1059,26 @@ async function eliminarFirmware(model, filename){
   const r = await fetch('/api/fortinet/'+encodeURIComponent(model)+'/'+encodeURIComponent(filename),{method:'DELETE'}).then(r=>r.json());
   if(r.success) cargarFortinet();
   else alert('Error al eliminar: '+(r.message||''));
+}
+// BACKUP DRIVE
+async function backupDrive(){
+  const msg = document.getElementById('drive-backup-msg');
+  msg.style.display='block';
+  msg.style.color='var(--muted)';
+  msg.textContent='Subiendo backup a Google Drive...';
+  try {
+    const r = await fetch('/api/backup/drive', {method:'POST'}).then(r=>r.json());
+    if(r.success){
+      msg.style.color='#34d399';
+      msg.textContent='✓ '+r.message;
+    } else {
+      msg.style.color='#fca5a5';
+      msg.textContent='Error: '+r.message;
+    }
+  } catch(e){
+    msg.style.color='#fca5a5';
+    msg.textContent='Error al conectar con el servidor';
+  }
 }
 // AUTOCOMPLETE
 let acTimeout = null;
