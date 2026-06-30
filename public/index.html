@@ -235,6 +235,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
       <button class="nav-tab admin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
       <button class="nav-tab admin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
+      <button class="nav-tab admin-only" onclick="showPage('auditoria',this)" style="display:none">Auditoría</button>
       <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button>
     </div>
     <div class="nav-user">
@@ -481,6 +482,32 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       </div>
     </div>
 
+    <!-- AUDITORIA -->
+    <div class="page" id="page-auditoria">
+      <div class="page-title">Auditoría</div>
+      <div class="page-sub">Registro de acciones realizadas en el sistema</div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Historial de actividad</div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="filter-btn active" onclick="filtrarAuditoria('todos',this)">Todos</button>
+            <button class="filter-btn" onclick="filtrarAuditoria('login',this)">Login/Logout</button>
+            <button class="filter-btn" onclick="filtrarAuditoria('crud',this)">Cambios de datos</button>
+            <button class="filter-btn" onclick="filtrarAuditoria('fallido',this)">Intentos fallidos</button>
+          </div>
+        </div>
+        <div class="search-input-wrap" style="max-width:280px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="auditoria-search" type="text" placeholder="Buscar usuario, accion, IP..." oninput="filtrarAuditoria(null,null)" autocomplete="off">
+        </div>
+        <button class="btn btn-blue" onclick="cargarAuditoria()">Actualizar</button>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Fecha</th><th>Usuario</th><th>Rol</th><th>Acción</th><th>Detalle</th><th>IP</th></tr></thead>
+        <tbody id="auditoria-tbody"></tbody></table>
+      </div>
+    </div>
+
   <div class="page" id="page-ipo">
       <div class="page-title">Gestión de Servicios IPO</div>
       <div class="page-sub">Busque por nombre IPO, IP de gestión o razón social</div>
@@ -704,7 +731,7 @@ function initApp(){
   document.getElementById('nav-role').className='role-pill '+(currentUser.role==='admin'?'':'consulta');
   if(currentUser.role==='admin'){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
-    loadDbInfo();loadUsers();loadBackups();
+    loadDbInfo();loadUsers();loadBackups();cargarAuditoria();
   }
   cargarPaloBackups();
   setInterval(()=>{ if(currentUser&&currentUser.role==='admin') loadUsers(); }, 30000);
@@ -727,6 +754,57 @@ function initApp(){
   },1000);
 }
 async function doLogout(){await fetch('/api/logout',{method:'POST'});location.reload();}
+
+// AUDITORIA
+let auditoriaData=[];
+async function cargarAuditoria(){
+  try{
+    auditoriaData=await fetch('/api/auditoria').then(r=>r.json());
+    filtrarAuditoria(window._auditoriaFiltroActual||'todos', null);
+  }catch(e){console.error('Error cargando auditoria',e);}
+}
+function filtrarAuditoria(filtro,btn){
+  if(filtro){
+    window._auditoriaFiltroActual=filtro;
+    if(btn){
+      document.querySelectorAll('#page-auditoria .filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  }
+  const f=window._auditoriaFiltroActual||'todos';
+  const q=(document.getElementById('auditoria-search')?.value||'').trim().toUpperCase();
+  let rows=auditoriaData;
+  if(f==='login') rows=rows.filter(r=>r.accion==='LOGIN_OK'||r.accion==='LOGOUT');
+  else if(f==='fallido') rows=rows.filter(r=>r.accion==='LOGIN_FALLIDO');
+  else if(f==='crud') rows=rows.filter(r=>!['LOGIN_OK','LOGOUT','LOGIN_FALLIDO'].includes(r.accion));
+  if(q){
+    rows=rows.filter(r=>
+      (r.usuario||'').toUpperCase().includes(q)||
+      (r.accion||'').toUpperCase().includes(q)||
+      (r.detalle||'').toUpperCase().includes(q)||
+      (r.ip||'').toUpperCase().includes(q)
+    );
+  }
+  const tbody=document.getElementById('auditoria-tbody');
+  if(!tbody) return;
+  if(rows.length===0){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Sin registros</td></tr>';
+    return;
+  }
+  const accionColor={LOGIN_OK:'#22c55e',LOGOUT:'#64748b',LOGIN_FALLIDO:'#ef4444'};
+  tbody.innerHTML=rows.map(r=>{
+    const fecha=new Date(r.fecha).toLocaleString('es-CL');
+    const color=accionColor[r.accion]||'#3b82f6';
+    return `<tr>
+      <td style="white-space:nowrap">${fecha}</td>
+      <td>${r.usuario||'-'}</td>
+      <td><span class="role-pill ${r.rol==='admin'?'':'consulta'}">${r.rol||'-'}</span></td>
+      <td><span style="color:${color};font-weight:600">${r.accion}</span></td>
+      <td>${r.detalle||''}</td>
+      <td style="white-space:nowrap;font-family:'Space Mono',monospace;font-size:12px">${r.ip||'-'}</td>
+    </tr>`;
+  }).join('');
+}
 
 // Interceptar respuestas 401 globalmente — sesion expirada
 const _fetch = window.fetch;
@@ -762,6 +840,7 @@ function showPage(name,btn){
   if(name==='sdwan') cargarDatosSdwan();
   if(name==='fwonpremise') cargarDatosFw();
   if(name==='fortinet') cargarFortinet();
+  if(name==='auditoria') cargarAuditoria();
 }
 
 // FORTINET
