@@ -36,11 +36,35 @@ if (!fs.existsSync(DB_FILE)) saveJSON(DB_FILE, []);
 function requireAuth(req, res, next) { if (!req.session.user) return res.status(401).json({ error: 'No autorizado' }); next(); }
 function requireAdmin(req, res, next) { if (!req.session.user || req.session.user.role !== 'admin') return res.status(403).json({ error: 'Acceso denegado' }); next(); }
 const loginLimiter = rateLimit({ windowMs: 15*60*1000, max: 10, message: { success: false, message: 'Demasiados intentos, espera 15 minutos' } });
-app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; res.json({ success: true, user: req.session.user }); });
-app.post('/api/logout', (req, res) => { req.session.destroy(() => res.json({ success: true })); });
+app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: req.session.user }); });
+app.post('/api/logout', (req, res) => { logAudit(req, 'LOGOUT', ''); req.session.destroy(() => res.json({ success: true })); });
 app.get('/api/me', requireAuth, (req, res) => { res.json(req.session.user); });
-app.post('/api/change-password', requireAuth, (req, res) => { const { newPassword } = req.body; if (!newPassword || newPassword.length < 6) return res.json({ success: false, message: 'Minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id === req.session.user.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(newPassword, 10); users[idx].mustChangePassword = false; saveJSON(USERS_FILE, users); req.session.user.mustChangePassword = false; res.json({ success: true }); });
+app.post('/api/change-password', requireAuth, (req, res) => { const { newPassword } = req.body; if (!newPassword || newPassword.length < 6) return res.json({ success: false, message: 'Minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id === req.session.user.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(newPassword, 10); users[idx].mustChangePassword = false; saveJSON(USERS_FILE, users); req.session.user.mustChangePassword = false; logAudit(req, 'CAMBIO_PASSWORD_PROPIO', ''); res.json({ success: true }); });
 const MULTISHEET_FILE = './data/multisheet.json';
+
+// ── AUDITORÍA ────────────────────────────────────────────────────────────────
+const AUDIT_FILE = './data/audit.json';
+if (!fs.existsSync(AUDIT_FILE)) saveJSON(AUDIT_FILE, []);
+function logAudit(req, accion, detalle) {
+  try {
+    const logs = loadJSON(AUDIT_FILE) || [];
+    logs.push({
+      id: Date.now() + Math.random().toString(36).slice(2,7),
+      fecha: new Date().toISOString(),
+      usuario: (req.session && req.session.user) ? req.session.user.username : ((req.body && req.body.username) || 'desconocido'),
+      rol: (req.session && req.session.user) ? req.session.user.role : '-',
+      accion,
+      detalle: detalle || '',
+      ip: req.headers['x-real-ip'] || req.ip || (req.connection && req.connection.remoteAddress) || ''
+    });
+    if (logs.length > 5000) logs.splice(0, logs.length - 5000);
+    saveJSON(AUDIT_FILE, logs);
+  } catch(e) { console.error('[Auditoria] Error:', e.message); }
+}
+app.get('/api/auditoria', requireAdmin, (req, res) => {
+  const logs = loadJSON(AUDIT_FILE) || [];
+  res.json(logs.slice().reverse().slice(0, 1000));
+});
 
 app.get('/api/sugerencias', requireAuth, (req, res) => {
   const q = (req.query.q || '').trim().toUpperCase();
@@ -49,13 +73,16 @@ app.get('/api/sugerencias', requireAuth, (req, res) => {
   const sugerencias = [];
   Object.entries(ms).forEach(([sheet, rows]) => {
     rows.forEach(row => {
+      // Buscar coincidencia en CUALQUIER campo
       const match = Object.entries(row).some(([k, v]) =>
         (v || '').toString().toUpperCase().includes(q)
       );
       if (!match) return;
+      // Obtener el codigo de la fila
       const codigoKey = Object.keys(row).find(k => k.toLowerCase().includes('codigo') || k.toLowerCase().includes('cod_'));
       const codigo = codigoKey ? (row[codigoKey] || '').toString().trim() : '';
       if (!codigo) return;
+      // Campo descriptivo
       const descKey = Object.keys(row).find(k =>
         k.toLowerCase().includes('cliente') ||
         k.toLowerCase().includes('name') ||
@@ -81,6 +108,7 @@ app.get('/api/consulta/:codigo', requireAuth, (req, res) => {
   const results = {};
   Object.entries(ms).forEach(([sheet, rows]) => {
     const found = rows.filter(row => {
+      // Buscar en CUALQUIER columna que contenga 'codigo' en su nombre
       return Object.entries(row).some(([k, v]) => {
         if (!k.toLowerCase().includes('codigo') && !k.toLowerCase().includes('cod_')) return false;
         const val = (v || '').toString().trim().toUpperCase();
@@ -92,14 +120,14 @@ app.get('/api/consulta/:codigo', requireAuth, (req, res) => {
   if (Object.keys(results).length === 0) return res.json({ found: false });
   res.json({ found: true, data: results });
 });
-app.post('/api/datos', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const nuevo = req.body; if (!nuevo.CODIGO) return res.json({ success: false, message: 'El campo CODIGO es obligatorio' }); const existe = db.find(r => (r.CODIGO || '').toString().trim().toUpperCase() === nuevo.CODIGO.toString().trim().toUpperCase()); if (existe) return res.json({ success: false, message: 'Ya existe un registro con ese CODIGO' }); db.push(nuevo); saveJSON(DB_FILE, db); res.json({ success: true }); });
-app.put('/api/datos/:codigo', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const codigo = req.params.codigo.trim().toUpperCase(); let updated = 0; const newDb = db.map(row => { if ((row.CODIGO || '').toString().trim().toUpperCase() === codigo) { updated++; return { ...row, ...req.body }; } return row; }); if (updated === 0) return res.json({ success: false, message: 'Registro no encontrado' }); saveJSON(DB_FILE, newDb); res.json({ success: true, updated }); });
-app.delete('/api/datos/:codigo', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const codigo = req.params.codigo.trim().toUpperCase(); const newDb = db.filter(row => (row.CODIGO || '').toString().trim().toUpperCase() !== codigo); if (newDb.length === db.length) return res.json({ success: false, message: 'Registro no encontrado' }); saveJSON(DB_FILE, newDb); res.json({ success: true }); });
+app.post('/api/datos', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const nuevo = req.body; if (!nuevo.CODIGO) return res.json({ success: false, message: 'El campo CODIGO es obligatorio' }); const existe = db.find(r => (r.CODIGO || '').toString().trim().toUpperCase() === nuevo.CODIGO.toString().trim().toUpperCase()); if (existe) return res.json({ success: false, message: 'Ya existe un registro con ese CODIGO' }); db.push(nuevo); saveJSON(DB_FILE, db); logAudit(req, 'DATOS_CREAR', 'CODIGO: ' + nuevo.CODIGO); res.json({ success: true }); });
+app.put('/api/datos/:codigo', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const codigo = req.params.codigo.trim().toUpperCase(); let updated = 0; const newDb = db.map(row => { if ((row.CODIGO || '').toString().trim().toUpperCase() === codigo) { updated++; return { ...row, ...req.body }; } return row; }); if (updated === 0) return res.json({ success: false, message: 'Registro no encontrado' }); saveJSON(DB_FILE, newDb); logAudit(req, 'DATOS_EDITAR', 'CODIGO: ' + codigo); res.json({ success: true, updated }); });
+app.delete('/api/datos/:codigo', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const codigo = req.params.codigo.trim().toUpperCase(); const newDb = db.filter(row => (row.CODIGO || '').toString().trim().toUpperCase() !== codigo); if (newDb.length === db.length) return res.json({ success: false, message: 'Registro no encontrado' }); saveJSON(DB_FILE, newDb); logAudit(req, 'DATOS_ELIMINAR', 'CODIGO: ' + codigo); res.json({ success: true }); });
 app.get('/api/usuarios', requireAdmin, (req, res) => { const users = loadJSON(USERS_FILE).map(u => ({ ...u, password: undefined, passwordHash: undefined })); res.json(users); });
-app.post('/api/usuarios', requireAdmin, (req, res) => { const { username, password, nombre, role, temporal } = req.body; if (!username || !password || !nombre || !role) return res.json({ success: false, message: 'Todos los campos son requeridos' }); const users = loadJSON(USERS_FILE); if (users.find(u => u.username === username)) return res.json({ success: false, message: 'El usuario ya existe' }); users.push({ id: Date.now(), username, nombre, passwordHash: bcrypt.hashSync(password, 10), role: role === 'admin' ? 'admin' : 'consulta', activo: true, mustChangePassword: !!temporal }); saveJSON(USERS_FILE, users); res.json({ success: true }); });
-app.put('/api/usuarios/:id', requireAdmin, (req, res) => { const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); const { nombre, role, activo, password, temporal } = req.body; if (nombre) users[idx].nombre = nombre; if (role) users[idx].role = role; if (activo !== undefined) users[idx].activo = activo; if (password) { users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = !!temporal; } saveJSON(USERS_FILE, users); res.json({ success: true }); });
-app.delete('/api/usuarios/:id', requireAdmin, (req, res) => { let users = loadJSON(USERS_FILE); if (users.find(u => u.id == req.params.id && u.username === 'admin')) return res.json({ success: false, message: 'No se puede eliminar el admin principal' }); users = users.filter(u => u.id != req.params.id); saveJSON(USERS_FILE, users); res.json({ success: true }); });
-app.post('/api/usuarios/:id/reset-password', requireAdmin, (req, res) => { const { password } = req.body; if (!password) return res.json({ success: false, message: 'Ingrese una contrasena temporal' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = true; saveJSON(USERS_FILE, users); res.json({ success: true }); });
+app.post('/api/usuarios', requireAdmin, (req, res) => { const { username, password, nombre, role, temporal } = req.body; if (!username || !password || !nombre || !role) return res.json({ success: false, message: 'Todos los campos son requeridos' }); const users = loadJSON(USERS_FILE); if (users.find(u => u.username === username)) return res.json({ success: false, message: 'El usuario ya existe' }); users.push({ id: Date.now(), username, nombre, passwordHash: bcrypt.hashSync(password, 10), role: role === 'admin' ? 'admin' : 'consulta', activo: true, mustChangePassword: !!temporal }); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_CREAR', 'Usuario: ' + username + ' (' + role + ')'); res.json({ success: true }); });
+app.put('/api/usuarios/:id', requireAdmin, (req, res) => { const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); const { nombre, role, activo, password, temporal } = req.body; if (nombre) users[idx].nombre = nombre; if (role) users[idx].role = role; if (activo !== undefined) users[idx].activo = activo; if (password) { users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = !!temporal; } saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_EDITAR', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
+app.delete('/api/usuarios/:id', requireAdmin, (req, res) => { let users = loadJSON(USERS_FILE); const target = users.find(u => u.id == req.params.id); if (target && target.username === 'admin') return res.json({ success: false, message: 'No se puede eliminar el admin principal' }); users = users.filter(u => u.id != req.params.id); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_ELIMINAR', target ? ('Usuario: ' + target.username) : ('ID: ' + req.params.id)); res.json({ success: true }); });
+app.post('/api/usuarios/:id/reset-password', requireAdmin, (req, res) => { const { password } = req.body; if (!password) return res.json({ success: false, message: 'Ingrese una contrasena temporal' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = true; saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_RESET_PASSWORD', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
 const storage = multer.diskStorage({ destination: (req, file, cb) => cb(null, './uploads/'), filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)) });
 const upload = multer({ storage, fileFilter: (req, file, cb) => { const ext = path.extname(file.originalname).toLowerCase(); if (['.xlsx','.xls','.csv'].includes(ext)) { cb(null, true); } else { cb(new Error('Solo se permiten archivos .xlsx, .xls o .csv')); } }, limits: { fileSize: 50*1024*1024 } });
 app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) => {
@@ -112,9 +140,11 @@ app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) =>
     const multisheet = {};
     let totalRows = 0;
     workbook.eachSheet((worksheet, sheetId) => {
+      // Hoja especial con dos tablas lado a lado
       if (worksheet.name === 'BD_Fw-Onpremise') {
         const row3 = worksheet.getRow(3);
         const headersLeft = [], headersRight = [];
+        // Columnas A-C (1-3) = Internet Seguro, E-G (5-7) = On Premise
         row3.eachCell({ includeEmpty: true }, (cell, col) => {
           if (col >= 1 && col <= 3) headersLeft[col-1] = cell.value || null;
           if (col >= 5 && col <= 7) headersRight[col-5] = cell.value || null;
@@ -185,13 +215,17 @@ app.get('/api/db/backups', requireAdmin, (req, res) => { const files = fs.readdi
 app.get('/api/db/backup/download/:filename', requireAdmin, (req, res) => { const filename = path.basename(req.params.filename); const file = path.join(BACKUP_DIR, filename); if (!fs.existsSync(file)) return res.status(404).json({ error: 'No encontrado' }); res.download(file); });
 app.delete('/api/db', requireAdmin, (req, res) => { saveJSON(DB_FILE, []); res.json({ success: true }); });
 
+// --- ESMAX ---
 const { exec } = require('child_process');
 const ESMAX_FILE = './data/esmax_sites.json';
 if (!fs.existsSync(ESMAX_FILE)) saveJSON(ESMAX_FILE, []);
 
+// Obtener sitios
 app.get('/api/esmax/sites', requireAuth, (req, res) => {
   res.json(loadJSON(ESMAX_FILE) || []);
 });
+
+// Agregar sitio
 app.post('/api/esmax/sites', requireAdmin, (req, res) => {
   const { nombre, ip } = req.body;
   if (!nombre || !ip) return res.json({ success: false, message: 'Nombre e IP requeridos' });
@@ -201,12 +235,16 @@ app.post('/api/esmax/sites', requireAdmin, (req, res) => {
   saveJSON(ESMAX_FILE, sites);
   res.json({ success: true });
 });
+
+// Eliminar sitio
 app.delete('/api/esmax/sites/:id', requireAdmin, (req, res) => {
   let sites = loadJSON(ESMAX_FILE) || [];
   sites = sites.filter(s => s.id != req.params.id);
   saveJSON(ESMAX_FILE, sites);
   res.json({ success: true });
 });
+
+// Ping a un sitio
 app.get('/api/esmax/ping/:ip', requireAuth, (req, res) => {
   const ip = req.params.ip.replace(/[^0-9.]/g, '');
   exec('ping -c 5 -W 2 ' + ip, (err, stdout) => {
@@ -222,8 +260,10 @@ app.get('/api/esmax/ping/:ip', requireAuth, (req, res) => {
   });
 });
 
+// Backup Esmax con fecha
 const ESMAX_BACKUP_DIR = './data/esmax_backups';
 if (!fs.existsSync(ESMAX_BACKUP_DIR)) fs.mkdirSync(ESMAX_BACKUP_DIR, { recursive: true });
+
 app.post('/api/esmax/backup', requireAdmin, async (req, res) => {
   try {
     const sites = loadJSON(ESMAX_FILE) || [];
@@ -238,12 +278,23 @@ app.post('/api/esmax/backup', requireAdmin, async (req, res) => {
     ];
     sites.forEach(s => worksheet.addRow(s));
     await workbook.xlsx.writeFile(xlsxFile);
-    const files = fs.readdirSync(ESMAX_BACKUP_DIR).filter(f => f.startsWith('esmax-backup-')).sort();
-    if (files.length > 30) files.slice(0, files.length - 30).forEach(f => fs.unlinkSync(path.join(ESMAX_BACKUP_DIR, f)));
+    // Mantener solo los ultimos 30 dias
+    const files = fs.readdirSync(ESMAX_BACKUP_DIR)
+      .filter(f => f.startsWith('esmax-backup-'))
+      .sort();
+    if (files.length > 30) {
+      files.slice(0, files.length - 30).forEach(f => {
+        fs.unlinkSync(path.join(ESMAX_BACKUP_DIR, f));
+      });
+    }
     res.json({ success: true, file: filename });
-  } catch(e) { res.json({ success: false, message: e.message }); }
+  } catch(e) {
+    res.json({ success: false, message: e.message });
+  }
 });
 
+
+// --- BUSCADOR IP ---
 const IP_FILE = './data/ipdb.json';
 const IP_BACKUP_DIR = './data/ipdb_backups';
 if (!fs.existsSync(IP_FILE)) saveJSON(IP_FILE, []);
@@ -253,32 +304,50 @@ app.get('/api/ipdb', requireAuth, (req, res) => {
   const db = loadJSON(IP_FILE) || [];
   const q = (req.query.q || '').trim().toUpperCase();
   if (!q) return res.json([]);
-  const result = db.filter(r => String(r.IP||'').toUpperCase().includes(q) || String(r.Equipo||'').toUpperCase().includes(q));
+  const result = db.filter(r =>
+    String(r.IP||'').toUpperCase().includes(q) ||
+    String(r.Equipo||'').toUpperCase().includes(q)
+  );
   res.json(result);
 });
+
 app.post('/api/ipdb', requireAdmin, (req, res) => {
   const db = loadJSON(IP_FILE) || [];
   const nuevo = req.body;
   if (!nuevo.IP && !nuevo.Equipo) return res.json({ success: false, message: 'IP o Equipo requerido' });
   db.push({ id: Date.now(), ...nuevo });
   saveJSON(IP_FILE, db);
+  logAudit(req, 'IPDB_CREAR', nuevo.IP || nuevo.Equipo || '');
   res.json({ success: true });
 });
+
 app.put('/api/ipdb/:id', requireAdmin, (req, res) => {
   const db = loadJSON(IP_FILE) || [];
   const idx = db.findIndex(r => r.id == req.params.id);
   if (idx === -1) return res.json({ success: false, message: 'No encontrado' });
   db[idx] = { ...db[idx], ...req.body };
   saveJSON(IP_FILE, db);
+  logAudit(req, 'IPDB_EDITAR', db[idx].IP || db[idx].Equipo || ('ID: ' + req.params.id));
   res.json({ success: true });
 });
+
 app.delete('/api/ipdb/:id', requireAdmin, (req, res) => {
   let db = loadJSON(IP_FILE) || [];
+  const target = db.find(r => r.id == req.params.id);
   db = db.filter(r => r.id != req.params.id);
   saveJSON(IP_FILE, db);
+  logAudit(req, 'IPDB_ELIMINAR', target ? (target.IP || target.Equipo || '') : ('ID: ' + req.params.id));
   res.json({ success: true });
 });
-const ipdbUpload = multer({ storage: multer.diskStorage({ destination: (req, file, cb) => cb(null, './uploads/'), filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)) }), fileFilter: (req, file, cb) => { const ext = path.extname(file.originalname).toLowerCase(); cb(null, ['.xlsx','.xls','.csv'].includes(ext)); }, limits: { fileSize: 50*1024*1024 } });
+
+const ipdbUpload = multer({ storage: multer.diskStorage({
+  destination: (req, file, cb) => cb(null, './uploads/'),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+}), fileFilter: (req, file, cb) => {
+  const ext = path.extname(file.originalname).toLowerCase();
+  cb(null, ['.xlsx','.xls','.csv'].includes(ext));
+}, limits: { fileSize: 50*1024*1024 } });
+
 app.post('/api/ipdb/upload', requireAdmin, ipdbUpload.single('file'), async (req, res) => {
   if (!req.file) return res.json({ success: false, message: 'No se recibio archivo' });
   try {
@@ -293,7 +362,9 @@ app.post('/api/ipdb/upload', requireAdmin, ipdbUpload.single('file'), async (req
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return;
       const obj = { id: Date.now() + rowNumber };
-      row.eachCell({ includeEmpty: true }, (cell, colNumber) => { obj[headers[colNumber - 1]] = cell.value !== null ? cell.value : ''; });
+      row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        obj[headers[colNumber - 1]] = cell.value !== null ? cell.value : '';
+      });
       data.push(obj);
     });
     fs.unlinkSync(req.file.path);
@@ -304,6 +375,7 @@ app.post('/api/ipdb/upload', requireAdmin, ipdbUpload.single('file'), async (req
     res.json({ success: false, message: e.message });
   }
 });
+
 app.post('/api/ipdb/backup', requireAdmin, async (req, res) => {
   try {
     const db = loadJSON(IP_FILE) || [];
@@ -312,31 +384,56 @@ app.post('/api/ipdb/backup', requireAdmin, async (req, res) => {
     const xlsxFile = path.join(IP_BACKUP_DIR, filename);
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('IPdb');
-    if (db.length > 0) { const cols = Object.keys(db[0]); worksheet.columns = cols.map(c => ({ header: c, key: c, width: 20 })); db.forEach(row => worksheet.addRow(row)); }
+    if (db.length > 0) {
+      const cols = Object.keys(db[0]);
+      worksheet.columns = cols.map(c => ({ header: c, key: c, width: 20 }));
+      db.forEach(row => worksheet.addRow(row));
+    }
     await workbook.xlsx.writeFile(xlsxFile);
-    const files = fs.readdirSync(IP_BACKUP_DIR).filter(f => f.startsWith('ipdb-backup-')).sort();
-    if (files.length > 10) files.slice(0, files.length - 10).forEach(f => fs.unlinkSync(path.join(IP_BACKUP_DIR, f)));
+    // Mantener max 10 backups
+    const files = fs.readdirSync(IP_BACKUP_DIR)
+      .filter(f => f.startsWith('ipdb-backup-'))
+      .sort();
+    if (files.length > 10) {
+      files.slice(0, files.length - 10).forEach(f => {
+        fs.unlinkSync(path.join(IP_BACKUP_DIR, f));
+      });
+    }
     res.json({ success: true, file: filename, rows: db.length });
-  } catch(e) { res.json({ success: false, message: e.message }); }
+  } catch(e) {
+    res.json({ success: false, message: e.message });
+  }
 });
+
 app.get('/api/ipdb/download', requireAdmin, async (req, res) => {
   try {
     const db = loadJSON(IP_FILE) || [];
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('IPdb');
-    if (db.length > 0) { const cols = Object.keys(db[0]).filter(c => c !== 'id'); worksheet.columns = cols.map(c => ({ header: c, key: c, width: 20 })); db.forEach(row => worksheet.addRow(row)); }
+    if (db.length > 0) {
+      const cols = Object.keys(db[0]).filter(c => c !== 'id');
+      worksheet.columns = cols.map(c => ({ header: c, key: c, width: 20 }));
+      db.forEach(row => worksheet.addRow(row));
+    }
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=ipdb-export.xlsx');
     await workbook.xlsx.write(res);
     res.end();
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
-app.delete('/api/ipdb/all', requireAdmin, (req, res) => { saveJSON(IP_FILE, []); res.json({ success: true }); });
+
+app.delete('/api/ipdb/all', requireAdmin, (req, res) => {
+  saveJSON(IP_FILE, []);
+  res.json({ success: true });
+});
+
 app.get('/api/ipdb/search', requireAuth, (req, res) => {
   const db = loadJSON(IP_FILE) || [];
   const q = (req.query.q || '').trim().toUpperCase();
   if (!q) return res.json([]);
-  const results = db.filter(row => Object.values(row).some(v => v !== null && v !== undefined && v.toString().toUpperCase().includes(q))).slice(0, 50);
+  const results = db.filter(row =>
+    Object.values(row).some(v => v !== null && v !== undefined && v.toString().toUpperCase().includes(q))
+  ).slice(0, 50);
   res.json(results);
 });
 app.get('/api/ipdb/info', requireAuth, (req, res) => {
@@ -345,9 +442,12 @@ app.get('/api/ipdb/info', requireAuth, (req, res) => {
   res.json({ rows: db.length, columns });
 });
 
+// Historico de pings
 const ESMAX_HIST_FILE = './data/esmax_historico.json';
 if (!fs.existsSync(ESMAX_HIST_FILE)) saveJSON(ESMAX_HIST_FILE, {});
-app.get('/api/esmax/historico', requireAuth, (req, res) => { res.json(loadJSON(ESMAX_HIST_FILE) || {}); });
+app.get('/api/esmax/historico', requireAuth, (req, res) => {
+  res.json(loadJSON(ESMAX_HIST_FILE) || {});
+});
 app.post('/api/esmax/historico', requireAuth, (req, res) => {
   const { id, avg, loss, estado, hora } = req.body;
   const hist = loadJSON(ESMAX_HIST_FILE) || {};
@@ -358,10 +458,17 @@ app.post('/api/esmax/historico', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
+// ── BACKUPS PANORAMA ──────────────────────────────────────────────────────────
 const PALO_BACKUP_DIR = '/opt/paloalto-backup';
 app.get('/api/palo/backups', requireAuth, (req, res) => {
   try {
-    const files = fs.readdirSync(PALO_BACKUP_DIR).filter(f => f.endsWith('.xml')).map(f => { const stat = fs.statSync(path.join(PALO_BACKUP_DIR, f)); return { name: f, size: stat.size, fecha: stat.mtime }; }).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    const files = fs.readdirSync(PALO_BACKUP_DIR)
+      .filter(f => f.endsWith('.xml'))
+      .map(f => {
+        const stat = fs.statSync(path.join(PALO_BACKUP_DIR, f));
+        return { name: f, size: stat.size, fecha: stat.mtime };
+      })
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
     res.json(files);
   } catch(e) { res.json([]); }
 });
@@ -378,6 +485,7 @@ app.get('/api/hoja/:sheet', requireAuth, (req, res) => {
   res.json(ms[sheet]);
 });
 
+
 app.post('/api/multisheet', requireAdmin, (req, res) => {
   const { sheet, data } = req.body;
   if(!sheet || !data) return res.json({ success: false, message: 'Datos incompletos' });
@@ -385,8 +493,10 @@ app.post('/api/multisheet', requireAdmin, (req, res) => {
   if(!ms[sheet]) ms[sheet] = [];
   ms[sheet].push(data);
   saveJSON(MULTISHEET_FILE, ms);
+  logAudit(req, 'MULTISHEET_CREAR', 'Hoja: ' + sheet);
   res.json({ success: true });
 });
+
 app.put('/api/multisheet', requireAdmin, (req, res) => {
   const { sheet, keyField, keyValue, data } = req.body;
   const ms = loadJSON(MULTISHEET_FILE) || {};
@@ -396,26 +506,34 @@ app.put('/api/multisheet', requireAdmin, (req, res) => {
     return row;
   });
   saveJSON(MULTISHEET_FILE, ms);
+  logAudit(req, 'MULTISHEET_EDITAR', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue);
   res.json({ success: true });
 });
+
 app.delete('/api/multisheet', requireAdmin, (req, res) => {
   const { sheet, keyField, keyValue } = req.body;
   const ms = loadJSON(MULTISHEET_FILE) || {};
   if(!ms[sheet]) return res.json({ success: false, message: 'Hoja no encontrada' });
   ms[sheet] = ms[sheet].filter(row => (row[keyField]||'').toString().trim() !== keyValue.toString().trim());
   saveJSON(MULTISHEET_FILE, ms);
+  logAudit(req, 'MULTISHEET_ELIMINAR', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue);
   res.json({ success: true });
 });
 
+
+// ── BD_IPO ────────────────────────────────────────────────────────────────────
 app.get('/api/ipo/search', requireAuth, (req, res) => {
   const q = (req.query.q || '').trim().toUpperCase();
   const ms = loadJSON(MULTISHEET_FILE) || {};
   const rows = ms['BD_Ipo'] || ms['BD_IPO'] || ms['BD_ipo'] || [];
   if (!q) return res.json(rows.slice(0, 500));
-  const result = rows.filter(row => Object.values(row).some(v => (v || '').toString().toUpperCase().includes(q)));
+  const result = rows.filter(row =>
+    Object.values(row).some(v => (v || '').toString().toUpperCase().includes(q))
+  );
   res.json(result.slice(0, 500));
 });
 
+// ── BACKUP GOOGLE DRIVE ──────────────────────────────────────────────────────
 app.post('/api/backup/drive', requireAdmin, (req, res) => {
   const { exec } = require('child_process');
   exec('/home/ubuntu/backup_queulat.sh', (error, stdout, stderr) => {
@@ -424,24 +542,41 @@ app.post('/api/backup/drive', requireAdmin, (req, res) => {
   });
 });
 
+// ── FORTINET UPGRADE PATH ────────────────────────────────────────────────────
 app.post('/api/fortinet/upgrade-path', requireAuth, async (req, res) => {
   const { model, current_version, target_version } = req.body;
-  if (!model || !current_version || !target_version) return res.json({ success: false, message: 'Faltan parámetros' });
+  if (!model || !current_version || !target_version)
+    return res.json({ success: false, message: 'Faltan parámetros' });
   try {
     const https = require('https');
     const postData = 'product_slug=fortigate&model='+encodeURIComponent(model)+'&current_version='+encodeURIComponent(current_version)+'&target_version='+encodeURIComponent(target_version);
-    const options = { hostname: 'docs.fortinet.com', path: '/upgrade-tool/upgrade-path', method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(postData) } };
+    const options = {
+      hostname: 'docs.fortinet.com',
+      path: '/upgrade-tool/upgrade-path',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
     const data = await new Promise((resolve, reject) => {
-      const req2 = https.request(options, r => { let body = ''; r.on('data', chunk => body += chunk); r.on('end', () => resolve(body)); });
+      const req2 = https.request(options, r => {
+        let body = '';
+        r.on('data', chunk => body += chunk);
+        r.on('end', () => resolve(body));
+      });
       req2.on('error', reject);
       req2.write(postData);
       req2.end();
     });
     const json = JSON.parse(data);
     res.json({ success: true, path: json.result.path || [] });
-  } catch(e) { res.json({ success: false, message: e.message }); }
+  } catch(e) {
+    res.json({ success: false, message: e.message });
+  }
 });
 
+// ── FORTINET FIRMWARE ────────────────────────────────────────────────────────
 const fortinetUpload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
@@ -454,19 +589,24 @@ const fortinetUpload = multer({
   }),
   limits: { fileSize: 500 * 1024 * 1024 }
 });
+
 app.post('/api/fortinet/upload/:model', requireAdmin, (req, res, next) => {
   fortinetUpload.single('file')(req, res, (err) => {
     if (err) return res.json({ success: false, message: err.message });
     if (!req.file) return res.json({ success: false, message: 'No se recibió archivo' });
+    logAudit(req, 'FORTINET_FIRMWARE_SUBIR', 'Modelo: ' + req.params.model + ', Archivo: ' + req.file.originalname);
     res.json({ success: true, filename: req.file.originalname });
   });
 });
+
 app.delete('/api/fortinet/:model/:filename', requireAdmin, (req, res) => {
   const filePath = path.join(__dirname, 'public', 'fortinet', req.params.model, req.params.filename);
   if (!fs.existsSync(filePath)) return res.json({ success: false, message: 'Archivo no encontrado' });
   fs.unlinkSync(filePath);
+  logAudit(req, 'FORTINET_FIRMWARE_ELIMINAR', 'Modelo: ' + req.params.model + ', Archivo: ' + req.params.filename);
   res.json({ success: true });
 });
+
 app.get('/api/fortinet/list', requireAuth, (req, res) => {
   const base = path.join(__dirname, 'public', 'fortinet');
   if (!fs.existsSync(base)) return res.json([]);
@@ -476,33 +616,43 @@ app.get('/api/fortinet/list', requireAuth, (req, res) => {
     entries.forEach(e => {
       const full = path.join(dir, e);
       const rel = prefix ? prefix+'/'+e : e;
-      if (fs.statSync(full).isDirectory()) files = files.concat(getAllFiles(full, rel));
-      else files.push({ file: e, path: rel });
+      if (fs.statSync(full).isDirectory()) {
+        files = files.concat(getAllFiles(full, rel));
+      } else {
+        files.push({ file: e, path: rel });
+      }
     });
     return files;
   };
   const models = fs.readdirSync(base).filter(f => fs.statSync(path.join(base, f)).isDirectory());
-  const result = models.map(model => { const files = getAllFiles(path.join(base, model), ''); return { model, files }; }).filter(m => m.files.length > 0);
+  const result = models.map(model => {
+    const files = getAllFiles(path.join(base, model), '');
+    return { model, files };
+  }).filter(m => m.files.length > 0);
   res.json(result);
 });
 
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 app.listen(PORT, () => { console.log('NetQuery corriendo en http://localhost:' + PORT); });
 
+// ── BACKUP AUTOMÁTICO SEMANAL BD (Domingo 23:59) ──
 function msHasta(hora, minuto, diaSemana = null, diaMes = null) {
   const ahora = new Date();
   const objetivo = new Date(ahora);
   if (diaSemana !== null) {
+    // Próximo día de la semana (0=Dom, 1=Lun, ... 6=Sab)
     let diff = diaSemana - ahora.getDay();
     if (diff <= 0) diff += 7;
     objetivo.setDate(ahora.getDate() + diff);
   } else if (diaMes !== null) {
+    // Próximo día del mes
     objetivo.setDate(diaMes);
     if (objetivo <= ahora) objetivo.setMonth(objetivo.getMonth() + 1);
   }
   objetivo.setHours(hora, minuto, 0, 0);
   return objetivo - ahora;
 }
+
 async function ejecutarBackupBD() {
   try {
     const multisheet = loadJSON(MULTISHEET_FILE);
@@ -521,26 +671,46 @@ async function ejecutarBackupBD() {
     }
     await workbook.xlsx.writeFile(xlsxFile);
     console.log(`[Backup BD] Backup creado: ${filename} (${totalRows} registros)`);
-  } catch(e) { console.error('[Backup BD] Error en backup:', e.message); }
+  } catch(e) {
+    console.error('[Backup BD] Error en backup:', e.message);
+  }
 }
+
 function limpiarBackupAntiguo() {
   try {
-    const archivos = fs.readdirSync(BACKUP_DIR).filter(f => f.startsWith('backup-') && f.endsWith('.xlsx')).sort();
+    const archivos = fs.readdirSync(BACKUP_DIR)
+      .filter(f => f.startsWith('backup-') && f.endsWith('.xlsx'))
+      .sort(); // orden ascendente = más antiguo primero
     if (archivos.length > 0) {
       const masAntiguo = archivos[0];
       fs.unlinkSync(path.join(BACKUP_DIR, masAntiguo));
       console.log(`[Backup BD] Backup eliminado (más antiguo): ${masAntiguo}`);
-    } else { console.log('[Backup BD] No hay backups para eliminar'); }
-  } catch(e) { console.error('[Backup BD] Error limpieza:', e.message); }
+    } else {
+      console.log('[Backup BD] No hay backups para eliminar');
+    }
+  } catch(e) {
+    console.error('[Backup BD] Error limpieza:', e.message);
+  }
 }
+
 function programarBackupBD() {
+  // Backup cada domingo 23:59
   const msBackup = msHasta(23, 59, 0);
   const proxDomingo = new Date(Date.now() + msBackup);
-  setTimeout(() => { ejecutarBackupBD(); setInterval(ejecutarBackupBD, 7 * 24 * 60 * 60 * 1000); }, msBackup);
+  setTimeout(() => {
+    ejecutarBackupBD();
+    setInterval(ejecutarBackupBD, 7 * 24 * 60 * 60 * 1000);
+  }, msBackup);
   console.log(`[Backup BD] Próximo backup domingo: ${proxDomingo.toLocaleString('es-CL')}`);
+
+  // Limpieza cada día 1 del mes 00:00
   const msLimpieza = msHasta(0, 0, null, 1);
   const proxPrimero = new Date(Date.now() + msLimpieza);
-  setTimeout(() => { limpiarBackupAntiguo(); setInterval(limpiarBackupAntiguo, 30 * 24 * 60 * 60 * 1000); }, msLimpieza);
+  setTimeout(() => {
+    limpiarBackupAntiguo();
+    setInterval(limpiarBackupAntiguo, 30 * 24 * 60 * 60 * 1000);
+  }, msLimpieza);
   console.log(`[Backup BD] Próxima limpieza día 1: ${proxPrimero.toLocaleString('es-CL')}`);
 }
+
 programarBackupBD();
