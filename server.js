@@ -737,23 +737,23 @@ function limpiarBackupAntiguo() {
 }
 
 function programarBackupBD() {
-  // Backup cada domingo 23:59
-  const msBackup = msHasta(23, 59, 0);
-  const proxDomingo = new Date(Date.now() + msBackup);
-  setTimeout(() => {
-    ejecutarBackupBD();
-    setInterval(ejecutarBackupBD, 7 * 24 * 60 * 60 * 1000);
-  }, msBackup);
-  console.log(`[Backup BD] Próximo backup domingo: ${proxDomingo.toLocaleString('es-CL')}`);
-
-  // Limpieza cada día 1 del mes 00:00
-  const msLimpieza = msHasta(0, 0, null, 1);
-  const proxPrimero = new Date(Date.now() + msLimpieza);
-  setTimeout(() => {
-    limpiarBackupAntiguo();
-    setInterval(limpiarBackupAntiguo, 30 * 24 * 60 * 60 * 1000);
-  }, msLimpieza);
-  console.log(`[Backup BD] Próxima limpieza día 1: ${proxPrimero.toLocaleString('es-CL')}`);
+  // Polling cada minuto: evita setTimeout con valores > 2147483647ms (limite 32-bit Node.js)
+  let backupEjecutado = false;
+  let limpiezaEjecutada = false;
+  console.log("[Backup BD] Scheduler iniciado (polling cada minuto)");
+  setInterval(() => {
+    const ahora = new Date();
+    const dia = ahora.getDay();
+    const hora = ahora.getHours();
+    const min = ahora.getMinutes();
+    const diaMes = ahora.getDate();
+    if(dia===0 && hora===23 && min===59) {
+      if(!backupEjecutado) { ejecutarBackupBD(); backupEjecutado=true; }
+    } else { backupEjecutado=false; }
+    if(diaMes===1 && hora===0 && min===0) {
+      if(!limpiezaEjecutada) { limpiarBackupAntiguo(); limpiezaEjecutada=true; }
+    } else { limpiezaEjecutada=false; }
+  }, 60 * 1000);
 }
 
 programarBackupBD();
