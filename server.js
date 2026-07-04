@@ -289,7 +289,7 @@ app.post('/api/esmax/backup', requireAdmin, async (req, res) => {
     }
     res.json({ success: true, file: filename });
   } catch(e) {
-    res.json({ success: false, message: e.message });
+    console.error('[Fortinet upgrade-path error]', e.message, e.stack); res.json({ success: false, message: e.message });
   }
 });
 
@@ -543,10 +543,13 @@ app.post('/api/backup/drive', requireAdmin, (req, res) => {
 });
 
 // ── FORTINET UPGRADE PATH ────────────────────────────────────────────────────
+const _fortinetCache = {};
 app.post('/api/fortinet/upgrade-path', requireAuth, async (req, res) => {
   const { model, current_version, target_version } = req.body;
   if (!model || !current_version || !target_version)
     return res.json({ success: false, message: 'Faltan parámetros' });
+  const cacheKey = model+'|'+current_version+'|'+target_version;
+  if (_fortinetCache[cacheKey]) return res.json(_fortinetCache[cacheKey]);
   try {
     const https = require('https');
     const postData = 'product_slug=fortigate&model='+encodeURIComponent(model)+'&current_version='+encodeURIComponent(current_version)+'&target_version='+encodeURIComponent(target_version);
@@ -569,8 +572,13 @@ app.post('/api/fortinet/upgrade-path', requireAuth, async (req, res) => {
       req2.write(postData);
       req2.end();
     });
+    if(!data || data.trim() === '') return res.json({ success: false, message: 'Respuesta vacía de Fortinet' });
+    if(!data || data.trim() === '') return res.json({ success: false, message: 'Respuesta vacía de Fortinet' });
     const json = JSON.parse(data);
-    res.json({ success: true, path: json.result.path || [] });
+    if(!json.result) return res.json({ success: false, message: 'Sin resultado de Fortinet' });
+    const result = { success: true, path: json.result.path || [], available_from_extended: json.result.available_from_extended || [] };
+    if(result.path.length > 0) _fortinetCache[cacheKey] = result;
+    res.json(result);
   } catch(e) {
     res.json({ success: false, message: e.message });
   }

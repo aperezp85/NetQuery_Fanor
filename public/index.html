@@ -882,34 +882,64 @@ async function actualizarUrlFortinet(){
   resultado.style.display='block';
   resultado.innerHTML='<div style="color:var(--muted);padding:10px">Consultando ruta en Fortinet...</div>';
   let versionesSalto = [];
+  let hopsResultadoHtml = '';
   try {
+    const FORTINET_SLUG_MAP = {
+      'FGT_40F':'FGT40F','FGT_40F_3G4G':'FGT40F3G4G','FWF_40F_3G4G':'FWF40F3G4G',
+      '100E':'FG100E','100F':'FG100F','200F':'FG200F','200G':'FGT200G',
+      '60E':'FGT60E','60F':'FGT60F','70F':'FGT70F',
+      '80E':'FGT80E','80F':'FGT80F',
+      '400E':'FGT400E','50E':'FortiGate-50E','600E':'FGT600E'
+    };
+    const _slugKey = subKey||modelKey||'';
+    const modelFortinet = FORTINET_SLUG_MAP[_slugKey] || _slugKey.replace(/_/g,'').toUpperCase();
     const ruta = await fetch('/api/fortinet/upgrade-path', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:modelKey, current_version:from, target_version:to})
+      body:JSON.stringify({model:modelFortinet, current_version:from, target_version:to})
     }).then(r=>r.json());
     if(ruta.success && ruta.path.length){
-      // path viene como [{version:"7.0.7 F", build_number:"0367", hop:"current"}, ...]
-      versionesSalto = ruta.path.map(s=>s.version.split(' ')[0]);
-      // Diagrama de saltos
+      versionesSalto = ruta.path.map(s=>({version:s.version, type:s.type||''}));
+      const nHops = ruta.path.length - 2;
+      const primera = ruta.path[0].version;
+      const ultima = ruta.path[ruta.path.length-1].version;
       const hopsHtml = ruta.path.map((s,i)=>{
-        const ver = s.version;
-        const isFirst = s.hop==='current';
-        const isLast = s.hop==='target';
-        const color = isFirst?'#60a5fa':isLast?'#fca5a5':'var(--muted)';
-        const bg = isFirst?'rgba(59,130,246,0.1)':isLast?'rgba(239,68,68,0.1)':'var(--bg3)';
-        const border = isFirst?'1px solid #3b82f6':isLast?'1px solid #ef4444':'1px solid var(--border)';
-        return (i>0?'<span style="color:var(--muted);margin:0 6px">→</span>':'')
-          +'<span style="padding:5px 14px;border-radius:20px;font-size:13px;font-weight:500;font-family:Space Mono,monospace;background:'+bg+';color:'+color+';border:'+border+'">'+escHtml(ver)+'</span>';
+        const isFirst = i===0;
+        const isLast = i===ruta.path.length-1;
+        const label = isFirst ? 'CURRENT' : isLast ? 'TARGET' : 'HOP '+i;
+        const labelColor = isLast ? '#fca5a5' : 'var(--muted)';
+        const boxBg = isLast ? '#ef4444' : 'var(--bg3)';
+        const boxColor = isLast ? '#fff' : 'var(--text)';
+        const boxBorder = isLast ? '1px solid #ef4444' : '1px solid var(--border)';
+        const box = '<div style="display:flex;flex-direction:column;align-items:center;gap:6px">'
+          +'<span style="font-size:10px;font-weight:600;letter-spacing:1px;color:'+labelColor+'">'+label+'</span>'
+          +'<span style="padding:8px 16px;border-radius:8px;font-size:14px;font-weight:600;font-family:\'Space Mono\',monospace;background:'+boxBg+';color:'+boxColor+';border:'+boxBorder+'">'+escHtml(s.version)+'</span>'
+          +'</div>';
+        return (i>0?'<span style="color:var(--muted);font-size:18px;margin:0 4px;align-self:center;margin-top:18px">→</span>':'')+box;
       }).join('');
-      resultado.innerHTML = '<div style="font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">'
-        +'Ruta recomendada — '+(ruta.path.length-1)+' saltos</div>'
-        +'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:16px">'+hopsHtml+'</div>';
+      const tablaHtml = ruta.path.map((s,i)=>{
+        const isFirst = i===0;
+        const isLast = i===ruta.path.length-1;
+        const badge = isFirst ? ' <span style="font-size:10px;background:rgba(59,130,246,0.2);color:#60a5fa;padding:1px 6px;border-radius:4px;margin-left:6px">CURRENT</span>'
+                    : isLast ? ' <span style="font-size:10px;background:rgba(239,68,68,0.2);color:#fca5a5;padding:1px 6px;border-radius:4px;margin-left:6px">TARGET</span>' : '';
+        const rowBg = isLast ? 'rgba(239,68,68,0.08)' : isFirst ? 'rgba(59,130,246,0.06)' : '';
+        return '<tr style="border-bottom:1px solid var(--border);background:'+rowBg+'">'
+          +'<td style="padding:8px 12px;font-size:13px;font-weight:500">'+escHtml(s.version)+badge+'</td>'
+          +'<td style="padding:8px 12px;font-size:13px;color:var(--muted);font-family:\'Space Mono\',monospace">'+escHtml(s.build_number||'')+'</td>'
+          +'<td style="padding:8px 12px;font-size:12px;color:var(--muted)">'+escHtml(s.type||'')+'</td>'
+          +'</tr>';
+      }).join('');
+      hopsResultadoHtml = '<div style="margin-bottom:20px">'
+        +'<div style="font-family:\'Space Mono\',monospace;font-size:22px;font-weight:700;margin-bottom:4px">'
+        +'<span style="color:#ef4444">'+escHtml(primera)+'</span> <span style="color:var(--muted)">→</span> <span style="color:var(--text)">'+escHtml(ultima)+'</span></div>'
+        +'<div style="font-size:12px;color:var(--muted)">'+(nHops>=0?nHops:0)+' saltos</div>'
+        +'</div>'
+        +'<div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:24px;padding:16px;background:var(--bg3);border-radius:10px">'+hopsHtml+'</div>'
     } else {
-      resultado.innerHTML='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No se encontró ruta para esas versiones.</div>';
+      hopsResultadoHtml='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No se encontró ruta para esas versiones.</div>';
     }
   } catch(e){
-    resultado.innerHTML='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">Error al consultar Fortinet.</div>';
+    hopsResultadoHtml='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">Error al consultar Fortinet.</div>';
   }
   // Mostrar firmware filtrados abajo del formulario
   if(modelData.length){
@@ -919,7 +949,7 @@ async function actualizarUrlFortinet(){
     if(versionesSalto.length){
       files = files.filter(f => {
         const ver = extraerVersion(f.file);
-        return versionesSalto.some(v=>ver===v);
+        return versionesSalto.some(v=>ver===v.version);
       });
     } else if(from && to){
       const verToNum = v => {
@@ -948,7 +978,7 @@ async function actualizarUrlFortinet(){
     // Ordenar archivos por versión y extraer build
     const extraerBuild = fn => { const m = fn.match(/build(\d+)/); return m ? m[1] : ''; };
     const verToNum2 = v => { const p = (v||'').split('.').map(Number); return p[0]*10000+(p[1]||0)*100+(p[2]||0); };
-    resultado.innerHTML = '<div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted)">Firmware disponibles para '+escHtml(model)+(from&&to?' ('+escHtml(from)+' → '+escHtml(to)+')':'')+'</div>'+
+    resultado.innerHTML = hopsResultadoHtml + '<div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted)">Firmware disponibles para '+escHtml(model)+(from&&to?' ('+escHtml(from)+' → '+escHtml(to)+')':'')+'</div>'+
       (files.length===0 ? '<div style="color:var(--muted);font-size:13px">No hay firmware para esas versiones.</div>' :
       Object.entries(grupos).map(([sub,flist])=>{
         const sorted = [...flist].sort((a,b)=>verToNum2(extraerVersion(a.file))-verToNum2(extraerVersion(b.file)));
@@ -958,6 +988,7 @@ async function actualizarUrlFortinet(){
             <thead><tr style="border-bottom:1px solid var(--border)">
               <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 12px;font-weight:500">Versión</th>
               <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 12px;font-weight:500">Build</th>
+              <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 12px;font-weight:500">Tipo</th>
               <th style="text-align:left;font-size:11px;color:var(--muted);padding:6px 12px;font-weight:500">Archivo</th>
               <th></th>
             </tr></thead>
@@ -970,6 +1001,7 @@ async function actualizarUrlFortinet(){
               return `<tr style="border-bottom:1px solid var(--border);background:${rowColor}">
                 <td style="padding:8px 12px;font-size:13px;font-weight:500;color:${isTo?'#fca5a5':isFrom?'#60a5fa':'var(--text)'}">${escHtml(ver)}${isFrom?' <span style="font-size:10px;background:rgba(59,130,246,0.2);color:#60a5fa;padding:1px 6px;border-radius:4px">ACTUAL</span>':''}${isTo?' <span style="font-size:10px;background:rgba(239,68,68,0.2);color:#fca5a5;padding:1px 6px;border-radius:4px">TARGET</span>':''}</td>
                 <td style="padding:8px 12px;font-size:13px;color:var(--muted);font-family:'Space Mono',monospace">${escHtml(build)}</td>
+                <td style="padding:8px 12px;font-size:12px;color:var(--muted)">${escHtml((versionesSalto.find(v=>v.version===ver)||{type:''}).type)}</td>
                 <td style="padding:8px 12px;font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;word-break:break-all">${escHtml(f.file)}</td>
                 <td style="padding:8px 12px;white-space:nowrap">
                   <a href="/fortinet/${escHtml(modelData[0].model)}/${escHtml(f.path)}" download style="font-size:12px;padding:4px 12px;border-radius:6px;background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);text-decoration:none">↓ Descargar</a>
@@ -982,7 +1014,7 @@ async function actualizarUrlFortinet(){
       }).join(''));
   } else {
     resultado.style.display='block';
-    resultado.innerHTML='<div style="color:var(--muted);font-size:13px">No hay firmware cargados para '+escHtml(model)+'</div>';
+    resultado.innerHTML = hopsResultadoHtml + '<div style="color:var(--muted);font-size:13px">No hay firmware cargados para '+escHtml(model)+'</div>';
   }
   // Actualizar listado principal
   renderFortinet(modelData.length ? modelData : fortinetData);
@@ -1368,7 +1400,17 @@ async function openModalEditar(){
   const codigo = lastResult.Codigo_Servicio||lastResult.CODIGO||'';
   document.getElementById('modal-registro-title').textContent='Editar: '+codigo;
   document.getElementById('modal-registro-error').style.display='none';
-  const cols = Object.keys(lastResult).filter(c=>c!=='_sheet');
+  // Fix: obtener columnas completas de la hoja para no perder campos que el registro no tenia aun
+  let cols = Object.keys(lastResult).filter(c=>c!=='_sheet');
+  try {
+    const sheetName = lastSheet || 'BD_Servicios';
+    const r = await fetch('/api/hoja/'+encodeURIComponent(sheetName)).then(r=>r.json());
+    if(r && r.length>0){
+      const colsSheet = Object.keys(r[0]).filter(c=>c!=='_sheet');
+      const colSet = new Set([...colsSheet, ...cols]);
+      cols = [...colSet];
+    }
+  }catch(e){}
   window._servicioCols = cols;
   window._servicioSheet = lastSheet || 'BD_Servicios';
   const oltHtmlE = '<div id="olt-section" style="display:none;margin-top:14px;border:0.5px solid #10b981;border-radius:8px;padding:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:11px;font-weight:500;color:#10b981;text-transform:uppercase;letter-spacing:1px">Datos OLT — BD_Clientes_OLT</span><span style="font-size:11px;color:var(--muted);margin-left:4px">— opcional</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>OLT</label><input type="text" id="olt-OLT" placeholder="CLRMMVEOLT01 (...)"></div><div class="field"><label>FRAME</label><input type="text" id="olt-FRAME" placeholder="0"></div><div class="field"><label>SLOT</label><input type="text" id="olt-SLOT" placeholder="1"></div><div class="field"><label>PORT</label><input type="text" id="olt-PORT" placeholder="11"></div><div class="field"><label>ONU ID</label><input type="text" id="olt-ONU_ID" placeholder="3"></div></div></div>';
