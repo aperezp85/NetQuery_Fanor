@@ -684,6 +684,27 @@ app.get('/api/fortinet/list', requireAuth, (req, res) => {
   res.json(result);
 });
 
+// ── HEALTH CHECK ─────────────────────────────────────────────────────────────
+app.get('/api/health', (req, res) => {
+  try {
+    const ms = fs.existsSync(MULTISHEET_FILE) ? fs.statSync(MULTISHEET_FILE) : null;
+    const users = fs.existsSync(USERS_FILE) ? fs.statSync(USERS_FILE) : null;
+    const memMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
+    res.json({
+      status: 'ok',
+      uptime: Math.round(process.uptime()) + 's',
+      memoria_mb: memMB,
+      archivos: {
+        multisheet: ms ? { size_kb: Math.round(ms.size/1024), modificado: ms.mtime } : null,
+        users: users ? { size_kb: Math.round(users.size/1024), modificado: users.mtime } : null
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch(e) {
+    res.status(500).json({ status: 'error', message: e.message });
+  }
+});
+
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 app.listen(PORT, () => { console.log('NetQuery corriendo en http://localhost:' + PORT); });
 
