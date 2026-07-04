@@ -27,6 +27,41 @@ const DB_FILE = './data/database.json';
 const BACKUP_DIR = './data/backups';
 function loadJSON(file) { if (!fs.existsSync(file)) return null; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function saveJSON(file, data) { fs.writeFileSync(file, JSON.stringify(data, null, 2)); }
+
+// ── VALIDACIÓN Y SANITIZACIÓN ─────────────────────────────────────────────────
+function sanitizeText(val, maxLen) {
+  if (val === null || val === undefined) return '';
+  let s = String(val);
+  s = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  s = s.trim();
+  if (maxLen && s.length > maxLen) s = s.slice(0, maxLen);
+  return s;
+}
+function sanitizeObject(obj, maxLen) {
+  if (!obj || typeof obj !== 'object') return {};
+  const out = {};
+  Object.keys(obj).forEach(k => {
+    const cleanKey = sanitizeText(k, 100);
+    if (!cleanKey) return;
+    const v = obj[k];
+    out[cleanKey] = (typeof v === 'string') ? sanitizeText(v, maxLen || 500) : v;
+  });
+  return out;
+}
+function sanitizeIP(val) {
+  let s = sanitizeText(val, 50);
+  if (/^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/.test(s)) return s;
+  return s.replace(/[^0-9./]/g, '');
+}
+function sanitizeModelStrict(val) {
+  const s = sanitizeText(val, 60);
+  if (!/^[A-Za-z0-9_\-]+$/.test(s)) return null;
+  return s;
+}
+function isValidUsername(val) {
+  const s = sanitizeText(val, 60);
+  return /^[A-Za-z0-9._\-]{3,60}$/.test(s);
+}
 if (!fs.existsSync('./data')) fs.mkdirSync('./data', { recursive: true });
 if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
 if (!fs.existsSync('./uploads')) fs.mkdirSync('./uploads', { recursive: true });

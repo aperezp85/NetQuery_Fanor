@@ -551,6 +551,10 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             <select id="fnt-model" onchange="onFntModelChange()" style="padding:8px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
               <option value="">Cargando modelos...</option>
             </select>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+              <input type="text" id="fnt-model-manual" placeholder="Ej: FG200G, FG600E..." style="flex:1;padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:12px" oninput="onFntModelManual()" autocomplete="off">
+              <span style="font-size:11px;color:var(--muted);white-space:nowrap">slug manual</span>
+            </div>
           </div>
           <div class="field">
             <label>Versión actual</label>
@@ -884,15 +888,37 @@ async function actualizarUrlFortinet(){
   let versionesSalto = [];
   let hopsResultadoHtml = '';
   try {
+    // Slugs confirmados via API docs.fortinet.com
     const FORTINET_SLUG_MAP = {
-      'FGT_40F':'FGT40F','FGT_40F_3G4G':'FGT40F3G4G','FWF_40F_3G4G':'FWF40F3G4G',
-      '100E':'FG100E','100F':'FG100F','200F':'FG200F','200G':'FGT200G',
-      '60E':'FGT60E','60F':'FGT60F','70F':'FGT70F',
-      '80E':'FGT80E','80F':'FGT80F',
-      '400E':'FGT400E','50E':'FortiGate-50E','600E':'FGT600E'
+      // 40F y variantes
+      'FGT_40F':'FGT40F','40F':'FGT40F',
+      'FWF_40F':'FWF40F','FWF40F':'FWF40F',
+      // 60E/60F
+      '60E':'FGT60E','FGT_60E':'FGT60E',
+      '60F':'FGT60F','FGT_60F':'FGT60F',
+      // 70F
+      '70F':'FGT70F','FGT_70F':'FGT70F',
+      // 80E/80F
+      '80E':'FGT80E','FGT_80E':'FGT80E',
+      '80F':'FGT80F','FGT_80F':'FGT80F',
+      // 100E/100F
+      '100E':'FG100E','FGT_100E':'FG100E',
+      '100F':'FG100F','FGT_100F':'FG100F',
+      // 200F
+      '200F':'FG200F','FGT_200F':'FG200F',
+      // Sin ruta confirmada en API publica — se usa slug directo y se muestra aviso
+      '200G':'FG200G','FGT_200G':'FG200G',
+      '400E':'FG400E','FGT_400E':'FG400E',
+      '50E':'FG50E','FGT_50E':'FG50E',
+      '600E':'FG600E','FGT_600E':'FG600E',
+      'FGT_40F_3G4G':'FGT40F3G4G','FWF_40F_3G4G':'FWF40F3G4G'
     };
+    // Modelos sin ruta publicada en la API de Fortinet
+    const SIN_RUTA_API = new Set(['FG200G','FG400E','FG50E','FG600E','FGT40F3G4G','FWF40F3G4G']);
     const _slugKey = subKey||modelKey||'';
-    const modelFortinet = FORTINET_SLUG_MAP[_slugKey] || _slugKey.replace(/_/g,'').toUpperCase();
+    // Si hay input manual, toma prioridad
+    const manualInput = (document.getElementById('fnt-model-manual')||{}).value||'';
+    const modelFortinet = manualInput.trim() || FORTINET_SLUG_MAP[_slugKey] || _slugKey.replace(/_/g,'').toUpperCase();
     const ruta = await fetch('/api/fortinet/upgrade-path', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -936,7 +962,14 @@ async function actualizarUrlFortinet(){
         +'</div>'
         +'<div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:24px;padding:16px;background:var(--bg3);border-radius:10px">'+hopsHtml+'</div>'
     } else {
-      hopsResultadoHtml='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No se encontró ruta para esas versiones.</div>';
+      const sinRuta = SIN_RUTA_API.has(modelFortinet);
+      hopsResultadoHtml = sinRuta
+        ? '<div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:8px;padding:12px;font-size:13px;color:#fbbf24;margin-bottom:12px">'
+          +'<strong>⚠️ Modelo sin ruta publicada</strong><br>'
+          +'<span style="color:var(--muted)">La API pública de Fortinet no tiene rutas de actualización registradas para <strong>'+modelFortinet+'</strong>. '
+          +'Consulta directamente en <a href="https://support.fortinet.com" target="_blank" style="color:#60a5fa">support.fortinet.com</a> con tu cuenta de soporte.</span>'
+          +'</div>'
+        : '<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No se encontró ruta para esas versiones. Prueba con otras versiones o verifica el modelo.</div>';
     }
   } catch(e){
     hopsResultadoHtml='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">Error al consultar Fortinet.</div>';
@@ -1068,6 +1101,21 @@ function poblarComboboxFortinet(data){
   });
 }
 
+function onFntModelManual(){
+  // Si el usuario escribe manualmente, limpiar el selector para evitar conflicto
+  const manual = (document.getElementById('fnt-model-manual')||{}).value||'';
+  if(manual.trim()){
+    const sel = document.getElementById('fnt-model');
+    if(sel) sel.value = '';
+    // Poblar versiones con un rango generico comun
+    const fromSel = document.getElementById('fnt-from');
+    const toSel = document.getElementById('fnt-to');
+    const versiones = ['6.4.5','6.4.12','7.0.1','7.0.5','7.0.10','7.0.14','7.2.1','7.2.5','7.2.9','7.4.1','7.4.4','7.4.7','7.6.0','7.6.1','7.6.2'];
+    if(fromSel) fromSel.innerHTML = '<option value="">Versión actual...</option>' + versiones.map(v=>'<option>'+v+'</option>').join('');
+    if(toSel) toSel.innerHTML = '<option value="">Versión destino...</option>' + versiones.map(v=>'<option>'+v+'</option>').join('');
+  }
+  actualizarUrlFortinet();
+}
 function onFntModelChange(){
   const sel = document.getElementById('fnt-model');
   const val = sel ? sel.value : '';
