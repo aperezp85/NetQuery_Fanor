@@ -491,7 +491,11 @@ app.post('/api/esmax/historico', requireAuth, (req, res) => {
   const { id, avg, loss, estado, hora } = req.body;
   const hist = loadJSON(ESMAX_HIST_FILE) || {};
   if (!hist[id]) hist[id] = [];
-  hist[id].push({ avg, loss, estado, hora });
+  // Guardar con timestamp para limpieza por tiempo
+  hist[id].push({ avg, loss, estado, hora, ts: Date.now() });
+  // Mantener solo ultimas 24 horas y max 100 entradas
+  const hace24h = Date.now() - 24 * 60 * 60 * 1000;
+  hist[id] = hist[id].filter(e => (e.ts || 0) > hace24h);
   if (hist[id].length > 100) hist[id] = hist[id].slice(-100);
   saveJSON(ESMAX_HIST_FILE, hist);
   res.json({ success: true });
