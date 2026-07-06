@@ -45,6 +45,7 @@ nav{display:flex;align-items:center;background:var(--bg2);border-bottom:1px soli
 .user-badge{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:13px;}
 .role-pill{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.15);color:#60a5fa;font-family:'Space Mono',monospace;}
 .role-pill.consulta{background:rgba(16,185,129,0.15);color:#34d399;}
+.role-pill.superadmin{background:rgba(239,68,68,0.15);color:#fca5a5;}
 .btn-logout{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-family:inherit;}
 .btn-logout:hover{border-color:var(--danger);color:#fca5a5;}
 main{flex:1;padding:32px 40px;max-width:1400px;width:100%;margin:0 auto;}
@@ -99,6 +100,7 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .tag.admin{background:rgba(59,130,246,0.15);color:#60a5fa;}
 .tag.consulta{background:rgba(16,185,129,0.15);color:#34d399;}
 .tag.active{background:rgba(16,185,129,0.15);color:#34d399;}
+.tag.superadmin{background:rgba(239,68,68,0.15);color:#fca5a5;}
 .tag.inactive{background:rgba(239,68,68,0.1);color:#fca5a5;}
 .tag.temporal{background:rgba(245,158,11,0.15);color:#fcd34d;}
 .btn-icon{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);transition:all 0.15s;margin-right:3px;font-size:13px;}
@@ -233,9 +235,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('ipo',this)">IPO</button>
       <button class="nav-tab" onclick="showPage('sdwan',this)">SDWAN</button>
       <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
-      <button class="nav-tab admin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
-      <button class="nav-tab admin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
-      <button class="nav-tab admin-only" onclick="showPage('auditoria',this)" style="display:none">Auditoría</button>
+      <button class="nav-tab superadmin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
+      <button class="nav-tab superadmin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
+      <button class="nav-tab superadmin-only" onclick="showPage('auditoria',this)" style="display:none">Auditoría</button>
       <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button>
     </div>
     <div class="nav-user">
@@ -473,7 +475,17 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             <button class="filter-btn" onclick="filtrarUsuarios('inactivo',this)">Inactivos</button>
           </div>
         </div>
-        <button class="btn btn-red" id="btn-eliminar-masivo" onclick="confirmarEliminacionMasiva()" style="display:none">Eliminar seleccionados</button>
+        <div id="acciones-masivas" style="display:none;align-items:center;gap:8px">
+          <span style="font-size:13px;color:var(--muted)" id="lbl-seleccionados"></span>
+          <select id="sel-rol-masivo" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
+            <option value="">Cambiar rol a...</option>
+            <option value="consulta">Consulta</option>
+            <option value="admin">Administrador</option>
+            <option value="superadmin">SuperAdmin</option>
+          </select>
+          <button class="btn btn-blue" onclick="aplicarRolMasivo()">Aplicar</button>
+          <button class="btn btn-red" onclick="confirmarEliminacionMasiva()">Eliminar seleccionados</button>
+        </div>
         <button class="btn btn-blue" onclick="openModalUser()">+ Nuevo usuario</button>
       </div>
       <div class="table-wrap">
@@ -741,13 +753,20 @@ function initApp(){
   document.getElementById('app').style.display='flex';
   document.getElementById('nav-username').textContent=currentUser.nombre||currentUser.username;
   document.getElementById('nav-role').textContent=currentUser.role;
-  document.getElementById('nav-role').className='role-pill '+(currentUser.role==='admin'?'':'consulta');
-  if(currentUser.role==='admin'){
+  const isSuperAdmin = currentUser.role==='superadmin';
+  const isAdmin = currentUser.role==='admin' || isSuperAdmin;
+  document.getElementById('nav-role').className='role-pill '+(isSuperAdmin?'superadmin':isAdmin?'':'consulta');
+  if(isAdmin){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
+  }
+  if(isSuperAdmin){
+    document.querySelectorAll('.superadmin-only').forEach(el=>el.style.display='');
     loadDbInfo();loadUsers();loadBackups();cargarAuditoria();
+  } else if(isAdmin){
+    loadDbInfo();loadBackups();
   }
   cargarPaloBackups();
-  setInterval(()=>{ if(currentUser&&currentUser.role==='admin') loadUsers(); }, 30000);
+  setInterval(()=>{ if(currentUser&&isSuperAdmin) loadUsers(); }, 30000);
   cargarInfoIPDB();
   cargarDatosIpo();
   cargarEquipos();
@@ -1958,7 +1977,7 @@ function renderUsers(){
     <td>${u.role!=='admin'?`<input type="checkbox" class="chk-user" data-id="${u.id}" onchange="actualizarBotonMasivo()" style="width:auto">`:''}</td>
     <td><strong>${escHtml(u.nombre)}</strong></td>
     <td style="font-family:Space Mono,monospace;font-size:13px">${escHtml(u.username)}</td>
-    <td><span class="tag ${u.role}">${u.role==='admin'?'Administrador':'Consulta'}</span></td>
+    <td><span class="tag ${u.role}">${u.role==='superadmin'?'SuperAdmin':u.role==='admin'?'Administrador':'Consulta'}</span></td>
     <td><span class="tag ${u.activo?'active':'inactive'}">${u.activo?'Activo':'Inactivo'}</span>${u.mustChangePassword?'<span class="tag temporal" style="margin-left:4px">Temporal</span>':''}</td>
     <td style="font-size:12px;color:var(--muted)">${formatActividad(u.lastActivity)}</td>
     <td>
@@ -1976,9 +1995,27 @@ function toggleSeleccionTodos(chk){
 }
 function actualizarBotonMasivo(){
   const seleccionados=document.querySelectorAll('.chk-user:checked').length;
-  const btn=document.getElementById('btn-eliminar-masivo');
-  if(btn) btn.style.display = seleccionados>0 ? 'inline-block' : 'none';
-  if(btn) btn.textContent = 'Eliminar seleccionados ('+seleccionados+')';
+  const div=document.getElementById('acciones-masivas');
+  const lbl=document.getElementById('lbl-seleccionados');
+  if(div) div.style.display = seleccionados>0 ? 'flex' : 'none';
+  if(lbl) lbl.textContent = seleccionados+' usuario(s) seleccionado(s)';
+}
+async function aplicarRolMasivo(){
+  const ids=Array.from(document.querySelectorAll('.chk-user:checked')).map(c=>c.dataset.id);
+  const rol=document.getElementById('sel-rol-masivo').value;
+  if(!rol){alert('Seleccione un rol');return;}
+  if(ids.length===0)return;
+  document.getElementById('confirm-msg').textContent='¿Cambiar rol a "'+rol+'" en '+ids.length+' usuario(s)?';
+  document.getElementById('confirm-ok-btn').textContent='Aplicar';
+  document.getElementById('confirm-ok-btn').onclick=async function(){
+    closeModal('modal-confirm');
+    for(const id of ids){
+      await fetch('/api/usuarios/'+id+'/rol',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:rol})});
+    }
+    document.getElementById('sel-rol-masivo').value='';
+    loadUsers();
+  };
+  document.getElementById('modal-confirm').classList.add('open');
 }
 function confirmarEliminacionMasiva(){
   const ids=Array.from(document.querySelectorAll('.chk-user:checked')).map(c=>c.dataset.id);
