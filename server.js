@@ -99,13 +99,33 @@ if (!fs.existsSync('./sessions')) fs.mkdirSync('./sessions', { recursive: true }
 if (!fs.existsSync(USERS_FILE)) { const hash = bcrypt.hashSync('Admin1234!', 10); saveJSON(USERS_FILE, [{ id: 1, username: 'admin', password: hash, role: 'admin', nombre: 'Administrador', activo: true, mustChangePassword: false }]); }
 if (!fs.existsSync(DB_FILE)) saveJSON(DB_FILE, []);
 function requireAuth(req, res, next) { if (!req.session.user) return res.status(401).json({ error: 'No autorizado' }); next(); }
-function requireAdmin(req, res, next) { if (!req.session.user || req.session.user.role !== 'admin') return res.status(403).json({ error: 'Acceso denegado' }); next(); }
+function requireAdmin(req, res, next) { if (!req.session.user || !['admin','superadmin'].includes(req.session.user.role)) return res.status(403).json({ error: 'Acceso denegado' }); next(); }
+function requireSuperAdmin(req, res, next) { if (!req.session.user || req.session.user.role !== 'superadmin') return res.status(403).json({ error: 'Acceso denegado: se requiere superadmin' }); next(); }
+function requireEditor(req, res, next) { if (!req.session.user || !['admin','superadmin'].includes(req.session.user.role)) return res.status(403).json({ error: 'Acceso denegado' }); next(); }
 const loginLimiter = rateLimit({ windowMs: 15*60*1000, max: 10, message: { success: false, message: 'Demasiados intentos, espera 15 minutos' } });
 app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; if (!username || !password || !isValidUsername(username)) { logAudit(req, 'LOGIN_FALLIDO', 'Formato invalido: ' + sanitizeText(String(username||''), 60)); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); const _ip = req.headers['x-real-ip'] || req.ip || ''; _loginFallidosPorIP[_ip] = (_loginFallidosPorIP[_ip] || 0) + 1; if (_loginFallidosPorIP[_ip] === 3) { sendAlert('Intentos fallidos de login', 'Se detectaron <strong>3 intentos fallidos</strong> desde IP <strong>' + _ip + '</strong> con usuario <strong>' + username + '</strong>.'); } return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; const _ipLogin = req.headers['x-real-ip'] || req.ip || ''; delete _loginFallidosPorIP[_ipLogin]; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: req.session.user }); });
 app.post('/api/logout', (req, res) => { logAudit(req, 'LOGOUT', ''); req.session.destroy(() => res.json({ success: true })); });
 app.get('/api/me', requireAuth, (req, res) => { res.json(req.session.user); });
 app.post('/api/change-password', requireAuth, (req, res) => { const newPassword = sanitizeText(req.body.newPassword, 200); if (!newPassword || newPassword.length < 6) return res.json({ success: false, message: 'Minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id === req.session.user.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(newPassword, 10); users[idx].mustChangePassword = false; saveJSON(USERS_FILE, users); req.session.user.mustChangePassword = false; logAudit(req, 'CAMBIO_PASSWORD_PROPIO', ''); res.json({ success: true }); });
 const MULTISHEET_FILE = './data/multisheet.json';
+
+// ── SUPERADMIN ───────────────────────────────────────────────────────────────
+app.put('/api/usuarios/:id/rol', requireSuperAdmin, (req, res) => {
+  const users = loadJSON(USERS_FILE);
+  const idx = users.findIndex(u => u.id == req.params.id);
+  if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' });
+  const nuevoRol = req.body.role;
+  if (!['consulta','admin','superadmin'].includes(nuevoRol)) return res.json({ success: false, message: 'Rol invalido' });
+  // No se puede quitar el rol superadmin al unico superadmin
+  if (users[idx].role === 'superadmin' && nuevoRol !== 'superadmin') {
+    const superadmins = users.filter(u => u.role === 'superadmin');
+    if (superadmins.length <= 1) return res.json({ success: false, message: 'No puedes degradar al unico superadmin' });
+  }
+  users[idx].role = nuevoRol;
+  saveJSON(USERS_FILE, users);
+  logAudit(req, 'CAMBIO_ROL', 'Usuario: ' + users[idx].username + ' → ' + nuevoRol);
+  res.json({ success: true });
+});
 
 // ── AUDITORÍA ────────────────────────────────────────────────────────────────
 const AUDIT_FILE = './data/audit.json';
@@ -126,7 +146,7 @@ function logAudit(req, accion, detalle) {
     saveJSON(AUDIT_FILE, logs);
   } catch(e) { console.error('[Auditoria] Error:', e.message); }
 }
-app.get('/api/auditoria', requireAdmin, (req, res) => {
+app.get('/api/auditoria', requireSuperAdmin, (req, res) => {
   const logs = loadJSON(AUDIT_FILE) || [];
   res.json(logs.slice().reverse().slice(0, 1000));
 });
@@ -188,14 +208,14 @@ app.get('/api/consulta/:codigo', requireAuth, (req, res) => {
 app.post('/api/datos', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const nuevo = sanitizeObject(req.body, 500); if (!nuevo.CODIGO) return res.json({ success: false, message: 'El campo CODIGO es obligatorio' }); const existe = db.find(r => (r.CODIGO || '').toString().trim().toUpperCase() === nuevo.CODIGO.toString().trim().toUpperCase()); if (existe) return res.json({ success: false, message: 'Ya existe un registro con ese CODIGO' }); db.push(nuevo); saveJSON(DB_FILE, db); logAudit(req, 'DATOS_CREAR', 'CODIGO: ' + nuevo.CODIGO); res.json({ success: true }); });
 app.put('/api/datos/:codigo', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const codigo = sanitizeText(req.params.codigo, 100).trim().toUpperCase(); const cambios = sanitizeObject(req.body, 500); let updated = 0; const newDb = db.map(row => { if ((row.CODIGO || '').toString().trim().toUpperCase() === codigo) { updated++; return { ...row, ...cambios }; } return row; }); if (updated === 0) return res.json({ success: false, message: 'Registro no encontrado' }); saveJSON(DB_FILE, newDb); logAudit(req, 'DATOS_EDITAR', 'CODIGO: ' + codigo); res.json({ success: true, updated }); });
 app.delete('/api/datos/:codigo', requireAdmin, (req, res) => { const db = loadJSON(DB_FILE); const codigo = sanitizeText(req.params.codigo, 100).trim().toUpperCase(); const newDb = db.filter(row => (row.CODIGO || '').toString().trim().toUpperCase() !== codigo); if (newDb.length === db.length) return res.json({ success: false, message: 'Registro no encontrado' }); saveJSON(DB_FILE, newDb); logAudit(req, 'DATOS_ELIMINAR', 'CODIGO: ' + codigo); res.json({ success: true }); });
-app.get('/api/usuarios', requireAdmin, (req, res) => { const users = loadJSON(USERS_FILE).map(u => ({ ...u, password: undefined, passwordHash: undefined })); res.json(users); });
-app.post('/api/usuarios', requireAdmin, (req, res) => { const username = sanitizeText(req.body.username, 60); const password = sanitizeText(req.body.password, 200); const nombre = sanitizeText(req.body.nombre, 100); const role = req.body.role; const temporal = req.body.temporal; if (!username || !password || !nombre || !role) return res.json({ success: false, message: 'Todos los campos son requeridos' }); if (!isValidUsername(username)) return res.json({ success: false, message: 'Usuario invalido: solo letras, numeros, punto y guion (3-60 caracteres)' }); if (password.length < 6) return res.json({ success: false, message: 'La contrasena debe tener minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); if (users.find(u => u.username === username)) return res.json({ success: false, message: 'El usuario ya existe' }); users.push({ id: Date.now(), username, nombre, passwordHash: bcrypt.hashSync(password, 10), role: role === 'admin' ? 'admin' : 'consulta', activo: true, mustChangePassword: !!temporal }); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_CREAR', 'Usuario: ' + username + ' (' + role + ')'); res.json({ success: true }); });
-app.put('/api/usuarios/:id', requireAdmin, (req, res) => { const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); const nombre = sanitizeText(req.body.nombre, 100); const role = req.body.role; const activo = req.body.activo; const password = sanitizeText(req.body.password, 200); const temporal = req.body.temporal; if (password && password.length < 6) return res.json({ success: false, message: 'La contrasena debe tener minimo 6 caracteres' }); if (nombre) users[idx].nombre = nombre; if (role) users[idx].role = role; if (activo !== undefined) users[idx].activo = activo; if (password) { users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = !!temporal; } saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_EDITAR', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
-app.delete('/api/usuarios/:id', requireAdmin, (req, res) => { let users = loadJSON(USERS_FILE); const target = users.find(u => u.id == req.params.id); if (target && target.username === 'admin') return res.json({ success: false, message: 'No se puede eliminar el admin principal' }); users = users.filter(u => u.id != req.params.id); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_ELIMINAR', target ? ('Usuario: ' + target.username) : ('ID: ' + req.params.id)); res.json({ success: true }); });
-app.post('/api/usuarios/:id/reset-password', requireAdmin, (req, res) => { const password = sanitizeText(req.body.password, 200); if (!password || password.length < 6) return res.json({ success: false, message: 'Ingrese una contrasena temporal de minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = true; saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_RESET_PASSWORD', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
+app.get('/api/usuarios', requireSuperAdmin, (req, res) => { const users = loadJSON(USERS_FILE).map(u => ({ ...u, password: undefined, passwordHash: undefined })); res.json(users); });
+app.post('/api/usuarios', requireSuperAdmin, (req, res) => { const username = sanitizeText(req.body.username, 60); const password = sanitizeText(req.body.password, 200); const nombre = sanitizeText(req.body.nombre, 100); const role = req.body.role; const temporal = req.body.temporal; if (!username || !password || !nombre || !role) return res.json({ success: false, message: 'Todos los campos son requeridos' }); if (!isValidUsername(username)) return res.json({ success: false, message: 'Usuario invalido: solo letras, numeros, punto y guion (3-60 caracteres)' }); if (password.length < 6) return res.json({ success: false, message: 'La contrasena debe tener minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); if (users.find(u => u.username === username)) return res.json({ success: false, message: 'El usuario ya existe' }); users.push({ id: Date.now(), username, nombre, passwordHash: bcrypt.hashSync(password, 10), role: role === 'admin' ? 'admin' : 'consulta', activo: true, mustChangePassword: !!temporal }); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_CREAR', 'Usuario: ' + username + ' (' + role + ')'); res.json({ success: true }); });
+app.put('/api/usuarios/:id', requireSuperAdmin, (req, res) => { const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); const nombre = sanitizeText(req.body.nombre, 100); const role = req.body.role; const activo = req.body.activo; const password = sanitizeText(req.body.password, 200); const temporal = req.body.temporal; if (password && password.length < 6) return res.json({ success: false, message: 'La contrasena debe tener minimo 6 caracteres' }); if (nombre) users[idx].nombre = nombre; if (role) users[idx].role = role; if (activo !== undefined) users[idx].activo = activo; if (password) { users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = !!temporal; } saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_EDITAR', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
+app.delete('/api/usuarios/:id', requireSuperAdmin, (req, res) => { let users = loadJSON(USERS_FILE); const target = users.find(u => u.id == req.params.id); if (target && target.username === 'admin') return res.json({ success: false, message: 'No se puede eliminar el admin principal' }); users = users.filter(u => u.id != req.params.id); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_ELIMINAR', target ? ('Usuario: ' + target.username) : ('ID: ' + req.params.id)); res.json({ success: true }); });
+app.post('/api/usuarios/:id/reset-password', requireSuperAdmin, (req, res) => { const password = sanitizeText(req.body.password, 200); if (!password || password.length < 6) return res.json({ success: false, message: 'Ingrese una contrasena temporal de minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = true; saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_RESET_PASSWORD', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
 const storage = multer.diskStorage({ destination: (req, file, cb) => cb(null, './uploads/'), filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)) });
 const upload = multer({ storage, fileFilter: (req, file, cb) => { const ext = path.extname(file.originalname).toLowerCase(); if (['.xlsx','.xls','.csv'].includes(ext)) { cb(null, true); } else { cb(new Error('Solo se permiten archivos .xlsx, .xls o .csv')); } }, limits: { fileSize: 50*1024*1024 } });
-app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) => {
+app.post('/api/upload', requireSuperAdmin, upload.single('file'), async (req, res) => {
   if (!req.file) return res.json({ success: false, message: 'No se recibio archivo' });
   try {
     const ext = path.extname(req.file.originalname).toLowerCase();
@@ -256,7 +276,7 @@ app.post('/api/upload', requireAdmin, upload.single('file'), async (req, res) =>
   }
 });
 app.get('/api/db/info', requireAuth, (req, res) => { const db = loadJSON(DB_FILE); res.json({ rows: db.length, columns: db.length > 0 ? Object.keys(db[0]) : [] }); });
-app.post('/api/db/backup', requireAdmin, async (req, res) => {
+app.post('/api/db/backup', requireSuperAdmin, async (req, res) => {
   try {
     const multisheet = loadJSON(MULTISHEET_FILE);
     const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
@@ -276,9 +296,9 @@ app.post('/api/db/backup', requireAdmin, async (req, res) => {
     res.json({ success: true, file: filename, rows: totalRows });
   } catch(e) { res.json({ success: false, message: e.message }); }
 });
-app.get('/api/db/backups', requireAdmin, (req, res) => { const files = fs.readdirSync(BACKUP_DIR).filter(f => f.endsWith('.xlsx')).map(f => ({ name: f, size: fs.statSync(path.join(BACKUP_DIR, f)).size })).reverse(); res.json(files); });
-app.get('/api/db/backup/download/:filename', requireAdmin, (req, res) => { const filename = path.basename(req.params.filename); const file = path.join(BACKUP_DIR, filename); if (!fs.existsSync(file)) return res.status(404).json({ error: 'No encontrado' }); res.download(file); });
-app.delete('/api/db', requireAdmin, (req, res) => { saveJSON(DB_FILE, []); res.json({ success: true }); });
+app.get('/api/db/backups', requireSuperAdmin, (req, res) => { const files = fs.readdirSync(BACKUP_DIR).filter(f => f.endsWith('.xlsx')).map(f => ({ name: f, size: fs.statSync(path.join(BACKUP_DIR, f)).size })).reverse(); res.json(files); });
+app.get('/api/db/backup/download/:filename', requireSuperAdmin, (req, res) => { const filename = path.basename(req.params.filename); const file = path.join(BACKUP_DIR, filename); if (!fs.existsSync(file)) return res.status(404).json({ error: 'No encontrado' }); res.download(file); });
+app.delete('/api/db', requireSuperAdmin, (req, res) => { saveJSON(DB_FILE, []); res.json({ success: true }); });
 
 // --- ESMAX ---
 const { exec } = require('child_process');
@@ -610,7 +630,7 @@ app.get('/api/ipo/search', requireAuth, (req, res) => {
 });
 
 // ── BACKUP GOOGLE DRIVE ──────────────────────────────────────────────────────
-app.post('/api/backup/drive', requireAdmin, (req, res) => {
+app.post('/api/backup/drive', requireSuperAdmin, (req, res) => {
   const { exec } = require('child_process');
   exec('/home/ubuntu/backup_queulat.sh', (error, stdout, stderr) => {
     if (error) return res.json({ success: false, message: stderr || error.message });
