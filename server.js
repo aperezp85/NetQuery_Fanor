@@ -1,4 +1,5 @@
 require('dotenv').config({ path: '/opt/netquery/.env' });
+const nodemailer = require('nodemailer');
 const express = require('express');
 const axios = require('axios');
 const session = require('express-session');
@@ -27,6 +28,35 @@ const DB_FILE = './data/database.json';
 const BACKUP_DIR = './data/backups';
 function loadJSON(file) { if (!fs.existsSync(file)) return null; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function saveJSON(file, data) { fs.writeFileSync(file, JSON.stringify(data, null, 2)); }
+
+// ── NOTIFICACIONES EMAIL ─────────────────────────────────────────────────────
+const _mailTransport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS }
+});
+let _mailReady = false;
+const _loginFallidosPorIP = {};
+_mailTransport.verify((err) => {
+  if (err) console.error('[Mail] Error de configuracion:', err.message);
+  else { _mailReady = true; console.log('[Mail] Listo para enviar notificaciones'); }
+});
+async function sendAlert(asunto, cuerpo) {
+  if (!_mailReady || !process.env.MAIL_TO) return;
+  try {
+    await _mailTransport.sendMail({
+      from: '"Queulat Alertas" <' + process.env.MAIL_USER + '>',
+      to: process.env.MAIL_TO,
+      subject: '[Queulat] ' + asunto,
+      html: '<div style="font-family:monospace;padding:20px;background:#0f172a;color:#e2e8f0;border-radius:8px">'
+        + '<h2 style="color:#ef4444">⚠️ ' + asunto + '</h2>'
+        + '<p>' + cuerpo + '</p>'
+        + '<hr style="border-color:#334155">'
+        + '<small style="color:#64748b">Queulat v3.2 — ' + new Date().toLocaleString('es-CL') + '</small>'
+        + '</div>'
+    });
+    console.log('[Mail] Alerta enviada:', asunto);
+  } catch(e) { console.error('[Mail] Error enviando alerta:', e.message); }
+}
 
 // ── VALIDACIÓN Y SANITIZACIÓN ─────────────────────────────────────────────────
 function sanitizeText(val, maxLen) {
@@ -71,7 +101,7 @@ if (!fs.existsSync(DB_FILE)) saveJSON(DB_FILE, []);
 function requireAuth(req, res, next) { if (!req.session.user) return res.status(401).json({ error: 'No autorizado' }); next(); }
 function requireAdmin(req, res, next) { if (!req.session.user || req.session.user.role !== 'admin') return res.status(403).json({ error: 'Acceso denegado' }); next(); }
 const loginLimiter = rateLimit({ windowMs: 15*60*1000, max: 10, message: { success: false, message: 'Demasiados intentos, espera 15 minutos' } });
-app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; if (!username || !password || !isValidUsername(username)) { logAudit(req, 'LOGIN_FALLIDO', 'Formato invalido: ' + sanitizeText(String(username||''), 60)); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: req.session.user }); });
+app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; if (!username || !password || !isValidUsername(username)) { logAudit(req, 'LOGIN_FALLIDO', 'Formato invalido: ' + sanitizeText(String(username||''), 60)); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); const _ip = req.headers['x-real-ip'] || req.ip || ''; _loginFallidosPorIP[_ip] = (_loginFallidosPorIP[_ip] || 0) + 1; if (_loginFallidosPorIP[_ip] === 3) { sendAlert('Intentos fallidos de login', 'Se detectaron <strong>3 intentos fallidos</strong> desde IP <strong>' + _ip + '</strong> con usuario <strong>' + username + '</strong>.'); } return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; const _ipLogin = req.headers['x-real-ip'] || req.ip || ''; delete _loginFallidosPorIP[_ipLogin]; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: req.session.user }); });
 app.post('/api/logout', (req, res) => { logAudit(req, 'LOGOUT', ''); req.session.destroy(() => res.json({ success: true })); });
 app.get('/api/me', requireAuth, (req, res) => { res.json(req.session.user); });
 app.post('/api/change-password', requireAuth, (req, res) => { const newPassword = sanitizeText(req.body.newPassword, 200); if (!newPassword || newPassword.length < 6) return res.json({ success: false, message: 'Minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id === req.session.user.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(newPassword, 10); users[idx].mustChangePassword = false; saveJSON(USERS_FILE, users); req.session.user.mustChangePassword = false; logAudit(req, 'CAMBIO_PASSWORD_PROPIO', ''); res.json({ success: true }); });
@@ -292,6 +322,9 @@ app.get('/api/esmax/ping/:ip', requireAuth, (req, res) => {
     let estado = 'rojo';
     if (loss === 0 && avg !== null && avg < 100) estado = 'verde';
     else if (loss < 50) estado = 'amarillo';
+    if (estado === 'rojo') {
+      sendAlert('Equipo caido: ' + ip, 'El equipo <strong>' + ip + '</strong> no responde al ping. Perdida: <strong>' + loss + '%</strong>. Hora: ' + new Date().toLocaleString('es-CL'));
+    }
     res.json({ ip, loss, avg, estado, raw: lines });
   });
 });
@@ -750,6 +783,7 @@ async function ejecutarBackupBD() {
     console.log(`[Backup BD] Backup creado: ${filename} (${totalRows} registros)`);
   } catch(e) {
     console.error('[Backup BD] Error en backup:', e.message);
+    sendAlert('Error en backup automatico', 'El backup semanal fallo: <strong>' + e.message + '</strong>');
   }
 }
 
