@@ -157,6 +157,7 @@ app.get('/api/sugerencias', requireAuth, (req, res) => {
   const ms = loadJSON(MULTISHEET_FILE) || {};
   const sugerencias = [];
   Object.entries(ms).forEach(([sheet, rows]) => {
+    if (sheet === 'BD_Clientes_OLT') return; // Se fusiona con BD_Servicios
     rows.forEach(row => {
       // Buscar coincidencia en CUALQUIER campo
       const match = Object.entries(row).some(([k, v]) =>
@@ -187,13 +188,22 @@ app.get('/api/sugerencias', requireAuth, (req, res) => {
   }).slice(0, 100);
   res.json(unicos);
 });
+// ── ÍNDICE EN MEMORIA ────────────────────────────────────────────────────────
+let _msCache = null;
+function getMultisheetCache() {
+  if (!_msCache) _msCache = loadJSON(MULTISHEET_FILE) || {};
+  return _msCache;
+}
+function invalidateMultisheetCache() { _msCache = null; }
+// Precarga al arrancar
+try { _msCache = loadJSON(MULTISHEET_FILE) || {}; } catch(e) {}
+
 app.get('/api/consulta/:codigo', requireAuth, (req, res) => {
   const codigo = req.params.codigo.trim().toUpperCase();
-  const ms = loadJSON(MULTISHEET_FILE) || {};
+  const ms = getMultisheetCache();
   const results = {};
   Object.entries(ms).forEach(([sheet, rows]) => {
     const found = rows.filter(row => {
-      // Buscar en CUALQUIER columna que contenga 'codigo' en su nombre
       return Object.entries(row).some(([k, v]) => {
         if (!k.toLowerCase().includes('codigo') && !k.toLowerCase().includes('cod_')) return false;
         const val = (v || '').toString().trim().toUpperCase();
@@ -267,6 +277,7 @@ app.post('/api/upload', requireSuperAdmin, upload.single('file'), async (req, re
     });
     fs.unlinkSync(req.file.path);
     saveJSON(MULTISHEET_FILE, multisheet);
+    invalidateMultisheetCache();
     const firstSheet = multisheet[Object.keys(multisheet)[0]] || [];
     saveJSON(DB_FILE, firstSheet);
     res.json({ success: true, rows: totalRows, sheets: Object.keys(multisheet).length, columns: firstSheet.length > 0 ? Object.keys(firstSheet[0]) : [] });
@@ -589,21 +600,26 @@ app.post('/api/multisheet', requireAdmin, (req, res) => {
   if(!ms[sheet]) ms[sheet] = [];
   ms[sheet].push(data);
   saveJSON(MULTISHEET_FILE, ms);
+  invalidateMultisheetCache();
   logAudit(req, 'MULTISHEET_CREAR', 'Hoja: ' + sheet);
   res.json({ success: true });
 });
 
 app.put('/api/multisheet', requireAdmin, (req, res) => {
   const { sheet, keyField, keyValue, data } = req.body;
+  if(!sheet || !keyField || keyValue===undefined || keyValue===null || !data) return res.json({ success: false, message: 'Datos incompletos' });
   const ms = loadJSON(MULTISHEET_FILE) || {};
   if(!ms[sheet]) return res.json({ success: false, message: 'Hoja no encontrada' });
+  let updated = 0;
   ms[sheet] = ms[sheet].map(row => {
-    if((row[keyField]||'').toString().trim() === keyValue.toString().trim()) return { ...row, ...data };
+    if((row[keyField]||'').toString().trim() === keyValue.toString().trim()){ updated++; return { ...row, ...data }; }
     return row;
   });
+  if(updated === 0) return res.json({ success: false, message: 'Registro no encontrado (' + keyField + ': ' + keyValue + ')' });
   saveJSON(MULTISHEET_FILE, ms);
+  invalidateMultisheetCache();
   logAudit(req, 'MULTISHEET_EDITAR', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue);
-  res.json({ success: true });
+  res.json({ success: true, updated });
 });
 
 app.delete('/api/multisheet', requireAdmin, (req, res) => {
@@ -612,6 +628,7 @@ app.delete('/api/multisheet', requireAdmin, (req, res) => {
   if(!ms[sheet]) return res.json({ success: false, message: 'Hoja no encontrada' });
   ms[sheet] = ms[sheet].filter(row => (row[keyField]||'').toString().trim() !== keyValue.toString().trim());
   saveJSON(MULTISHEET_FILE, ms);
+  invalidateMultisheetCache();
   logAudit(req, 'MULTISHEET_ELIMINAR', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue);
   res.json({ success: true });
 });
@@ -639,7 +656,9 @@ app.post('/api/backup/drive', requireSuperAdmin, (req, res) => {
 });
 
 // ── FORTINET UPGRADE PATH ────────────────────────────────────────────────────
-const _fortinetCache = {};
+const FORTINET_CACHE_FILE = './data/fortinet_cache.json';
+if (!fs.existsSync(FORTINET_CACHE_FILE)) saveJSON(FORTINET_CACHE_FILE, {});
+const _fortinetCache = (() => { try { return loadJSON(FORTINET_CACHE_FILE) || {}; } catch(e) { return {}; } })();
 app.post('/api/fortinet/upgrade-path', requireAuth, async (req, res) => {
   const { model, current_version, target_version } = req.body;
   if (!model || !current_version || !target_version)
@@ -673,7 +692,10 @@ app.post('/api/fortinet/upgrade-path', requireAuth, async (req, res) => {
     const json = JSON.parse(data);
     if(!json.result) return res.json({ success: false, message: 'Sin resultado de Fortinet' });
     const result = { success: true, path: json.result.path || [], available_from_extended: json.result.available_from_extended || [] };
-    if(result.path.length > 0) _fortinetCache[cacheKey] = result;
+    if(result.path.length > 0) {
+      _fortinetCache[cacheKey] = result;
+      try { saveJSON(FORTINET_CACHE_FILE, _fortinetCache); } catch(e) {}
+    }
     res.json(result);
   } catch(e) {
     res.json({ success: false, message: e.message });

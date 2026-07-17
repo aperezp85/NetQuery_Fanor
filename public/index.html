@@ -363,6 +363,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-green" onclick="openModalAgregarSdwan()">+ Agregar</button>
         <button class="btn btn-yellow" onclick="openModalEditarSdwan()">Editar resultado</button>
         <button class="btn btn-red" onclick="eliminarResultadoSdwan()">Eliminar resultado</button>
+        <button class="btn btn-red" id="btn-eliminar-masivo-sdwan" onclick="eliminarMasivoSdwan()" style="display:none">Eliminar seleccionados (<span id="cnt-sdwan-sel">0</span>)</button>
       </div>
       <div id="sdwan-result"></div>
     </div>
@@ -386,6 +387,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-green" onclick="openModalAgregarFw()">+ Agregar</button>
         <button class="btn btn-yellow" onclick="openModalEditarFw()">Editar resultado</button>
         <button class="btn btn-red" onclick="eliminarResultadoFw()">Eliminar resultado</button>
+        <button class="btn btn-red" id="btn-eliminar-masivo-fw" onclick="eliminarMasivoFw()" style="display:none">Eliminar seleccionados (<span id="cnt-fw-sel">0</span>)</button>
       </div>
       <div id="fw-result-internet" style="margin-bottom:24px"></div>
       <div id="fw-result-onpremise"></div>
@@ -547,6 +549,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-green" onclick="openModalAgregarIPO()">+ Agregar</button>
         <button class="btn btn-yellow" onclick="openModalEditarIPO()">Editar resultado</button>
         <button class="btn btn-red" onclick="eliminarResultadoIPO()">Eliminar resultado</button>
+        <button class="btn btn-red" id="btn-eliminar-masivo-ipo" onclick="eliminarMasivoIPO()" style="display:none">Eliminar seleccionados (<span id="cnt-ipo-sel">0</span>)</button>
       </div>
       <div id="ipo-result"></div>
     </div>
@@ -713,8 +716,8 @@ let esmax_charts={},esmax_monitoreando=false,esmax_interval=null,esmax_historico
 let ipdbCols=[],lastIPDB=null,editIPDB=false,allIPDB=[];
 
 // AUTH──
-let loginIntentos = 0;
 const LOGIN_MAX_INTENTOS = 5;
+let loginIntentos = parseInt(sessionStorage.getItem('loginIntentos')||'0');
 async function doLogin(){
   const username=document.getElementById('login-user').value.trim();
   const password=document.getElementById('login-pass').value;
@@ -725,9 +728,23 @@ async function doLogin(){
     showAlert(errEl,'Demasiados intentos fallidos. Recargue la página para intentar nuevamente.','error');
     return;
   }
-  const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})}).then(r=>r.json());
-  if(!r.success){loginIntentos++;showAlert(errEl,r.message+' (intento '+loginIntentos+'/'+LOGIN_MAX_INTENTOS+')','error');return;}
+  let r;
+  try {
+    r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})}).then(res=>res.json());
+  } catch(e) {
+    showAlert(errEl,'Sin conexión con el servidor. Verifique su red e intente nuevamente.','error');
+    return;
+  }
+  if(!r.success){
+    loginIntentos++;
+    sessionStorage.setItem('loginIntentos', loginIntentos);
+    const intentosRestantes = LOGIN_MAX_INTENTOS - loginIntentos;
+    const msgIntento = intentosRestantes > 0 ? ' ('+intentosRestantes+' intento'+(intentosRestantes!==1?'s':'')+' restante'+(intentosRestantes!==1?'s':'')+')' : '';
+    showAlert(errEl,'Usuario o contraseña incorrectos'+msgIntento,'error');
+    return;
+  }
   loginIntentos=0;
+  sessionStorage.removeItem('loginIntentos');
   currentUser=r.user;
   if(currentUser.mustChangePassword){document.getElementById('login-screen').style.display='none';document.getElementById('change-pass-screen').style.display='flex';}
   else initApp();
@@ -854,7 +871,7 @@ window.fetch = async function(...args) {
         currentUser = null;
         document.getElementById('app').style.display = 'none';
         document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('login-error').textContent = 'Tu sesion expiro. Ingresa nuevamente.';
+        document.getElementById('login-error').textContent = 'Tu sesión expiró por inactividad. Por favor ingresa nuevamente.';
         document.getElementById('login-error').style.display = 'block';
       }
     } catch(e) {}
@@ -1350,9 +1367,25 @@ async function doSearch(){
   // Fusionar BD_Clientes_OLT en BD_Servicios si comparten CODIGO
   const oltRows = (r.data['BD_Clientes_OLT']||[]);
   const oltMap = {};
-  oltRows.forEach(row=>{ const k=String(row.CODIGO||'').trim().toUpperCase(); if(k) oltMap[k]=row; });
+  oltRows.forEach(row=>{
+    const k=String(row.CODIGO||'').trim().toUpperCase();
+    if(k) oltMap[k]=row;
+    // También indexar por codigo de servicio embebido (ej: DA_02-25-XXX_SUFIJO)
+    const match = k.match(/(\d{2}-\d{2}-\d{10,})/);
+    if(match && !oltMap[match[1]]) oltMap[match[1]]=row;
+  });
   const sheetsToSkip = new Set();
-  if(oltRows.length && r.data['BD_Servicios']) sheetsToSkip.add('BD_Clientes_OLT');
+  // Omitir BD_Clientes_OLT solo si el codigo tambien existe en BD_Servicios (se fusiona)
+  const codigosEnServicios = new Set((r.data['BD_Servicios']||[]).map(row=>String(row.Codigo_Servicio||'').trim().toUpperCase()));
+  const oltSolosEnOLT = oltRows.some(row=>{
+    const k=String(row.CODIGO||'').trim().toUpperCase();
+    if(codigosEnServicios.has(k)) return false;
+    // Verificar si el codigo esta embebido en el CODIGO del OLT
+    const match=k.match(/(\d{2}-\d{2}-\d{10,})/);
+    if(match && codigosEnServicios.has(match[1])) return false;
+    return true;
+  });
+  if(oltRows.length && !oltSolosEnOLT) sheetsToSkip.add('BD_Clientes_OLT');
 
   let html='';
   Object.entries(r.data).forEach(([sheet,rows])=>{
@@ -1370,7 +1403,12 @@ async function doSearch(){
       // Buscar OLT coincidente
       const oltMatch = sheet==='BD_Servicios' && (row.Nodo||'').toUpperCase().includes('OLT') ? oltMap[codigoCS.trim().toUpperCase()] : null;
       const oltExcluir = oltMatch ? new Set(['Puerta','Ip_Admin_Switch','Proveedor']) : new Set();
-      let fields=Object.keys(row).filter(k=>!oltExcluir.has(k)).map(k=>{
+      // Filtrar columnas según la hoja
+      const SHEET_COLS = {
+        'BD_Sdwan': ['Codigo_Servicio','Local','Direccion','Comuna','Hostname','Detalle_Dirección','Ip_Gestion','Lan','Cliente','Proveedor']
+      };
+      const colsToShow = SHEET_COLS[sheet] ? SHEET_COLS[sheet] : Object.keys(row).filter(k=>!oltExcluir.has(k));
+      let fields=colsToShow.filter(k=>!oltExcluir.has(k)).map(k=>{
         const val=row[k]!==undefined&&row[k]!==''?row[k]:null;
         const isMono=MONO.some(m=>k.toLowerCase().includes(m.toLowerCase()));
         return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
@@ -1387,10 +1425,37 @@ async function doSearch(){
       html+='<div class="result-card" id="'+rowId+'" data-row="'+escHtml(JSON.stringify(row))+'" data-sheet="'+escHtml(sheet)+'" data-olt="'+escHtml(JSON.stringify(oltMatch||{}))+'" style="margin-bottom:16px;cursor:pointer;border:1px solid var(--border);transition:border-color 0.2s" onclick="seleccionarCard(this)"><div class="result-header"><div class="result-code" data-codigo="'+escHtml(codigoCS)+'" data-cliente="'+escHtml(clienteCS)+'">'+escHtml(codigoCS)+(clienteCS?'<span style="color:var(--muted);font-weight:400;margin:0 8px">||</span><span style="color:#f87171;font-size:14px">'+escHtml(clienteCS)+'</span>':'')+'</div><div style="display:flex;gap:8px;align-items:center"><button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();copiarResultado(this)">Copiar</button><div class="result-badge">Encontrado</div></div></div><div class="result-grid">'+fields+'</div></div>';
     });
   });
-  container.innerHTML=html;
+  const LIMITE_INICIAL = 20;
+  const totalCards = (html.match(/class="result-card"/g)||[]).length;
+  if(totalCards > LIMITE_INICIAL){
+    // Dividir en visible y oculto
+    let count=0;
+    const htmlVisible=[];
+    const htmlOculto=[];
+    const partes = html.split('<div class="result-card"');
+    htmlVisible.push(partes[0]);
+    for(let i=1;i<partes.length;i++){
+      if(count<LIMITE_INICIAL){ htmlVisible.push('<div class="result-card"'+partes[i]); count++; }
+      else { htmlOculto.push('<div class="result-card"'+partes[i]); }
+    }
+    const resto = totalCards - LIMITE_INICIAL;
+    container.innerHTML = htmlVisible.join('')
+      + '<div id="ver-mas-container" style="text-align:center;padding:16px">'
+      + '<button class="btn btn-blue" onclick="verMasResultados()" style="gap:8px">'
+      + '&#43; Ver '+resto+' resultado'+(resto!==1?'s':'')+' más</button></div>'
+      + '<div id="resultados-ocultos" style="display:none">'+htmlOculto.join('')+'</div>';
+  } else {
+    container.innerHTML=html;
+  }
   // Seleccionar primer card por defecto
   const firstCard=container.querySelector('.result-card');
   if(firstCard) firstCard.click();
+}
+function verMasResultados(){
+  const ocultos=document.getElementById('resultados-ocultos');
+  const verMas=document.getElementById('ver-mas-container');
+  if(ocultos){ ocultos.style.display=''; ocultos.id=''; }
+  if(verMas) verMas.remove();
 }
 function seleccionarCard(el){
   document.querySelectorAll('#search-result .result-card').forEach(c=>{
@@ -1454,11 +1519,8 @@ async function openModalAgregar(){
   document.getElementById('modal-registro-title').textContent='Agregar registro en BD_Servicios';
   document.getElementById('modal-registro-error').style.display='none';
   let cols = [];
-  try{
-    const r = await fetch('/api/hoja/BD_Servicios').then(r=>r.json());
-    if(r && r.length>0) cols = Object.keys(r[0]);
-  }catch(e){}
-  if(!cols.length) cols = ['Codigo_Servicio','Cliente','Direccion','Comuna','Ip_Gestion','Vrf','Wan','Nodo','Puerta','Ip_Admin_Switch'];
+  const camposNuevos = ['Codigo_Servicio','Cliente','Direccion','Comuna','Ip_Gestion','Vrf','Wan','Nodo','Puerta','Ip_Admin_Switch','Proveedor','Posicion_Switch','Posicion_Shelf_MC','Posicion_ODF'];
+  cols = camposNuevos;
   window._servicioCols = cols;
   const oltHtml = '<div id="olt-section" style="display:none;margin-top:14px;border:0.5px solid #10b981;border-radius:8px;padding:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:11px;font-weight:500;color:#10b981;text-transform:uppercase;letter-spacing:1px">Datos OLT — BD_Clientes_OLT</span><span style="font-size:11px;color:var(--muted);margin-left:4px">— opcional</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>OLT</label><input type="text" id="olt-OLT" placeholder="CLRMMVEOLT01 (...)"></div><div class="field"><label>FRAME</label><input type="text" id="olt-FRAME" placeholder="0"></div><div class="field"><label>SLOT</label><input type="text" id="olt-SLOT" placeholder="1"></div><div class="field"><label>PORT</label><input type="text" id="olt-PORT" placeholder="11"></div><div class="field"><label>ONU ID</label><input type="text" id="olt-ONU_ID" placeholder="3"></div></div></div>';
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
@@ -1481,25 +1543,55 @@ async function openModalEditar(){
   document.getElementById('modal-registro-title').textContent='Editar: '+codigo;
   document.getElementById('modal-registro-error').style.display='none';
   // Fix: obtener columnas completas de la hoja para no perder campos que el registro no tenia aun
-  let cols = Object.keys(lastResult).filter(c=>c!=='_sheet');
-  try {
-    const sheetName = lastSheet || 'BD_Servicios';
-    const r = await fetch('/api/hoja/'+encodeURIComponent(sheetName)).then(r=>r.json());
-    if(r && r.length>0){
-      const colsSheet = Object.keys(r[0]).filter(c=>c!=='_sheet');
-      const colSet = new Set([...colsSheet, ...cols]);
-      cols = [...colSet];
-    }
-  }catch(e){}
+  const _camposExcluir = ['Enlace_Datos','Link_Optico'];
+  const camposBase = ['Codigo_Servicio','Cliente','Direccion','Comuna','Ip_Gestion','Vrf','Wan','Nodo','Puerta','Ip_Admin_Switch','Proveedor','Posicion_Switch','Posicion_Shelf_MC','Posicion_ODF'];
+  let cols = [];
+  // Si el registro es OLT puro (sin Codigo_Servicio), usar camposBase directamente
+  const esOLTPuro = lastSheet === 'BD_Clientes_OLT' && !lastResult.Codigo_Servicio;
+  if(esOLTPuro){
+    cols = camposBase;
+  } else {
+    cols = Object.keys(lastResult).filter(c=>c!=='_sheet' && !_camposExcluir.includes(c));
+    try {
+      const sheetName = (lastSheet === 'BD_Clientes_OLT' ? 'BD_Servicios' : lastSheet) || 'BD_Servicios';
+      const r = await fetch('/api/hoja/'+encodeURIComponent(sheetName)).then(r=>r.json());
+      if(r && r.length>0){
+        const colsSheet = Object.keys(r[0]).filter(c=>c!=='_sheet');
+        const colSet = new Set([...colsSheet, ...cols]);
+        cols = [...colSet];
+      }
+    }catch(e){}
+    const colSet2 = new Set([...cols, ...camposBase]);
+    cols = [...colSet2];
+  }
   window._servicioCols = cols;
-  window._servicioSheet = lastSheet || 'BD_Servicios';
+  window._servicioSheet = (lastSheet === 'BD_Clientes_OLT' ? 'BD_Servicios' : lastSheet) || 'BD_Servicios';
   const oltHtmlE = '<div id="olt-section" style="display:none;margin-top:14px;border:0.5px solid #10b981;border-radius:8px;padding:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:11px;font-weight:500;color:#10b981;text-transform:uppercase;letter-spacing:1px">Datos OLT — BD_Clientes_OLT</span><span style="font-size:11px;color:var(--muted);margin-left:4px">— opcional</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>OLT</label><input type="text" id="olt-OLT" placeholder="CLRMMVEOLT01 (...)"></div><div class="field"><label>FRAME</label><input type="text" id="olt-FRAME" placeholder="0"></div><div class="field"><label>SLOT</label><input type="text" id="olt-SLOT" placeholder="1"></div><div class="field"><label>PORT</label><input type="text" id="olt-PORT" placeholder="11"></div><div class="field"><label>ONU ID</label><input type="text" id="olt-ONU_ID" placeholder="3"></div></div></div>';
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' value="'+escHtml(String(lastResult[c]||''))+'"></div>'
   ).join('') + oltHtmlE;
+  // Si es OLT puro, pre-llenar sección OLT con datos del registro OLT
+  if(esOLTPuro){
+    const oltSec = document.getElementById('olt-section');
+    if(oltSec) oltSec.style.display='block';
+    const oltInput = document.getElementById('olt-OLT');
+    if(oltInput) oltInput.value = lastResult['OLT']||'';
+    const setOltF = (id,key)=>{ const el=document.getElementById(id); if(el) el.value=lastResult[key]||''; };
+    setOltF('olt-FRAME','FRAME');
+    setOltF('olt-SLOT','SLOT');
+    setOltF('olt-PORT','PORT');
+    setOltF('olt-ONU_ID','ONU ID');
+    // Pre-llenar Nodo desde OLT
+    const nodoEl = document.getElementById('field-srv-Nodo');
+    if(nodoEl && lastResult['OLT']) nodoEl.value = lastResult['OLT'].split('(')[0].trim();
+    // Indicar que es creación en BD_Servicios (no edición)
+    window._modalEditMode = false;
+    window._servicioSheet = 'BD_Servicios';
+    window._oltOrigCodigo = lastResult.CODIGO||'';
+  }
   // Si Nodo ya tiene valor, mostrar sección OLT y pre-llenar con datos existentes
   const nodoVal = lastResult['Nodo']||'';
-  if(nodoVal && nodoVal.toUpperCase().includes('OLT')){
+  if(!esOLTPuro && nodoVal && nodoVal.toUpperCase().includes('OLT')){
     const oltSec = document.getElementById('olt-section');
     if(oltSec){
       oltSec.style.display='block';
@@ -1517,7 +1609,7 @@ async function openModalEditar(){
     }
   }
   document.getElementById('modal-registro').classList.add('open');
-  window._modalEditMode=true;
+  if(!esOLTPuro){ window._modalEditMode=true; }
   window._modalEditValue=codigo;
   document.getElementById('modal-registro-save-btn').onclick=guardarServicio;
 }
@@ -1565,7 +1657,7 @@ async function guardarServicio(){
   if(data.Ip_Gestion && !validarIP(data.Ip_Gestion)){showAlert(errEl,'IP Gestión no tiene formato válido (ej: 192.168.1.1 o https://...)','error');return;}
   if(data.Ip_Admin_Switch && !validarIP(data.Ip_Admin_Switch)){showAlert(errEl,'Ip_Admin_Switch no tiene formato válido','error');return;}
   let r;
-  const sheet = window._servicioSheet || 'BD_Servicios';
+  const sheet = (window._servicioSheet === 'BD_Clientes_OLT' ? 'BD_Servicios' : window._servicioSheet) || 'BD_Servicios';
   if(window._modalEditMode){
     r=await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({sheet:sheet,keyField:sheet==='BD_Clientes_OLT'?'CODIGO':'Codigo_Servicio',keyValue:window._modalEditValue,data})
@@ -1590,12 +1682,27 @@ async function guardarServicio(){
       NAME: nodoSrv,
       CODIGO: codigoSrv
     };
-    await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sheet:'BD_Clientes_OLT',data:oltData})
+    if(window._modalEditMode){
+      // Actualizar OLT existente
+      await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({sheet:'BD_Clientes_OLT',keyField:'CODIGO',keyValue:codigoSrv,data:oltData})
+      }).catch(()=>{});
+    } else {
+      // Crear nuevo OLT
+      await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({sheet:'BD_Clientes_OLT',data:oltData})
+      }).catch(()=>{});
+    }
+  }
+  // Si veniamos de un registro OLT puro, eliminar el registro viejo desordenado
+  if(window._oltOrigCodigo){
+    await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Clientes_OLT',keyField:'CODIGO',keyValue:window._oltOrigCodigo})
     }).catch(()=>{});
+    window._oltOrigCodigo='';
   }
   closeModal('modal-registro');
-  if(window._modalEditMode) doSearch();
+  doSearch();
 }
 
 
@@ -2340,10 +2447,29 @@ function renderIpoTable(data){
     }).join('');
     let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarIPOIdx(this,'+idx+')">Copiar</button>';
     if(isIntegral) btns += '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredsIPO('+idx+')">&#128273; Creds</button>';
-    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarIPO('+idx+',this)"><div class="result-header"><div class="result-code">'+ipo+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">IPO</div></div></div><div class="result-grid">'+fields+'</div></div>';
+    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarIPO('+idx+',this)"><div class="result-header"><div style="display:flex;align-items:center;gap:10px"><input type="checkbox" class="chk-ipo" data-idx="'+idx+'" onclick="event.stopPropagation();actualizarBotonMasivoIPO()" style="width:16px;height:16px;cursor:pointer"><div class="result-code">'+ipo+'</div></div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">IPO</div></div></div><div class="result-grid">'+fields+'</div></div>';
   }).join('');
 }
 
+function actualizarBotonMasivoIPO(){
+  const sel=document.querySelectorAll('.chk-ipo:checked').length;
+  const btn=document.getElementById('btn-eliminar-masivo-ipo');
+  const cnt=document.getElementById('cnt-ipo-sel');
+  if(btn) btn.style.display=sel>0?'inline-block':'none';
+  if(cnt) cnt.textContent=sel;
+}
+async function eliminarMasivoIPO(){
+  const checks=Array.from(document.querySelectorAll('.chk-ipo:checked'));
+  if(!checks.length) return;
+  if(!confirm('¿Eliminar '+checks.length+' registro(s) IPO seleccionado(s)?')) return;
+  const rows=checks.map(c=>window._ipoDataRef[parseInt(c.dataset.idx)]);
+  for(const row of rows){
+    await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Ipo',keyField:'IPO',keyValue:row.IPO})
+    }).then(r=>r.json());
+  }
+  buscarIPO();
+}
 function seleccionarIPO(idx, el){
   lastIPOResult = window._ipoDataRef[idx];
   document.querySelectorAll('#ipo-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
@@ -2352,7 +2478,7 @@ function seleccionarIPO(idx, el){
 
 function copiarIPOIdx(btn, idx){
   const row = window._ipoDataRef[idx];
-  const txt = 'IPO: '+(row.IPO||'')+'\nIP Gestión: '+(row.Ip_Gestion||'')+'\nRazón Social: '+(row.Razon_Social||'')+'\nFQDN: '+(row.FQDN||'');
+  const txt = Object.entries(row).filter(([k])=>k!=='_id').map(([k,v])=>k+': '+(v||'')).join('\n');
   const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
   document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
   btn.textContent='¡Copiado!';btn.style.color='#34d399';
@@ -2391,7 +2517,7 @@ async function openModalEditarIPO(){
   }
   const row = lastIPOResult;
   document.getElementById('modal-registro-title').textContent = 'Editar: '+(row.IPO||'');
-  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  const cols = Object.keys(row).filter(k=>k!=='_id');
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+c+'</label><input type="text" id="field-ipo-'+c+'" value="'+(row[c]||'')+'"></div>'
   ).join('');
@@ -2405,7 +2531,7 @@ async function openModalEditarIPO(){
 async function guardarIPOModal(){
   const errEl = document.getElementById('modal-registro-error');
   errEl.style.display='none';
-  const cols = ['IPO','Ip_Gestion','Razon_Social','FQDN'];
+  const cols = lastIPOResult ? Object.keys(lastIPOResult).filter(k=>k!=='_id') : ['IPO','Ip_Gestion','Razon_Social','FQDN'];
   const data={};
   cols.forEach(c=>{
     const el=document.getElementById('field-ipo-'+c);
@@ -2497,10 +2623,29 @@ function renderSdwan(data){
       return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
     }).join('');
     let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarSdwanIdx(this,'+idx+')">Copiar</button>';
-    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarSdwan('+idx+',this)"><div class="result-header"><div class="result-code">'+codigo+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">SDWAN</div></div></div><div class="result-grid">'+fields+'</div></div>';
+    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarSdwan('+idx+',this)"><div class="result-header"><div style="display:flex;align-items:center;gap:10px"><input type="checkbox" class="chk-sdwan" data-idx="'+idx+'" onclick="event.stopPropagation();actualizarBotonMasivoSdwan()" style="width:16px;height:16px;cursor:pointer"><div class="result-code">'+codigo+'</div></div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">SDWAN</div></div></div><div class="result-grid">'+fields+'</div></div>';
   }).join('');
 }
 
+function actualizarBotonMasivoSdwan(){
+  const sel=document.querySelectorAll('.chk-sdwan:checked').length;
+  const btn=document.getElementById('btn-eliminar-masivo-sdwan');
+  const cnt=document.getElementById('cnt-sdwan-sel');
+  if(btn) btn.style.display=sel>0?'inline-block':'none';
+  if(cnt) cnt.textContent=sel;
+}
+async function eliminarMasivoSdwan(){
+  const checks=Array.from(document.querySelectorAll('.chk-sdwan:checked'));
+  if(!checks.length) return;
+  if(!confirm('¿Eliminar '+checks.length+' registro(s) SDWAN seleccionado(s)?')) return;
+  const rows=checks.map(c=>window._sdwanDataRef[parseInt(c.dataset.idx)]);
+  for(const row of rows){
+    await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:'BD_Sdwan',keyField:'Codigo_Servicio',keyValue:row.Codigo_Servicio})
+    }).then(r=>r.json());
+  }
+  buscarSdwan();
+}
 function seleccionarSdwan(idx, el){
   lastSdwanResult = window._sdwanDataRef[idx];
   document.querySelectorAll('#sdwan-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
@@ -2663,7 +2808,7 @@ function renderFwSection(cont, data, titulo, cols){
       return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
     }).join('');
     let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="seleccionarFw('+idx+',\''+titulo+'\',this)">Copiar</button>';
-    return '<div class="result-card" data-fw-idx="'+idx+'" data-fw-tipo="'+titulo+'" style="margin-bottom:12px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarFwCard('+idx+',\''+titulo+'\',this)"><div class="result-header"><div class="result-code" style="color:'+accentColor+'">'+nombre+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<span style="font-size:11px;padding:3px 10px;border-radius:20px;background:'+badgeBg+';color:'+badgeColor+';border:0.5px solid '+badgeBorder+'">'+titulo+'</span></div></div><div class="result-grid">'+fields+'</div></div>';
+    return '<div class="result-card" data-fw-idx="'+idx+'" data-fw-tipo="'+titulo+'" style="margin-bottom:12px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarFwCard('+idx+',\''+titulo+'\',this)"><div class="result-header"><div style=\"display:flex;align-items:center;gap:10px\"><input type=\"checkbox\" class=\"chk-fw\" data-idx="'+idx+'" data-tipo="'+titulo+'" onclick=\"event.stopPropagation();actualizarBotonMasivoFw()\" style=\"width:16px;height:16px;cursor:pointer\"><div class=\"result-code\" style=\"color:'+accentColor+'\">'+nombre+'</div><div style="display:flex;gap:8px;align-items:center">'+btns+'<span style="font-size:11px;padding:3px 10px;border-radius:20px;background:'+badgeBg+';color:'+badgeColor+';border:0.5px solid '+badgeBorder+'">'+titulo+'</span></div></div><div class="result-grid">'+fields+'</div></div>';
   }).join('');
   cont.innerHTML = html;
 }
@@ -2680,6 +2825,30 @@ function copiarFw(btn, idx, tipo){
 let lastFwResult = null;
 let lastFwTipo = null;
 
+function actualizarBotonMasivoFw(){
+  const sel=document.querySelectorAll('.chk-fw:checked').length;
+  const btn=document.getElementById('btn-eliminar-masivo-fw');
+  const cnt=document.getElementById('cnt-fw-sel');
+  if(btn) btn.style.display=sel>0?'inline-block':'none';
+  if(cnt) cnt.textContent=sel;
+}
+async function eliminarMasivoFw(){
+  const checks=Array.from(document.querySelectorAll('.chk-fw:checked'));
+  if(!checks.length) return;
+  if(!confirm('¿Eliminar '+checks.length+' registro(s) FW seleccionado(s)?')) return;
+  for(const chk of checks){
+    const idx=parseInt(chk.dataset.idx);
+    const tipo=chk.dataset.tipo;
+    const dataRef = tipo==='Internet Seguro' ? window._fwIsDataRef : window._fwOpDataRef;
+    const row = dataRef[idx];
+    const sheet = tipo==='Internet Seguro' ? 'BD_Fw_Internet_Seguro' : 'BD_Fw_On_Premise';
+    const keyField = tipo==='Internet Seguro' ? 'Nombre' : 'Nombre';
+    await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet,keyField,keyValue:row.Nombre})
+    }).then(r=>r.json());
+  }
+  buscarFw();
+}
 function seleccionarFwCard(idx, tipo, el){
   const data = tipo.includes('INTERNET') ? (window._fwFiltI||fwInternetData) : (window._fwFiltO||fwOnPremiseData);
   lastFwResult = data[idx];
