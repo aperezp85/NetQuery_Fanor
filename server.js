@@ -146,6 +146,52 @@ function logAudit(req, accion, detalle) {
     saveJSON(AUDIT_FILE, logs);
   } catch(e) { console.error('[Auditoria] Error:', e.message); }
 }
+const ADMIN_CREDS_FILE = './data/admin_creds.json';
+if (!fs.existsSync(ADMIN_CREDS_FILE)) saveJSON(ADMIN_CREDS_FILE, {});
+app.get('/api/admin-creds/:key', requireSuperAdmin, (req, res) => {
+  const creds = loadJSON(ADMIN_CREDS_FILE) || {};
+  const key = sanitizeText(req.params.key, 100);
+  res.json(creds[key] || {});
+});
+app.post('/api/admin-creds', requireSuperAdmin, (req, res) => {
+  const key = sanitizeText(req.body.key, 100);
+  const usuario = sanitizeText(req.body.usuario, 200);
+  const pass = sanitizeText(req.body.pass, 200);
+  if (!key) return res.json({ success: false, message: 'Falta key' });
+  const creds = loadJSON(ADMIN_CREDS_FILE) || {};
+  creds[key] = { usuario, pass };
+  saveJSON(ADMIN_CREDS_FILE, creds);
+  logAudit(req, 'ADMIN_CREDS_GUARDAR', 'Key: ' + key);
+  res.json({ success: true });
+});
+
+const AGENDA_CONFIG_FILE = './data/agenda_config.json';
+if (!fs.existsSync(AGENDA_CONFIG_FILE)) saveJSON(AGENDA_CONFIG_FILE, {});
+app.get('/api/agenda-config', requireAuth, (req, res) => {
+  const config = loadJSON(AGENDA_CONFIG_FILE) || {};
+  res.json(config);
+});
+app.post('/api/agenda-config', requireSuperAdmin, (req, res) => {
+  const label = sanitizeText(req.body.label, 100);
+  const colsRaw = sanitizeText(req.body.cols, 500);
+  if (!label || !colsRaw) return res.json({ success: false, message: 'Faltan datos' });
+  const cols = colsRaw.split(',').map(c => c.trim()).filter(Boolean);
+  if (cols.length === 0) return res.json({ success: false, message: 'Debe indicar al menos una columna' });
+  const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  if (!key) return res.json({ success: false, message: 'Nombre invalido' });
+  const config = loadJSON(AGENDA_CONFIG_FILE) || {};
+  if (config[key]) return res.json({ success: false, message: 'Ya existe una pestaña con ese nombre' });
+  const sheetName = 'Agenda_' + label.trim();
+  config[key] = { label: label.trim(), sheet: sheetName, cols };
+  saveJSON(AGENDA_CONFIG_FILE, config);
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  if (!ms[sheetName]) ms[sheetName] = [];
+  saveJSON(MULTISHEET_FILE, ms);
+  invalidateMultisheetCache();
+  logAudit(req, 'AGENDA_CREAR_PESTANA', 'Pestana: ' + label + ', Columnas: ' + cols.join(','));
+  res.json({ success: true, key, config: config[key] });
+});
+
 app.get('/api/auditoria', requireSuperAdmin, (req, res) => {
   const logs = loadJSON(AUDIT_FILE) || [];
   res.json(logs.slice().reverse().slice(0, 1000));
@@ -221,7 +267,7 @@ app.delete('/api/datos/:codigo', requireAdmin, (req, res) => { const db = loadJS
 app.get('/api/usuarios', requireSuperAdmin, (req, res) => { const users = loadJSON(USERS_FILE).map(u => ({ ...u, password: undefined, passwordHash: undefined })); res.json(users); });
 app.post('/api/usuarios', requireSuperAdmin, (req, res) => { const username = sanitizeText(req.body.username, 60); const password = sanitizeText(req.body.password, 200); const nombre = sanitizeText(req.body.nombre, 100); const role = req.body.role; const temporal = req.body.temporal; if (!username || !password || !nombre || !role) return res.json({ success: false, message: 'Todos los campos son requeridos' }); if (!isValidUsername(username)) return res.json({ success: false, message: 'Usuario invalido: solo letras, numeros, punto y guion (3-60 caracteres)' }); if (password.length < 6) return res.json({ success: false, message: 'La contrasena debe tener minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); if (users.find(u => u.username === username)) return res.json({ success: false, message: 'El usuario ya existe' }); users.push({ id: Date.now(), username, nombre, passwordHash: bcrypt.hashSync(password, 10), role: role === 'admin' ? 'admin' : 'consulta', activo: true, mustChangePassword: !!temporal }); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_CREAR', 'Usuario: ' + username + ' (' + role + ')'); res.json({ success: true }); });
 app.put('/api/usuarios/:id', requireSuperAdmin, (req, res) => { const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); const nombre = sanitizeText(req.body.nombre, 100); const role = req.body.role; const activo = req.body.activo; const password = sanitizeText(req.body.password, 200); const temporal = req.body.temporal; if (password && password.length < 6) return res.json({ success: false, message: 'La contrasena debe tener minimo 6 caracteres' }); if (nombre) users[idx].nombre = nombre; if (role) users[idx].role = role; if (activo !== undefined) users[idx].activo = activo; if (password) { users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = !!temporal; } saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_EDITAR', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
-app.delete('/api/usuarios/:id', requireSuperAdmin, (req, res) => { let users = loadJSON(USERS_FILE); const target = users.find(u => u.id == req.params.id); if (target && target.username === 'admin') return res.json({ success: false, message: 'No se puede eliminar el admin principal' }); users = users.filter(u => u.id != req.params.id); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_ELIMINAR', target ? ('Usuario: ' + target.username) : ('ID: ' + req.params.id)); res.json({ success: true }); });
+app.delete('/api/usuarios/:id', requireSuperAdmin, (req, res) => { let users = loadJSON(USERS_FILE); const target = users.find(u => u.id == req.params.id); if (!target) return res.json({ success: false, message: 'Usuario no encontrado' }); if (target.username === 'admin') return res.json({ success: false, message: 'No se puede eliminar el admin principal' }); users = users.filter(u => u.id != req.params.id); saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_ELIMINAR', 'Usuario: ' + target.username); res.json({ success: true }); });
 app.post('/api/usuarios/:id/reset-password', requireSuperAdmin, (req, res) => { const password = sanitizeText(req.body.password, 200); if (!password || password.length < 6) return res.json({ success: false, message: 'Ingrese una contrasena temporal de minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id == req.params.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(password, 10); users[idx].mustChangePassword = true; saveJSON(USERS_FILE, users); logAudit(req, 'USUARIO_RESET_PASSWORD', 'Usuario: ' + users[idx].username); res.json({ success: true }); });
 const storage = multer.diskStorage({ destination: (req, file, cb) => cb(null, './uploads/'), filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)) });
 const upload = multer({ storage, fileFilter: (req, file, cb) => { const ext = path.extname(file.originalname).toLowerCase(); if (['.xlsx','.xls','.csv'].includes(ext)) { cb(null, true); } else { cb(new Error('Solo se permiten archivos .xlsx, .xls o .csv')); } }, limits: { fileSize: 50*1024*1024 } });
@@ -232,7 +278,7 @@ app.post('/api/upload', requireSuperAdmin, upload.single('file'), async (req, re
     const workbook = new ExcelJS.Workbook();
     if (ext === '.csv') { await workbook.csv.readFile(req.file.path); }
     else { await workbook.xlsx.readFile(req.file.path); }
-    const multisheet = {};
+    const multisheet = loadJSON(MULTISHEET_FILE) || {};
     let totalRows = 0;
     workbook.eachSheet((worksheet, sheetId) => {
       // Hoja especial con dos tablas lado a lado
@@ -336,7 +382,9 @@ app.post('/api/esmax/sites', requireAdmin, (req, res) => {
 // Eliminar sitio
 app.delete('/api/esmax/sites/:id', requireAdmin, (req, res) => {
   let sites = loadJSON(ESMAX_FILE) || [];
+  const before = sites.length;
   sites = sites.filter(s => s.id != req.params.id);
+  if (sites.length === before) return res.json({ success: false, message: 'Sitio no encontrado' });
   saveJSON(ESMAX_FILE, sites);
   res.json({ success: true });
 });
@@ -437,9 +485,10 @@ app.put('/api/ipdb/:id', requireAdmin, (req, res) => {
 app.delete('/api/ipdb/:id', requireAdmin, (req, res) => {
   let db = loadJSON(IP_FILE) || [];
   const target = db.find(r => r.id == req.params.id);
+  if (!target) return res.json({ success: false, message: 'Registro no encontrado' });
   db = db.filter(r => r.id != req.params.id);
   saveJSON(IP_FILE, db);
-  logAudit(req, 'IPDB_ELIMINAR', target ? (target.IP || target.Equipo || '') : ('ID: ' + req.params.id));
+  logAudit(req, 'IPDB_ELIMINAR', target.IP || target.Equipo || '');
   res.json({ success: true });
 });
 
@@ -615,7 +664,7 @@ app.put('/api/multisheet', requireAdmin, (req, res) => {
     if((row[keyField]||'').toString().trim() === keyValue.toString().trim()){ updated++; return { ...row, ...data }; }
     return row;
   });
-  if(updated === 0) return res.json({ success: false, message: 'Registro no encontrado (' + keyField + ': ' + keyValue + ')' });
+  if(updated === 0){ logAudit(req, 'MULTISHEET_EDITAR_FALLIDO', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue + ' (no encontrado)'); return res.json({ success: false, message: 'Registro no encontrado (' + keyField + ': ' + keyValue + ')' }); }
   saveJSON(MULTISHEET_FILE, ms);
   invalidateMultisheetCache();
   logAudit(req, 'MULTISHEET_EDITAR', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue);
@@ -626,7 +675,9 @@ app.delete('/api/multisheet', requireAdmin, (req, res) => {
   const { sheet, keyField, keyValue } = req.body;
   const ms = loadJSON(MULTISHEET_FILE) || {};
   if(!ms[sheet]) return res.json({ success: false, message: 'Hoja no encontrada' });
+  const antes = ms[sheet].length;
   ms[sheet] = ms[sheet].filter(row => (row[keyField]||'').toString().trim() !== keyValue.toString().trim());
+  if(ms[sheet].length === antes){ logAudit(req, 'MULTISHEET_ELIMINAR_FALLIDO', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue + ' (no encontrado)'); return res.json({ success: false, message: 'Registro no encontrado' }); }
   saveJSON(MULTISHEET_FILE, ms);
   invalidateMultisheetCache();
   logAudit(req, 'MULTISHEET_ELIMINAR', 'Hoja: ' + sheet + ', ' + keyField + ': ' + keyValue);
@@ -782,6 +833,110 @@ app.get('/api/health', (req, res) => {
   } catch(e) {
     res.status(500).json({ status: 'error', message: e.message });
   }
+});
+
+
+// ── FTP ───────────────────────────────────────────────────────────────────────
+const FtpClient = require('ftp');
+
+function ftpConnect() {
+  return new Promise((resolve, reject) => {
+    const c = new FtpClient();
+    c.on('ready', () => resolve(c));
+    c.on('error', reject);
+    c.connect({
+      host: process.env.FTP_HOST,
+      port: parseInt(process.env.FTP_PORT) || 21,
+      user: process.env.FTP_USER,
+      password: process.env.FTP_PASS,
+      connTimeout: 10000,
+      pasvTimeout: 10000
+    });
+  });
+}
+
+// Listar directorio FTP
+app.get('/api/ftp/list', requireAdmin, async (req, res) => {
+  const dir = req.query.dir || '/';
+  let c;
+  try {
+    c = await ftpConnect();
+    const files = await new Promise((resolve, reject) => {
+      c.list(dir, (err, list) => {
+        if (err) reject(err);
+        else resolve(list);
+      });
+    });
+    c.end();
+    res.json({ success: true, dir, files: files.map(f => ({
+      name: f.name,
+      type: f.type === 'd' ? 'dir' : 'file',
+      size: f.size,
+      date: f.date
+    }))});
+  } catch(e) {
+    if(c) try { c.end(); } catch(_) {}
+    res.json({ success: false, message: e.message });
+  }
+});
+
+// Descargar archivo del FTP
+app.get('/api/ftp/download', requireAdmin, async (req, res) => {
+  const filepath = req.query.path;
+  if (!filepath) return res.status(400).json({ error: 'Falta path' });
+  const filename = path.basename(filepath);
+  let c;
+  try {
+    c = await ftpConnect();
+    const stream = await new Promise((resolve, reject) => {
+      c.get(filepath, (err, stream) => {
+        if (err) reject(err);
+        else resolve(stream);
+      });
+    });
+    res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
+    res.setHeader('Content-Type', 'application/octet-stream');
+    stream.once('close', () => { c.end(); });
+    stream.pipe(res);
+  } catch(e) {
+    if(c) try { c.end(); } catch(_) {}
+    res.status(500).json({ error: e.message });
+  }
+});
+
+
+// ── AGENDA ───────────────────────────────────────────────────────────────────
+
+app.get('/api/agenda-config', requireAuth, (req, res) => {
+  res.json(loadJSON(AGENDA_CONFIG_FILE) || {});
+});
+
+app.post('/api/agenda-config', requireAuth, (req, res) => {
+  const { label, cols } = req.body;
+  if (!label || !cols) return res.json({ success: false, message: 'Faltan datos' });
+  const config = loadJSON(AGENDA_CONFIG_FILE) || {};
+  const key = 'agenda_' + Date.now().toString(36);
+  const colsArr = cols.split(',').map(c => c.trim()).filter(Boolean);
+  if (!colsArr.length) return res.json({ success: false, message: 'Ingrese al menos una columna' });
+  const sheetName = 'AG_' + label.trim().replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+  config[key] = { label: label.trim(), sheet: sheetName, cols: colsArr };
+  saveJSON(AGENDA_CONFIG_FILE, config);
+  // Crear hoja vacia en multisheet
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  if (!ms[sheetName]) { ms[sheetName] = []; saveJSON(MULTISHEET_FILE, ms); }
+  logAudit(req, 'AGENDA_CREAR_PESTANA', 'Label: ' + label + ', Sheet: ' + sheetName);
+  res.json({ success: true, key, sheet: sheetName });
+});
+
+app.delete('/api/agenda-config/:key', requireAuth, (req, res) => {
+  const config = loadJSON(AGENDA_CONFIG_FILE) || {};
+  const key = req.params.key;
+  if (!config[key]) return res.json({ success: false, message: 'Pestaña no encontrada' });
+  const sheetName = config[key].sheet;
+  logAudit(req, 'AGENDA_ELIMINAR_PESTANA', 'Label: ' + config[key].label);
+  delete config[key];
+  saveJSON(AGENDA_CONFIG_FILE, config);
+  res.json({ success: true });
 });
 
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });

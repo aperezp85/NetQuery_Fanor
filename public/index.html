@@ -234,10 +234,12 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('ipdb',this)">Buscador IP</button>
       <button class="nav-tab" onclick="showPage('ipo',this)">IPO</button>
       <button class="nav-tab" onclick="showPage('sdwan',this)">SDWAN</button>
+      <button class="nav-tab" onclick="showPage('agenda',this)">Agenda</button>
       <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
       <button class="nav-tab superadmin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
       <button class="nav-tab superadmin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
       <button class="nav-tab superadmin-only" onclick="showPage('auditoria',this)" style="display:none">Auditoría</button>
+      <button class="nav-tab admin-only" onclick="showPage('ftp',this)" style="display:none">FTP</button>
       <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button>
     </div>
     <div class="nav-user">
@@ -369,6 +371,31 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
     </div>
 
     <!-- FW ON-PREMISE -->
+    <!-- Agenda -->
+    <div class="page" id="page-agenda">
+      <div class="page-title">Agenda</div>
+      <div class="page-sub">Directorio de contactos por categoria</div>
+      <div id="agenda-subtabs" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap"></div>
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="agenda-search" type="text"
+            placeholder="Buscar por cualquier campo..."
+            onkeydown="if(event.key==='Enter')filtrarAgenda()"
+            oninput="filtrarAgenda()"
+            autocomplete="off">
+        </div>
+        <button class="btn btn-blue" onclick="filtrarAgenda()">Buscar</button>
+      </div>
+      <div class="action-bar admin-only" style="display:none">
+        <button class="btn btn-green" onclick="openModalAgregarAgenda()">+ Agregar</button>
+        <button class="btn btn-yellow" onclick="openModalEditarAgenda()">Editar resultado</button>
+        <button class="btn btn-red" onclick="eliminarResultadoAgenda()">Eliminar resultado</button>
+        <button class="btn superadmin-only" style="display:none" onclick="openModalNuevaPestanaAgenda()">+ Nueva pestana</button>
+        <button class="btn btn-red superadmin-only" style="display:none" onclick="eliminarPestanaAgenda()">&#10005; Eliminar pestana</button>
+      </div>
+      <div id="agenda-result"></div>
+    </div>
     <div class="page" id="page-fwonpremise">
       <div class="page-title">FW On-Premise</div>
       <div class="page-sub">Busque en Internet Seguro y On Premise simultáneamente</div>
@@ -550,12 +577,41 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-yellow" onclick="openModalEditarIPO()">Editar resultado</button>
         <button class="btn btn-red" onclick="eliminarResultadoIPO()">Eliminar resultado</button>
         <button class="btn btn-red" id="btn-eliminar-masivo-ipo" onclick="eliminarMasivoIPO()" style="display:none">Eliminar seleccionados (<span id="cnt-ipo-sel">0</span>)</button>
+        <button class="btn superadmin-only" style="display:none;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredsEditable('ipo_admin_general')">&#128273; Creds</button>
       </div>
       <div id="ipo-result"></div>
     </div>
 
     <!-- FORTINET -->
-    <div class="page" id="page-fortinet">
+    <!-- FTP -->
+  <div class="page" id="page-ftp">
+    <div class="page-title">Explorador FTP</div>
+    <div class="page-sub">Conexión a servidor FTP — <span style="font-family:'Space Mono',monospace;color:var(--accent)">10.139.33.160</span></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;background:var(--bg2);padding:10px 14px;border-radius:10px;border:1px solid var(--border)">
+      <span style="font-size:12px;color:var(--muted)">Ruta:</span>
+      <span id="ftp-ruta" style="font-family:'Space Mono',monospace;font-size:13px;color:var(--text)">/</span>
+      <button class="btn" style="margin-left:auto;padding:4px 12px;font-size:12px" onclick="ftpNavegar('/home/ftp01')">&#8962; Inicio</button>
+      <button class="btn" style="padding:4px 12px;font-size:12px" onclick="ftpSubir()">&#8593; Subir</button>
+      <button class="btn btn-blue" style="padding:4px 12px;font-size:12px" onclick="ftpListar(ftpRutaActual)">&#8635; Actualizar</button>
+      <button class="btn btn-green" id="btn-ftp-descargar" style="padding:4px 12px;font-size:12px;display:none" onclick="ftpDescargarSeleccionados()">&#8595; Descargar seleccionados</button>
+    </div>
+    <div id="ftp-msg" style="margin-bottom:10px"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:36px"><input type="checkbox" id="ftp-chk-todos" onchange="ftpToggleTodos(this)" style="width:auto"></th>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Tamaño</th>
+          <th>Fecha</th>
+          <th>Acción</th>
+        </tr></thead>
+        <tbody id="ftp-tbody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page" id="page-fortinet">
       <div class="page-title" style="display:flex;align-items:center;gap:12px">
         <img src="/img/fortinet-logo.svg" alt="Fortinet" style="height:32px;object-fit:contain">
       </div>
@@ -891,8 +947,10 @@ function showPage(name,btn){
   cargarDatosIpo();
   if(name==='ipo') cargarDatosIpo();
   if(name==='sdwan') cargarDatosSdwan();
+  if(name==='agenda') cargarAgendaConfig();
   if(name==='fwonpremise') cargarDatosFw();
   if(name==='fortinet') cargarFortinet();
+  if(name==='ftp') { ftpRutaActual='/home/ftp01'; ftpHistorial=['/home/ftp01']; ftpListar('/home/ftp01'); }
   if(name==='auditoria') cargarAuditoria();
 }
 
@@ -1191,6 +1249,99 @@ function onFntModelChange(){
   actualizarUrlFortinet();
 }
 
+// ── FTP ──────────────────────────────────────────────────────────────────────
+let ftpRutaActual = '/';
+let ftpHistorial = ['/'];
+
+async function ftpListar(dir) {
+  ftpRutaActual = dir;
+  document.getElementById('ftp-ruta').textContent = dir;
+  document.getElementById('ftp-msg').innerHTML = '';
+  document.getElementById('ftp-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr>';
+  document.getElementById('ftp-chk-todos').checked = false;
+  document.getElementById('btn-ftp-descargar').style.display = 'none';
+  try {
+    const r = await fetch('/api/ftp/list?dir=' + encodeURIComponent(dir)).then(r=>r.json());
+    if (!r.success) {
+      document.getElementById('ftp-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#ef4444;padding:24px">Error: ' + escHtml(r.message) + '</td></tr>';
+      return;
+    }
+    if (r.files.length === 0) {
+      document.getElementById('ftp-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Carpeta vacía</td></tr>';
+      return;
+    }
+    // Ordenar: carpetas primero, luego archivos
+    const sorted = [...r.files].sort((a,b) => {
+      if (a.type === b.type) return a.name.localeCompare(b.name);
+      return a.type === 'dir' ? -1 : 1;
+    });
+    document.getElementById('ftp-tbody').innerHTML = sorted.map(f => {
+      const isDir = f.type === 'dir';
+      const icon = isDir ? '📁' : '📄';
+      const size = isDir ? '—' : (f.size > 1024*1024 ? (f.size/1024/1024).toFixed(1)+' MB' : f.size > 1024 ? (f.size/1024).toFixed(1)+' KB' : f.size+' B');
+      const fecha = f.date ? new Date(f.date).toLocaleDateString('es-CL') : '—';
+      const fullPath = (dir === '/' ? '' : dir) + '/' + f.name;
+      const chk = isDir ? '' : `<input type="checkbox" class="ftp-chk" data-path="${escHtml(fullPath)}" data-name="${escHtml(f.name)}" onchange="ftpActualizarBoton()" style="width:auto">`;
+      const accion = isDir
+        ? `<button class="btn btn-blue" style="padding:3px 10px;font-size:12px" onclick="ftpNavegar('${escHtml(fullPath)}')">Abrir</button>`
+        : `<button class="btn btn-green" style="padding:3px 10px;font-size:12px" onclick="ftpDescargar('${escHtml(fullPath)}','${escHtml(f.name)}')">&#8595; Descargar</button>`;
+      return `<tr>
+        <td>${chk}</td>
+        <td>${icon} ${escHtml(f.name)}</td>
+        <td style="color:var(--muted);font-size:12px">${isDir ? 'Carpeta' : 'Archivo'}</td>
+        <td style="font-size:12px;color:var(--muted)">${size}</td>
+        <td style="font-size:12px;color:var(--muted)">${fecha}</td>
+        <td>${accion}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('ftp-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#ef4444;padding:24px">Error de conexión: ' + escHtml(e.message) + '</td></tr>';
+  }
+}
+
+function ftpNavegar(dir) {
+  if (!ftpHistorial.includes(dir)) ftpHistorial.push(dir);
+  ftpListar(dir);
+}
+
+function ftpSubir() {
+  if (ftpHistorial.length > 1) {
+    ftpHistorial.pop();
+    ftpListar(ftpHistorial[ftpHistorial.length - 1]);
+  } else {
+    ftpListar('/');
+  }
+}
+
+function ftpToggleTodos(chk) {
+  document.querySelectorAll('.ftp-chk').forEach(c => c.checked = chk.checked);
+  ftpActualizarBoton();
+}
+
+function ftpActualizarBoton() {
+  const sel = document.querySelectorAll('.ftp-chk:checked').length;
+  const btn = document.getElementById('btn-ftp-descargar');
+  btn.style.display = sel > 0 ? '' : 'none';
+  btn.textContent = sel > 1 ? `↓ Descargar ${sel} archivos` : '↓ Descargar seleccionado';
+}
+
+function ftpDescargar(path, name) {
+  const a = document.createElement('a');
+  a.href = '/api/ftp/download?path=' + encodeURIComponent(path);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function ftpDescargarSeleccionados() {
+  const seleccionados = [...document.querySelectorAll('.ftp-chk:checked')];
+  if (seleccionados.length === 0) return;
+  seleccionados.forEach((chk, i) => {
+    setTimeout(() => ftpDescargar(chk.dataset.path, chk.dataset.name), i * 500);
+  });
+}
+
 async function cargarFortinet(){
   const cont = document.getElementById('fortinet-list');
   cont.innerHTML = '<div style="color:var(--muted);padding:20px">Cargando...</div>';
@@ -1405,7 +1556,7 @@ async function doSearch(){
       const oltExcluir = oltMatch ? new Set(['Puerta','Ip_Admin_Switch','Proveedor']) : new Set();
       // Filtrar columnas según la hoja
       const SHEET_COLS = {
-        'BD_Sdwan': ['Codigo_Servicio','Local','Direccion','Comuna','Hostname','Detalle_Dirección','Ip_Gestion','Lan','Cliente','Proveedor']
+        'BD_Sdwan': (typeof SDWAN_COLS !== 'undefined' && SDWAN_COLS.length) ? SDWAN_COLS : ['Codigo_Servicio','Local','Direccion','Comuna','Hostname','Detalle_Dirección','Ip_Gestion','Lan','Cliente','Proveedor','Simcard']
       };
       const colsToShow = SHEET_COLS[sheet] ? SHEET_COLS[sheet] : Object.keys(row).filter(k=>!oltExcluir.has(k));
       let fields=colsToShow.filter(k=>!oltExcluir.has(k)).map(k=>{
@@ -1522,12 +1673,14 @@ async function openModalAgregar(){
   const camposNuevos = ['Codigo_Servicio','Cliente','Direccion','Comuna','Ip_Gestion','Vrf','Wan','Nodo','Puerta','Ip_Admin_Switch','Proveedor','Posicion_Switch','Posicion_Shelf_MC','Posicion_ODF'];
   cols = camposNuevos;
   window._servicioCols = cols;
+  window._servicioSheet = 'BD_Servicios';
   const oltHtml = '<div id="olt-section" style="display:none;margin-top:14px;border:0.5px solid #10b981;border-radius:8px;padding:12px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span><span style="font-size:11px;font-weight:500;color:#10b981;text-transform:uppercase;letter-spacing:1px">Datos OLT — BD_Clientes_OLT</span><span style="font-size:11px;color:var(--muted);margin-left:4px">— opcional</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="field"><label>OLT</label><input type="text" id="olt-OLT" placeholder="CLRMMVEOLT01 (...)"></div><div class="field"><label>FRAME</label><input type="text" id="olt-FRAME" placeholder="0"></div><div class="field"><label>SLOT</label><input type="text" id="olt-SLOT" placeholder="1"></div><div class="field"><label>PORT</label><input type="text" id="olt-PORT" placeholder="11"></div><div class="field"><label>ONU ID</label><input type="text" id="olt-ONU_ID" placeholder="3"></div></div></div>';
   document.getElementById('modal-registro-fields').innerHTML = cols.map(c=>
     '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-srv-'+escHtml(c)+'"'+(c==='Nodo'?' oninput="onNodoInput(this)"':'')+' placeholder="'+escHtml(c)+'"></div>'
   ).join('') + oltHtml;
   document.getElementById('modal-registro').classList.add('open');
   window._modalEditMode=false;
+  window._oltOrigCodigo='';
   document.getElementById('modal-registro-save-btn').onclick=guardarServicio;
 }
 async function openModalEditar(){
@@ -1561,8 +1714,11 @@ async function openModalEditar(){
         cols = [...colSet];
       }
     }catch(e){}
-    const colSet2 = new Set([...cols, ...camposBase]);
-    cols = [...colSet2];
+    const esServiciosSheet = (lastSheet === 'BD_Servicios' || lastSheet === 'BD_Clientes_OLT');
+    if(esServiciosSheet){
+      const colSet2 = new Set([...cols, ...camposBase]);
+      cols = [...colSet2];
+    }
   }
   window._servicioCols = cols;
   window._servicioSheet = (lastSheet === 'BD_Clientes_OLT' ? 'BD_Servicios' : lastSheet) || 'BD_Servicios';
@@ -1682,17 +1838,17 @@ async function guardarServicio(){
       NAME: nodoSrv,
       CODIGO: codigoSrv
     };
-    if(window._modalEditMode){
-      // Actualizar OLT existente
-      await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
+    try{
+      const rOlt = await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({sheet:'BD_Clientes_OLT',keyField:'CODIGO',keyValue:codigoSrv,data:oltData})
-      }).catch(()=>{});
-    } else {
-      // Crear nuevo OLT
-      await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({sheet:'BD_Clientes_OLT',data:oltData})
-      }).catch(()=>{});
-    }
+      }).then(r=>r.json());
+      if(!rOlt || !rOlt.success){
+        // No existia un registro OLT previo con ese CODIGO: crear uno nuevo
+        await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({sheet:'BD_Clientes_OLT',data:oltData})
+        }).catch(()=>{});
+      }
+    }catch(e){}
   }
   // Si veniamos de un registro OLT puro, eliminar el registro viejo desordenado
   if(window._oltOrigCodigo){
@@ -2427,6 +2583,46 @@ function mostrarCredenciales(ipo, usuario, pass){
   document.body.appendChild(div);
 }
 
+async function mostrarCredsEditable(key){
+  window._credsKey = key;
+  let stored = {};
+  try{ stored = await fetch('/api/admin-creds/'+encodeURIComponent(key)).then(r=>r.json()); }catch(e){}
+  renderCredsBox((stored&&stored.usuario)||'', (stored&&stored.pass)||'', !(stored&&stored.usuario));
+}
+function renderCredsBox(usuario, pass, editMode){
+  document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove());
+  const overlay = document.createElement('div');
+  overlay.className = 'creds-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999';
+  const div = document.createElement('div');
+  div.className = 'creds-box';
+  div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--accent);border-radius:12px;padding:24px 32px;z-index:2000;min-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.5)';
+  if(editMode){
+    div.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--accent)">Guardar credenciales</div><div style="margin-bottom:10px"><span style="color:var(--muted);font-size:12px">USUARIO</span><input id="creds-input-usuario" type="text" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div style="margin-bottom:16px"><span style="color:var(--muted);font-size:12px">PASSWORD</span><input id="creds-input-pass" type="text" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><button id="creds-btn-guardar" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">Guardar</button><button id="creds-btn-cancelar" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer">Cancelar</button>';
+    div.querySelector('#creds-input-usuario').value = usuario;
+    div.querySelector('#creds-input-pass').value = pass;
+    div.querySelector('#creds-btn-guardar').onclick = guardarCredsEditable;
+    div.querySelector('#creds-btn-cancelar').onclick = cerrarCredsBox;
+  } else {
+    div.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--accent)">Credenciales</div><div style="margin-bottom:8px"><span style="color:var(--muted);font-size:12px">USUARIO</span><div style="font-family:monospace;font-size:15px">'+escHtml(usuario)+'</div></div><div style="margin-bottom:16px"><span style="color:var(--muted);font-size:12px">PASSWORD</span><div style="font-family:monospace;font-size:15px">'+escHtml(pass)+'</div></div><button id="creds-btn-copiar" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">Copiar</button><button id="creds-btn-editar" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">Editar</button><button id="creds-btn-cerrar" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer">Cerrar</button>';
+    div.querySelector('#creds-btn-copiar').onclick = function(){ navigator.clipboard.writeText(usuario+'\n'+pass); this.textContent='Copiado'; setTimeout(()=>{this.textContent='Copiar';},1500); };
+    div.querySelector('#creds-btn-editar').onclick = function(){ renderCredsBox(usuario, pass, true); };
+    div.querySelector('#creds-btn-cerrar').onclick = cerrarCredsBox;
+  }
+  overlay.onclick = cerrarCredsBox;
+  document.body.appendChild(overlay);
+  document.body.appendChild(div);
+}
+function cerrarCredsBox(){ document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove()); }
+async function guardarCredsEditable(){
+  const usuario = (document.getElementById('creds-input-usuario')||{}).value||'';
+  const pass = (document.getElementById('creds-input-pass')||{}).value||'';
+  try{
+    const r = await fetch('/api/admin-creds',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:window._credsKey,usuario,pass})}).then(r=>r.json());
+    if(r && r.success){ renderCredsBox(usuario, pass, false); }
+  }catch(e){}
+}
+
 function renderIpoTable(data){
   const cont = document.getElementById('ipo-result');
   if(!cont) return;
@@ -2584,12 +2780,13 @@ async function eliminarResultadoIPO(){
 // ── SDWAN ──
 let sdwanData = [];
 let lastSdwanResult = null;
-const SDWAN_COLS = ['Codigo_Servicio','Local','Direccion','Comuna','Hostname','Detalle_Dirección','Ip_Gestion','Lan','Cliente','Proveedor'];
+let SDWAN_COLS = ['Codigo_Servicio','Local','Direccion','Comuna','Hostname','Detalle_Dirección','Ip_Gestion','Lan','Cliente','Proveedor','Simcard'];
 
 async function cargarDatosSdwan(){
   try{
     const r = await fetch('/api/hoja/BD_Sdwan').then(r=>r.json());
     sdwanData = r || [];
+    if(sdwanData.length){ const colSet = new Set(); sdwanData.forEach(row => Object.keys(row).forEach(k => { if(k !== '_sheet') colSet.add(k); })); if(colSet.size) SDWAN_COLS = [...colSet]; }
     const q = document.getElementById('sdwan-search') ? document.getElementById('sdwan-search').value.trim() : '';
     if(q) filtrarSdwan();
     else { const cont=document.getElementById('sdwan-result'); if(cont) cont.innerHTML=''; }
@@ -3024,6 +3221,199 @@ async function eliminarResultadoFw(){
 
 
 
+
+// ── AGENDA ───────────────────────────────────────────────────────────────────
+window._agendaConfig = {};
+window._agendaCurrentKey = null;
+window._agendaData = [];
+window._agendaLastResult = null;
+window._agendaEditMode = false;
+
+async function cargarAgendaConfig(){
+  try{ window._agendaConfig = await fetch('/api/agenda-config').then(r=>r.json()); }
+  catch(e){ window._agendaConfig = {}; }
+  renderAgendaSubtabs();
+  const keys = Object.keys(window._agendaConfig);
+  if(!window._agendaCurrentKey && keys.length){ window._agendaCurrentKey = keys[0]; }
+  if(window._agendaCurrentKey){ seleccionarSubtabAgenda(window._agendaCurrentKey); }
+}
+function renderAgendaSubtabs(){
+  const cont = document.getElementById('agenda-subtabs');
+  if(!cont) return;
+  const keys = Object.keys(window._agendaConfig);
+  cont.innerHTML = keys.map(k => {
+    const activo = k === window._agendaCurrentKey;
+    return '<button class="btn" data-agenda-key="'+k+'" style="padding:6px 14px;font-size:13px;'+(activo?'background:var(--accent);color:white;border:none':'background:none;border:1px solid var(--border);color:var(--muted)')+'">'+escHtml(window._agendaConfig[k].label)+'</button>';
+  }).join('');
+  cont.querySelectorAll('[data-agenda-key]').forEach(btn=>{
+    btn.onclick = function(){ seleccionarSubtabAgenda(this.getAttribute('data-agenda-key')); };
+  });
+}
+async function seleccionarSubtabAgenda(key){
+  window._agendaCurrentKey = key;
+  window._agendaLastResult = null;
+  renderAgendaSubtabs();
+  const el = document.getElementById('agenda-search');
+  if(el) el.value = '';
+  const cont = document.getElementById('agenda-result');
+  if(cont) cont.innerHTML = '';
+  await cargarDatosAgendaSheet();
+}
+async function cargarDatosAgendaSheet(){
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  if(!cfg) return;
+  try{ window._agendaData = await fetch('/api/hoja/'+encodeURIComponent(cfg.sheet)).then(r=>r.json()); }
+  catch(e){ window._agendaData = []; }
+}
+function filtrarAgenda(){
+  const el = document.getElementById('agenda-search');
+  const q = el ? el.value.trim().toUpperCase() : '';
+  if(!q){ const cont=document.getElementById('agenda-result'); if(cont) cont.innerHTML=''; return; }
+  const filtrado = window._agendaData.filter(row =>
+    Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
+  );
+  renderAgenda(filtrado);
+}
+function renderAgenda(data){
+  const cont = document.getElementById('agenda-result');
+  if(!cont) return;
+  window._agendaDataRef = data;
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  if(!data || data.length === 0){ cont.innerHTML = '<div class="not-found"><p>Sin registros</p></div>'; return; }
+  cont.innerHTML = data.map((row,idx) => {
+    const fields = cfg.cols.map(k=>{
+      const val = row[k]!==undefined&&row[k]!=='' ? row[k] : null;
+      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value'+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
+    }).join('');
+    const titulo = escHtml(String(row[cfg.cols[0]] || ''));
+    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarAgenda('+idx+',this)"><div class="result-header"><div class="result-code">'+titulo+'</div><div class="result-badge">'+escHtml(cfg.label)+'</div></div><div class="result-grid">'+fields+'</div></div>';
+  }).join('');
+}
+function seleccionarAgenda(idx, el){
+  window._agendaLastResult = window._agendaDataRef[idx];
+  document.querySelectorAll('#agenda-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
+  el.style.borderColor = 'var(--accent)';
+}
+function openModalAgregarAgenda(){
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  if(!cfg){ alert('Primero cree una pestana de agenda'); return; }
+  document.getElementById('modal-registro-title').textContent = 'Agregar contacto: ' + cfg.label;
+  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-agenda-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._agendaEditMode = false;
+  document.getElementById('modal-registro-save-btn').onclick = guardarAgenda;
+}
+function openModalEditarAgenda(){
+  if(!window._agendaLastResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  const row = window._agendaLastResult;
+  document.getElementById('modal-registro-title').textContent = 'Editar contacto: ' + cfg.label;
+  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-agenda-'+escHtml(c)+'" value="'+escHtml(String(row[c]||''))+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._agendaEditMode = true;
+  document.getElementById('modal-registro-save-btn').onclick = guardarAgenda;
+}
+async function guardarAgenda(){
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  const errEl = document.getElementById('modal-registro-error');
+  errEl.style.display='none';
+  const data = {};
+  cfg.cols.forEach(c=>{ const el = document.getElementById('field-agenda-'+c); if(el) data[c] = el.value.trim(); });
+  let r;
+  if(window._agendaEditMode){
+    r = await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:cfg.sheet,keyField:'_id',keyValue:window._agendaLastResult._id,data})
+    }).then(r=>r.json());
+  } else {
+    data._id = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+    r = await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:cfg.sheet,data})
+    }).then(r=>r.json());
+  }
+  if(!r.success){ showAlert(errEl, r.message||'Error al guardar', 'error'); return; }
+  closeModal('modal-registro');
+  await cargarDatosAgendaSheet();
+  filtrarAgenda();
+}
+function eliminarResultadoAgenda(){
+  if(!window._agendaLastResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  document.getElementById('confirm-msg').textContent='Esta seguro que desea eliminar este registro?';
+  document.getElementById('confirm-ok-btn').textContent='Eliminar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    const cfg = window._agendaConfig[window._agendaCurrentKey];
+    const r = await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:cfg.sheet,keyField:'_id',keyValue:window._agendaLastResult._id})
+    }).then(r=>r.json());
+    closeModal('modal-confirm');
+    if(r.success){ window._agendaLastResult=null; await cargarDatosAgendaSheet(); filtrarAgenda(); }
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
+async function eliminarPestanaAgenda(){
+  if(!window._agendaCurrentKey){ alert('Seleccione una pestana primero'); return; }
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  if(!confirm('Eliminar la pestana "' + cfg.label + '"? Los contactos guardados se perderan.')) return;
+  try{
+    const r = await fetch('/api/agenda-config/'+encodeURIComponent(window._agendaCurrentKey),{method:'DELETE'}).then(r=>r.json());
+    if(r.success){
+      window._agendaCurrentKey = null;
+      await cargarAgendaConfig();
+    } else { alert(r.message||'Error al eliminar'); }
+  }catch(e){ alert('Error de conexion'); }
+}
+function openModalNuevaPestanaAgenda(){
+  document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove());
+  const overlay = document.createElement('div');
+  overlay.className = 'creds-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999';
+  const div = document.createElement('div');
+  div.className = 'creds-box';
+  div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--accent);border-radius:12px;padding:24px 32px;z-index:2000;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.5)';
+  div.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--accent)">Nueva pestana de Agenda</div><div style="margin-bottom:10px"><span style="color:var(--muted);font-size:12px">NOMBRE DE LA PESTANA</span><input id="agenda-nueva-label" type="text" placeholder="Ej: Movistar" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div style="margin-bottom:16px"><span style="color:var(--muted);font-size:12px">COLUMNAS (separadas por coma)</span><input id="agenda-nueva-cols" type="text" placeholder="Ej: Region, Contacto, Telefono, Email" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div id="agenda-nueva-error" style="display:none;color:#f87171;font-size:13px;margin-bottom:10px"></div><button id="agenda-nueva-guardar" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">Crear</button><button id="agenda-nueva-cancelar" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer">Cancelar</button>';
+  overlay.onclick = function(){ div.remove(); overlay.remove(); };
+  document.body.appendChild(overlay);
+  document.body.appendChild(div);
+  div.querySelector('#agenda-nueva-guardar').onclick = crearPestanaAgenda;
+  div.querySelector('#agenda-nueva-cancelar').onclick = function(){ div.remove(); overlay.remove(); };
+}
+async function crearPestanaAgenda(){
+  const label = (document.getElementById('agenda-nueva-label')||{}).value||'';
+  const cols = (document.getElementById('agenda-nueva-cols')||{}).value||'';
+  const errEl = document.getElementById('agenda-nueva-error');
+  if(!label.trim() || !cols.trim()){
+    if(errEl){ errEl.textContent='Complete nombre y columnas'; errEl.style.display='block'; }
+    return;
+  }
+  try{
+    const r = await fetch('/api/agenda-config',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({label,cols})
+    }).then(r=>r.json());
+    if(!r.success){ if(errEl){ errEl.textContent=r.message||'Error al crear'; errEl.style.display='block'; } return; }
+    document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove());
+    await cargarAgendaConfig();
+    seleccionarSubtabAgenda(r.key);
+  }catch(e){
+    if(errEl){ errEl.textContent='Error de conexion'; errEl.style.display='block'; }
+  }
+}
 </script>
 </body>
 </html>
