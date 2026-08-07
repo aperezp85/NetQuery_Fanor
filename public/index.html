@@ -235,6 +235,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('ipo',this)">IPO</button>
       <button class="nav-tab" onclick="showPage('sdwan',this)">SDWAN</button>
       <button class="nav-tab" onclick="showPage('agenda',this)">Agenda</button>
+      <button class="nav-tab" onclick="showPage('foscuras',this)">F.Oscuras</button>
       <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
       <button class="nav-tab superadmin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
       <button class="nav-tab superadmin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
@@ -396,6 +397,28 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       </div>
       <div id="agenda-result"></div>
     </div>
+    <!-- F.Oscuras -->
+    <div class="page" id="page-foscuras">
+      <div class="page-title">Fibras Oscuras</div>
+      <div class="page-sub">Consulta de enlaces de fibra oscura y rutas PEXT</div>
+      <!-- TABS DE HOJAS -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:12px" id="fo-tabs"></div>
+      <!-- BÚSQUEDA -->
+      <div class="search-box" style="margin-bottom:12px">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="fo-search" type="text"
+            placeholder="Buscar por codigo, cliente o ruta..."
+            onkeydown="if(event.key==='Enter')filtrarFO()"
+            oninput="filtrarFO()"
+            autocomplete="off">
+        </div>
+        <button class="btn btn-blue" onclick="filtrarFO()">Buscar</button>
+      </div>
+      <div id="fo-info" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
+      <div id="fo-result"></div>
+    </div>
+
     <div class="page" id="page-fwonpremise">
       <div class="page-title">FW On-Premise</div>
       <div class="page-sub">Busque en Internet Seguro y On Premise simultáneamente</div>
@@ -662,6 +685,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             <select id="fortinet-model-select" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
               <option value="">Seleccionar modelo...</option>
             </select>
+            <input type="text" id="fortinet-version-input" placeholder="Version ej: 6.2.7 (opcional)" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px;width:170px">
             <input type="file" id="fortinet-file-input" style="display:none" onchange="subirFirmware()">
             <button class="btn btn-green" onclick="document.getElementById('fortinet-file-input').click()">&#8593; Subir firmware</button>
           </div>
@@ -948,6 +972,7 @@ function showPage(name,btn){
   if(name==='ipo') cargarDatosIpo();
   if(name==='sdwan') cargarDatosSdwan();
   if(name==='agenda') cargarAgendaConfig();
+  if(name==='foscuras') cargarFO();
   if(name==='fwonpremise') cargarDatosFw();
   if(name==='fortinet') cargarFortinet();
   if(name==='ftp') { ftpRutaActual='/home/ftp01'; ftpHistorial=['/home/ftp01']; ftpListar('/home/ftp01'); }
@@ -1198,12 +1223,28 @@ function poblarComboboxFortinet(data){
       opt.textContent = m.model;
       sel.appendChild(opt);
     }
-    // Combobox upload
+    // Combobox upload (incluye submodelos si existen)
     if(selUp){
-      const opt2 = document.createElement('option');
-      opt2.value = m.model;
-      opt2.textContent = m.model;
-      selUp.appendChild(opt2);
+      if(subs.length > 0){
+        const grpUp = document.createElement('optgroup');
+        grpUp.label = m.model;
+        subs.forEach(sub => {
+          const opt2 = document.createElement('option');
+          opt2.value = m.model + '|' + sub;
+          opt2.textContent = m.model + ' \u203a ' + sub;
+          grpUp.appendChild(opt2);
+        });
+        const optRoot = document.createElement('option');
+        optRoot.value = m.model + '|';
+        optRoot.textContent = m.model + ' (sin subcarpeta)';
+        grpUp.appendChild(optRoot);
+        selUp.appendChild(grpUp);
+      } else {
+        const opt2 = document.createElement('option');
+        opt2.value = m.model + '|';
+        opt2.textContent = m.model;
+        selUp.appendChild(opt2);
+      }
     }
   });
 }
@@ -1352,7 +1393,11 @@ async function cargarFortinet(){
   } catch(e){ cont.innerHTML='<div style="color:var(--muted)">Error al cargar firmware.</div>'; }
 }
 function extraerVersion(filename){
-  const m = filename.match(/v(\d+\.\d+\.\d+)/);
+  // Patron 1: version justo antes de la extension, ej. ..._6.2.9.out
+  let m = filename.match(/_(\d+\.\d+\.\d+)\.[a-zA-Z0-9]+$/);
+  if(m) return m[1];
+  // Patron 2: v seguido directamente de la version completa, ej. v7.0.7...
+  m = filename.match(/v(\d+\.\d+\.\d+)/);
   return m ? m[1] : '';
 }
 function renderFortinet(data, filtroVersiones){
@@ -1396,18 +1441,31 @@ function renderFortinet(data, filtroVersiones){
   }).join('');
 }
 async function subirFirmware(){
-  const model = document.getElementById('fortinet-model-select').value;
+  const raw = document.getElementById('fortinet-model-select').value;
+  const [model, sub] = raw.split('|');
   const file = document.getElementById('fortinet-file-input').files[0];
+  const verInput = document.getElementById('fortinet-version-input');
+  const ver = verInput ? verInput.value.trim() : '';
   const msg = document.getElementById('fortinet-upload-msg');
   if(!model){ msg.innerHTML='<span style="color:#fca5a5">Seleccione un modelo primero.</span>'; return; }
   if(!file){ return; }
+  if(ver && !/^\d+\.\d+\.\d+$/.test(ver)){
+    msg.innerHTML='<span style="color:#fca5a5">Formato de version invalido. Use algo como 6.2.7</span>';
+    return;
+  }
   const fd = new FormData();
   fd.append('file', file);
   msg.innerHTML='<span style="color:var(--muted)">Subiendo...</span>';
-  const r = await fetch('/api/fortinet/upload/'+encodeURIComponent(model),{method:'POST',body:fd}).then(r=>r.json());
+  let url = '/api/fortinet/upload/'+encodeURIComponent(model);
+  const params = [];
+  if(sub) params.push('sub='+encodeURIComponent(sub));
+  if(ver) params.push('ver='+encodeURIComponent(ver));
+  if(params.length) url += '?'+params.join('&');
+  const r = await fetch(url,{method:'POST',body:fd}).then(r=>r.json());
   if(r.success){
     msg.innerHTML='<span style="color:#34d399">✓ '+escHtml(r.filename)+' subido correctamente.</span>';
     document.getElementById('fortinet-file-input').value='';
+    if(verInput) verInput.value='';
     cargarFortinet();
   } else {
     msg.innerHTML='<span style="color:#fca5a5">Error: '+escHtml(r.message||'No se pudo subir')+'</span>';
@@ -3223,6 +3281,110 @@ async function eliminarResultadoFw(){
 
 
 // ── AGENDA ───────────────────────────────────────────────────────────────────
+// ── FIBRAS OSCURAS ──────────────────────────────────────────────────────────
+let foData = [];
+let foSheets = [];
+let foSheetActual = '';
+let foAllSheetsCache = {};
+let foSearchResults = null;
+
+async function cargarFO(){
+  const tabsCont = document.getElementById('fo-tabs');
+  const cont = document.getElementById('fo-result');
+  const info = document.getElementById('fo-info');
+  if(tabsCont) tabsCont.innerHTML = '<div style="color:var(--muted);font-size:13px">Cargando hojas...</div>';
+  try {
+    foSheets = await fetch('/api/fo/sheets').then(r=>r.json());
+    if(!foSheets.length){ if(tabsCont) tabsCont.innerHTML='<div style="color:var(--muted)">Sin datos.</div>'; return; }
+    if(tabsCont){
+      tabsCont.innerHTML = foSheets.map((s,i)=>`<button class="filter-btn ${i===0?'active':''}" onclick="cambiarHojaFO('${escHtml(s.name)}',this)" style="font-size:12px">${escHtml(s.name)} <span style="font-size:11px;opacity:0.6">(${s.count})</span></button>`).join('');
+    }
+    foSheetActual = foSheets[0].name;
+    await cargarHojaFO(foSheetActual);
+  } catch(e){
+    if(cont) cont.innerHTML='<div style="color:var(--muted);padding:20px">Error al cargar datos.</div>';
+  }
+}
+async function cambiarHojaFO(sheet, btn){
+  document.querySelectorAll('#fo-tabs .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  foSheetActual = sheet;
+  foSearchResults = null;
+  document.getElementById('fo-search').value = '';
+  await cargarHojaFO(sheet);
+}
+async function cargarHojaFO(sheet){
+  const cont = document.getElementById('fo-result');
+  const info = document.getElementById('fo-info');
+  if(cont) cont.innerHTML='<div style="color:var(--muted);padding:20px">Cargando...</div>';
+  try {
+    foData = await fetch('/api/fo/'+encodeURIComponent(sheet)).then(r=>r.json());
+    foAllSheetsCache[sheet] = foData;
+    if(info) info.textContent = foData.length + ' registros en ' + sheet;
+    renderFO(foData, false);
+  } catch(e){
+    if(cont) cont.innerHTML='<div style="color:var(--muted)">Error al cargar hoja.</div>';
+  }
+}
+async function filtrarFO(){
+  const q = (document.getElementById('fo-search')||{value:''}).value.trim().toUpperCase();
+  const info = document.getElementById('fo-info');
+  const cont = document.getElementById('fo-result');
+  if(!q){
+    foSearchResults = null;
+    renderFO(foData, false);
+    if(info) info.textContent = foData.length + ' registros en ' + foSheetActual;
+    return;
+  }
+  if(cont) cont.innerHTML = '<div style="color:var(--muted);padding:20px">Buscando en todas las hojas...</div>';
+  const faltantes = foSheets.filter(s => !foAllSheetsCache[s.name]);
+  if(faltantes.length){
+    await Promise.all(faltantes.map(async s => {
+      try { foAllSheetsCache[s.name] = await fetch('/api/fo/'+encodeURIComponent(s.name)).then(r=>r.json()); }
+      catch(e){ foAllSheetsCache[s.name] = []; }
+    }));
+  }
+  const resultados = [];
+  foSheets.forEach(s => {
+    const datos = foAllSheetsCache[s.name] || [];
+    datos.forEach(row => {
+      if(Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))){
+        resultados.push(Object.assign({}, row, { __hoja: s.name }));
+      }
+    });
+  });
+  foSearchResults = resultados;
+  renderFO(resultados, true);
+  if(info) info.textContent = resultados.length + ' resultado(s) encontrados en todas las hojas';
+}
+function renderFO(data, esGlobal){
+  const cont = document.getElementById('fo-result');
+  if(!cont) return;
+  if(!data || data.length === 0){ cont.innerHTML = '<div class="not-found"><p>No se encontraron registros.</p></div>'; return; }
+  cont.innerHTML = data.map((row, idx) => {
+    const cols = Object.keys(row).filter(k => k !== '__hoja');
+    const codigo = escHtml(row['Codigo de servicio']||row['NUMERO DE SERVICIO']||row['Numero de Servicio']||row['Enlace Ciena']||'');
+    const cliente = escHtml(row['Cliente:']||row['CLIENTE']||'');
+    const hojaBadge = esGlobal ? '<span style="font-size:11px;padding:2px 8px;border-radius:6px;background:rgba(99,102,241,0.2);color:#a5b4fc;margin-left:8px">'+escHtml(row.__hoja)+'</span>' : '';
+    const fields = cols.map(k => {
+      const val = row[k] !== undefined && row[k] !== '' ? escHtml(String(row[k])) : '';
+      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value'+(val?'':' empty')+'" style="white-space:pre-wrap">'+(val||'&mdash;')+'</div></div>';
+    }).join('');
+    return '<div class="result-card" style="margin-bottom:12px"><div class="result-header"><div class="result-code">'+codigo+(cliente?' <span style="color:#f87171;font-size:13px;font-weight:400">|| '+cliente+'</span>':'')+hojaBadge+'</div><div style="display:flex;gap:8px"><button class="btn" style="padding:4px 10px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarFO(this,'+idx+')">Copiar</button></div></div><div class="result-grid">'+fields+'</div></div>';
+  }).join('');
+}
+function copiarFO(btn, idx){
+  const fuente = foSearchResults || foData;
+  const row = fuente[idx];
+  if(!row) return;
+  const txt = Object.entries(row).filter(([k])=>k!=='__hoja').map(([k,v])=>k+': '+(v||'')).join('\n');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  btn.textContent='¡Copiado!';btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
+
+
 window._agendaConfig = {};
 window._agendaCurrentKey = null;
 window._agendaData = [];

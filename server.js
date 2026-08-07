@@ -258,6 +258,14 @@ app.get('/api/consulta/:codigo', requireAuth, (req, res) => {
     });
     if (found.length > 0) results[sheet] = found;
   });
+  // Fibras Oscuras: buscar en todas las hojas (match en cualquier columna)
+  const foData = loadJSON(FO_FILE) || {};
+  Object.entries(foData).forEach(([sheet, rows]) => {
+    const found = rows.filter(row =>
+      Object.values(row).some(v => (v || '').toString().trim().toUpperCase().includes(codigo))
+    );
+    if (found.length > 0) results[sheet] = found;
+  });
   if (Object.keys(results).length === 0) return res.json({ found: false });
   res.json({ found: true, data: results });
 });
@@ -706,6 +714,30 @@ app.post('/api/backup/drive', requireSuperAdmin, (req, res) => {
   });
 });
 
+// ── FIBRAS OSCURAS ───────────────────────────────────────────────────────────
+const FO_FILE = './data/fo_parsed.json';
+app.get('/api/fo/sheets', requireAuth, (req, res) => {
+  const data = loadJSON(FO_FILE) || {};
+  res.json(Object.keys(data).map(name => ({ name, count: data[name].length })));
+});
+app.get('/api/fo/:sheet', requireAuth, (req, res) => {
+  const data = loadJSON(FO_FILE) || {};
+  const sheet = decodeURIComponent(req.params.sheet);
+  if(!data[sheet]) return res.json([]);
+  const q = (req.query.q || '').trim().toUpperCase();
+  if(!q) return res.json(data[sheet]);
+  res.json(data[sheet].filter(row =>
+    Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
+  ));
+});
+app.post('/api/fo/reload', requireAdmin, (req, res) => {
+  const { execSync } = require('child_process');
+  try {
+    execSync('python3 /opt/netquery/fo_parser.py');
+    res.json({ success: true });
+  } catch(e) { res.json({ success: false, message: e.message }); }
+});
+
 // ── FORTINET UPGRADE PATH ────────────────────────────────────────────────────
 const FORTINET_CACHE_FILE = './data/fortinet_cache.json';
 if (!fs.existsSync(FORTINET_CACHE_FILE)) saveJSON(FORTINET_CACHE_FILE, {});
@@ -759,11 +791,35 @@ const fortinetUpload = multer({
     destination: (req, file, cb) => {
       const model = sanitizeModelStrict(req.params.model);
       if (!model) return cb(new Error('Nombre de modelo invalido'));
-      const dir = path.join(__dirname, 'public', 'fortinet', model);
+      let dir = path.join(__dirname, 'public', 'fortinet', model);
+      const sub = req.query.sub ? sanitizeModelStrict(req.query.sub) : null;
+      if (req.query.sub && !sub) return cb(new Error('Nombre de subcarpeta invalido'));
+      if (sub) dir = path.join(dir, sub);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      req._fortinetDestDir = dir;
       cb(null, dir);
     },
-    filename: (req, file, cb) => cb(null, file.originalname)
+    filename: (req, file, cb) => {
+      const dir = req._fortinetDestDir;
+      const ver = req.query.ver ? String(req.query.ver).trim() : '';
+      const verValida = /^\d+\.\d+\.\d+$/.test(ver);
+      let name = file.originalname;
+      if (verValida && !name.includes(ver)) {
+        const ext = path.extname(name);
+        const base = name.slice(0, name.length - ext.length);
+        name = base + '_' + ver + ext;
+      }
+      if (dir && fs.existsSync(path.join(dir, name))) {
+        return cb(new Error('Ya existe un archivo con ese nombre: ' + name));
+      }
+      if (dir && verValida) {
+        const existentes = fs.readdirSync(dir).filter(f => f.includes('_' + ver + '.') || f.includes('v' + ver + '.') || f.includes('v' + ver + '-'));
+        if (existentes.length) {
+          return cb(new Error('Ya existe firmware con la version ' + ver + ': ' + existentes.join(', ')));
+        }
+      }
+      cb(null, name);
+    }
   }),
   limits: { fileSize: 500 * 1024 * 1024 }
 });
