@@ -168,6 +168,16 @@ body.light-mode .btn-logout:hover{border-color:var(--danger);color:#dc2626;}
 body.light-mode .rf-label{color:#374151;}
 body.light-mode .rf-value{color:#111827;}
 body.light-mode .page-sub{color:#4b5563;}
+body.light-mode .result-badge{color:#047857;}
+body.light-mode .role-pill.superadmin{color:#b91c1c;}
+body.light-mode [style*="color:#34d399"]{color:#047857 !important;}
+body.light-mode [style*="color:#60a5fa"]{color:#1d4ed8 !important;}
+body.light-mode [style*="color:#93c5fd"]{color:#1e40af !important;}
+body.light-mode [style*="color:#a5b4fc"]{color:#4338ca !important;}
+body.light-mode [style*="color:#f0a639"]{color:#b45309 !important;}
+body.light-mode [style*="color:#fbbf24"]{color:#92400e !important;}
+body.light-mode [style*="color:#fca5a5"]{color:#b91c1c !important;}
+body.light-mode [style*="color:#fcd34d"]{color:#92400e !important;}
 body.light-mode .stat-label{color:#374151;}
 body.light-mode .muted{color:#4b5563;}
 body.light-mode .nav-tab{color:#374151;}
@@ -244,12 +254,82 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button>
     </div>
     <div class="nav-user">
+      <button class="btn inicio-only" onclick="irAPagina('inicio')" style="display:none;padding:6px 14px;font-size:13px">&#8962; Inicio</button>
       <div class="user-badge"><span id="nav-username"></span><span class="role-pill" id="nav-role"></span></div>
       <button class="btn-logout" onclick="doLogout()">Salir</button>
     </div>
   </nav>
   <main>
 
+    <!-- INICIO -->
+    <div class="page" id="page-inicio">
+      <div style="max-width:640px;margin:0 auto;padding-top:24px">
+        <div style="text-align:center;margin-bottom:32px">
+          <div class="page-title" style="margin-bottom:4px">Que necesitas consultar?</div>
+          <div class="page-sub">Busca en Consulta, F.Oscuras, SDWAN, IPO y mas a la vez</div>
+        </div>
+        <div class="search-box" style="margin-bottom:32px">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input class="search-input" id="inicio-search-input" type="text" placeholder="Codigo de servicio, cliente, IP, enlace..." onkeydown="if(event.key==='Enter')buscarDesdeInicio()" autocomplete="off">
+          </div>
+          <button class="btn btn-blue" onclick="buscarDesdeInicio()">Buscar</button>
+        </div>
+        <div style="font-size:13px;color:var(--muted);font-weight:500;margin-bottom:12px">Accesos rapidos</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px">
+          <div onclick="irAPagina('consulta')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" style="width:22px;height:22px"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><circle cx="11" cy="14" r="2"/><path d="m12.5 15.5 1.5 1.5"/></svg>
+            <span style="font-size:14px;font-weight:500">Consulta</span>
+            <span style="font-size:12px;color:var(--muted)">Codigo de servicio general</span>
+          </div>
+          <div onclick="irAPagina('foscuras')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" style="width:22px;height:22px"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+            <span style="font-size:14px;font-weight:500">F.Oscuras</span>
+            <span style="font-size:12px;color:var(--muted)">Enlaces y rutas PEXT</span>
+          </div>
+          <div onclick="irAPagina('esmax')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" style="width:22px;height:22px"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            <span style="font-size:14px;font-weight:500">Esmax</span>
+            <span style="font-size:12px;color:var(--muted)">Respaldos y backups</span>
+          </div>
+          <div onclick="irAPagina('ipdb')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2" style="width:22px;height:22px"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+            <span style="font-size:14px;font-weight:500">Buscador IP</span>
+            <span style="font-size:12px;color:var(--muted)">Equipos por direccion IP</span>
+          </div>
+          <div onclick="irAPagina('ipo')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" style="width:22px;height:22px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span style="font-size:14px;font-weight:500">IPO</span>
+            <span style="font-size:12px;color:var(--muted)">Telefonia IP</span>
+          </div>
+          <div onclick="irAPagina('sdwan')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2" style="width:22px;height:22px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span style="font-size:14px;font-weight:500">SDWAN</span>
+            <span style="font-size:12px;color:var(--muted)">Enlaces y sitios</span>
+          </div>
+          <div onclick="irAPagina('agenda')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" style="width:22px;height:22px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span style="font-size:14px;font-weight:500">Agenda</span>
+            <span style="font-size:12px;color:var(--muted)">Contactos y referencia</span>
+          </div>
+          <div onclick="irAPagina('fwonpremise')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="width:22px;height:22px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style="font-size:14px;font-weight:500">FW On-Premise</span>
+            <span style="font-size:12px;color:var(--muted)">Firewalls internos</span>
+          </div>
+          <div onclick="irAPagina('fortinet')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#be123c" stroke-width="2" style="width:22px;height:22px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span style="font-size:14px;font-weight:500">Fortinet</span>
+            <span style="font-size:12px;color:var(--muted)">Firmware y actualizaciones</span>
+          </div>
+          <div onclick="irAPagina('ftp')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" style="width:22px;height:22px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span style="font-size:14px;font-weight:500">FTP</span>
+            <span style="font-size:12px;color:var(--muted)">Archivos del servidor</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- CONSULTA -->
     <div class="page active" id="page-consulta">
       <div class="page-title">Consulta de Codigo de Servicio</div>
@@ -856,6 +936,12 @@ function initApp(){
   if(isAdmin){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
   }
+  if(currentUser.role==='admin'){
+    const navTabs = document.getElementById('nav-tabs');
+    if(navTabs) navTabs.style.display='none';
+    document.querySelectorAll('.inicio-only').forEach(el=>el.style.display='');
+    irAPagina('inicio');
+  }
   if(isSuperAdmin){
     document.querySelectorAll('.superadmin-only').forEach(el=>el.style.display='');
     loadDbInfo();loadUsers();loadBackups();cargarAuditoria();
@@ -965,7 +1051,7 @@ function showPage(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
   if(name==='panorama') cargarPaloBackups();
   if(name==='ipdb') cargarInfoIPDB();
   cargarDatosIpo();
@@ -977,6 +1063,18 @@ function showPage(name,btn){
   if(name==='fortinet') cargarFortinet();
   if(name==='ftp') { ftpRutaActual='/home/ftp01'; ftpHistorial=['/home/ftp01']; ftpListar('/home/ftp01'); }
   if(name==='auditoria') cargarAuditoria();
+}
+function irAPagina(name){
+  const tab = document.querySelector('.nav-tab[onclick*="\'' + name + '\'"]');
+  showPage(name, tab);
+}
+function buscarDesdeInicio(){
+  const q = (document.getElementById('inicio-search-input')||{value:''}).value.trim();
+  if(!q) return;
+  const inputReal = document.getElementById('search-input');
+  if(inputReal) inputReal.value = q;
+  irAPagina('consulta');
+  setTimeout(()=>doSearch(), 50);
 }
 
 // FORTINET
@@ -3442,6 +3540,11 @@ function renderAgenda(data){
   window._agendaDataRef = data;
   const cfg = window._agendaConfig[window._agendaCurrentKey];
   if(!data || data.length === 0){ cont.innerHTML = '<div class="not-found"><p>Sin registros</p></div>'; return; }
+  const zonaCol = cfg.cols.find(c => c.trim().toLowerCase() === 'zona');
+  if(zonaCol){
+    renderAgendaPorZona(data, cfg, zonaCol);
+    return;
+  }
   cont.innerHTML = data.map((row,idx) => {
     const fields = cfg.cols.map(k=>{
       const val = row[k]!==undefined&&row[k]!=='' ? row[k] : null;
@@ -3451,10 +3554,52 @@ function renderAgenda(data){
     return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarAgenda('+idx+',this)"><div class="result-header"><div class="result-code">'+titulo+'</div><div class="result-badge">'+escHtml(cfg.label)+'</div></div><div class="result-grid">'+fields+'</div></div>';
   }).join('');
 }
+function renderAgendaPorZona(data, cfg, zonaCol){
+  const cont = document.getElementById('agenda-result');
+  const ZONA_COLORS = ['#3b82f6','#10b981','#f59e0b','#ec4899','#8b5cf6','#06b6d4','#f87171','#facc15','#a78bfa','#34d399'];
+  const grupos = {};
+  const orden = [];
+  data.forEach((row, idx) => {
+    const zona = String(row[zonaCol]||'').trim() || 'Sin zona';
+    if(!grupos[zona]){ grupos[zona] = []; orden.push(zona); }
+    grupos[zona].push({row, idx});
+  });
+  const cols = cfg.cols.filter(c => c !== zonaCol);
+  let html = '';
+  orden.forEach((zona, zi) => {
+    const color = ZONA_COLORS[zi % ZONA_COLORS.length];
+    const filas = grupos[zona];
+    html += '<div style="margin-bottom:20px;border:1px solid var(--border);border-radius:12px;overflow:hidden">';
+    html += '<div style="background:'+color+'22;border-left:4px solid '+color+';padding:8px 14px;display:flex;align-items:center;gap:8px">';
+    html += '<span style="font-size:13px;font-weight:600;color:'+color+'">'+escHtml(zona)+'</span>';
+    html += '<span style="font-size:11px;color:var(--muted)">('+filas.length+')</span>';
+    html += '</div>';
+    html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+    html += '<thead><tr>'+cols.map(c=>'<th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap">'+escHtml(c)+'</th>').join('')+'</tr></thead>';
+    html += '<tbody>';
+    filas.forEach(function(item){
+      const row = item.row, idx = item.idx;
+      html += '<tr style="cursor:pointer;border-bottom:1px solid var(--border)" onclick="seleccionarAgenda('+idx+',this)" onmouseover="this.style.background=\'var(--bg2)\'" onmouseout="if(!this.hasAttribute(\'data-sel\'))this.style.background=\'\'">';
+      html += cols.map(function(c){
+        const val = row[c]!==undefined && row[c]!=='' ? String(row[c]) : '';
+        return '<td style="padding:8px 10px;white-space:nowrap;color:'+(val?'var(--text)':'var(--muted)')+'">'+(val?escHtml(val):'&mdash;')+'</td>';
+      }).join('');
+      html += '</tr>';
+    });
+    html += '</tbody></table></div></div>';
+  });
+  cont.innerHTML = html;
+}
 function seleccionarAgenda(idx, el){
   window._agendaLastResult = window._agendaDataRef[idx];
   document.querySelectorAll('#agenda-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
-  el.style.borderColor = 'var(--accent)';
+  document.querySelectorAll('#agenda-result tr[data-sel]').forEach(r=>{r.style.background='';r.removeAttribute('data-sel');});
+  if(el.tagName === 'TR'){
+    el.style.background = 'rgba(99,102,241,0.15)';
+    el.setAttribute('data-sel','1');
+  } else {
+    el.style.borderColor = 'var(--accent)';
+  }
 }
 function openModalAgregarAgenda(){
   const cfg = window._agendaConfig[window._agendaCurrentKey];

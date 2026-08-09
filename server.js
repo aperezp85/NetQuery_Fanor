@@ -963,28 +963,8 @@ app.get('/api/ftp/download', requireAdmin, async (req, res) => {
 
 // ── AGENDA ───────────────────────────────────────────────────────────────────
 
-app.get('/api/agenda-config', requireAuth, (req, res) => {
-  res.json(loadJSON(AGENDA_CONFIG_FILE) || {});
-});
 
-app.post('/api/agenda-config', requireAuth, (req, res) => {
-  const { label, cols } = req.body;
-  if (!label || !cols) return res.json({ success: false, message: 'Faltan datos' });
-  const config = loadJSON(AGENDA_CONFIG_FILE) || {};
-  const key = 'agenda_' + Date.now().toString(36);
-  const colsArr = cols.split(',').map(c => c.trim()).filter(Boolean);
-  if (!colsArr.length) return res.json({ success: false, message: 'Ingrese al menos una columna' });
-  const sheetName = 'AG_' + label.trim().replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
-  config[key] = { label: label.trim(), sheet: sheetName, cols: colsArr };
-  saveJSON(AGENDA_CONFIG_FILE, config);
-  // Crear hoja vacia en multisheet
-  const ms = loadJSON(MULTISHEET_FILE) || {};
-  if (!ms[sheetName]) { ms[sheetName] = []; saveJSON(MULTISHEET_FILE, ms); }
-  logAudit(req, 'AGENDA_CREAR_PESTANA', 'Label: ' + label + ', Sheet: ' + sheetName);
-  res.json({ success: true, key, sheet: sheetName });
-});
-
-app.delete('/api/agenda-config/:key', requireAuth, (req, res) => {
+app.delete('/api/agenda-config/:key', requireSuperAdmin, (req, res) => {
   const config = loadJSON(AGENDA_CONFIG_FILE) || {};
   const key = req.params.key;
   if (!config[key]) return res.json({ success: false, message: 'Pestaña no encontrada' });
