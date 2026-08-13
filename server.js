@@ -450,6 +450,48 @@ app.post('/api/esmax/backup', requireAdmin, async (req, res) => {
 });
 
 
+const ICMP_FILE = './data/icmp_sites.json';
+if (!fs.existsSync(ICMP_FILE)) saveJSON(ICMP_FILE, []);
+app.get('/api/icmp/sites', requireAuth, (req, res) => {
+  const sites = loadJSON(ICMP_FILE) || [];
+  res.json(sites);
+});
+app.post('/api/icmp/sites', requireAdmin, (req, res) => {
+  const nombre = sanitizeText(req.body.nombre, 150);
+  const ip = sanitizeIP(req.body.ip || '');
+  const codigo = sanitizeText(req.body.codigo, 100);
+  const cliente = sanitizeText(req.body.cliente, 150);
+  const zona = sanitizeText(req.body.zona, 100);
+  const requiereVpn = !!req.body.requiereVpn;
+  if (!ip) return res.json({ success: false, message: 'La IP es obligatoria' });
+  const sites = loadJSON(ICMP_FILE) || [];
+  const nuevo = { id: Date.now().toString(36) + Math.random().toString(36).slice(2,8), nombre: nombre || ip, ip, codigo, cliente, zona, requiereVpn, avg: null, loss: null, estado: 'gris' };
+  sites.push(nuevo);
+  saveJSON(ICMP_FILE, sites);
+  logAudit(req, 'ICMP_AGREGAR', 'Nombre: ' + nuevo.nombre + ', IP: ' + ip);
+  res.json({ success: true, site: nuevo });
+});
+app.put('/api/icmp/sites/:id', requireAuth, (req, res) => {
+  const sites = loadJSON(ICMP_FILE) || [];
+  const idx = sites.findIndex(s => s.id === req.params.id);
+  if (idx === -1) return res.json({ success: false, message: 'Equipo no encontrado' });
+  const cambios = {};
+  if (req.body.avg !== undefined) cambios.avg = req.body.avg;
+  if (req.body.loss !== undefined) cambios.loss = req.body.loss;
+  if (req.body.estado !== undefined) cambios.estado = sanitizeText(req.body.estado, 20);
+  sites[idx] = { ...sites[idx], ...cambios };
+  saveJSON(ICMP_FILE, sites);
+  res.json({ success: true });
+});
+app.delete('/api/icmp/sites/:id', requireAdmin, (req, res) => {
+  let sites = loadJSON(ICMP_FILE) || [];
+  const target = sites.find(s => s.id === req.params.id);
+  if (!target) return res.json({ success: false, message: 'Equipo no encontrado' });
+  sites = sites.filter(s => s.id !== req.params.id);
+  saveJSON(ICMP_FILE, sites);
+  logAudit(req, 'ICMP_ELIMINAR', 'Nombre: ' + target.nombre + ', IP: ' + target.ip);
+  res.json({ success: true });
+});
 // --- BUSCADOR IP ---
 const IP_FILE = './data/ipdb.json';
 const IP_BACKUP_DIR = './data/ipdb_backups';
@@ -698,6 +740,26 @@ app.get('/api/ipo/search', requireAuth, (req, res) => {
   const q = (req.query.q || '').trim().toUpperCase();
   const ms = loadJSON(MULTISHEET_FILE) || {};
   const rows = ms['BD_Ipo'] || ms['BD_IPO'] || ms['BD_ipo'] || [];
+  if (!q) return res.json(rows.slice(0, 500));
+  const result = rows.filter(row =>
+    Object.values(row).some(v => (v || '').toString().toUpperCase().includes(q))
+  );
+  res.json(result.slice(0, 500));
+});
+app.get('/api/cucm/search', requireAuth, (req, res) => {
+  const q = (req.query.q || '').trim().toUpperCase();
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  const rows = ms['BD_Cucm'] || [];
+  if (!q) return res.json(rows.slice(0, 500));
+  const result = rows.filter(row =>
+    Object.values(row).some(v => (v || '').toString().toUpperCase().includes(q))
+  );
+  res.json(result.slice(0, 500));
+});
+app.get('/api/webex/search', requireAuth, (req, res) => {
+  const q = (req.query.q || '').trim().toUpperCase();
+  const ms = loadJSON(MULTISHEET_FILE) || {};
+  const rows = ms['BD_Webex'] || [];
   if (!q) return res.json(rows.slice(0, 500));
   const result = rows.filter(row =>
     Object.values(row).some(v => (v || '').toString().toUpperCase().includes(q))
@@ -973,6 +1035,34 @@ app.delete('/api/agenda-config/:key', requireSuperAdmin, (req, res) => {
   delete config[key];
   saveJSON(AGENDA_CONFIG_FILE, config);
   res.json({ success: true });
+});
+
+
+// ── MONITOREO ─────────────────────────────────────────────────────────────────
+// Verificar si la red de gestion es alcanzable (10.156.x.x via Lenovo)
+app.get('/api/monitoreo/vpn-status', requireAuth, (req, res) => {
+  const { exec } = require('child_process');
+  exec('ping -c 1 -W 2 10.156.0.1', (err, stdout) => {
+    const activa = !err && stdout.includes('1 received');
+    res.json({ activa });
+  });
+});
+
+// Obtener equipos de BD_Equipos para monitorear
+app.get('/api/monitoreo/equipos', requireAuth, (req, res) => {
+  try {
+    const ms = loadJSON(MULTISHEET_FILE) || {};
+    const equipos = ms['BD_Equipos'] || [];
+    const resultado = equipos
+      .filter(e => e.Ip_Administracion && e.Ip_Administracion.trim())
+      .map(e => ({
+        nombre: e.Swtich || e.Switch || e.Nombre || '',
+        ip: e.Ip_Administracion.trim(),
+        direccion: e.Direccion || '',
+        comuna: e.Comuna || ''
+      }));
+    res.json(resultado);
+  } catch(e) { res.json([]); }
 });
 
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });

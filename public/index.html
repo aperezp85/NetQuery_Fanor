@@ -32,21 +32,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 #change-pass-screen{display:none;align-items:center;justify-content:center;min-height:100vh;background-image:radial-gradient(ellipse at 80% 50%,rgba(245,158,11,0.08) 0%,transparent 60%);}
 .change-pass-card{width:420px;padding:48px 40px;background:var(--bg2);border:1px solid rgba(245,158,11,0.3);border-radius:16px;}
 #app{display:none;flex-direction:column;min-height:100vh;}
-nav{display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:60px;position:sticky;top:0;z-index:100;}
-.nav-brand{display:flex;align-items:center;gap:10px;margin-right:32px;}
+nav{display:flex;align-items:center;gap:8px;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:60px;position:sticky;top:0;z-index:100;}
+.nav-brand{display:flex;align-items:center;gap:10px;margin-right:16px;flex-shrink:0;}
 .nav-brand .logo-icon{width:32px;height:32px;border-radius:7px;}
 .nav-brand .logo-icon svg{width:16px;height:16px;}
 .nav-brand span{font-size:17px;font-weight:600;}
-.nav-tabs{display:flex;gap:4px;flex:1;}
+.nav-tabs{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;} .nav-tabs::-webkit-scrollbar{display:none;}
 .nav-tab{padding:7px 16px;border-radius:8px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;transition:all 0.15s;font-family:inherit;}
 .nav-tab:hover{color:var(--text);background:rgba(255,255,255,0.05);}
 .nav-tab.active{color:var(--accent);background:rgba(59,130,246,0.1);}
-.nav-user{display:flex;align-items:center;gap:12px;}
-.user-badge{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:13px;}
+.nav-user{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px;}
+.user-badge{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:13px;white-space:nowrap;flex-shrink:0;}
 .role-pill{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:rgba(59,130,246,0.15);color:#60a5fa;font-family:'Space Mono',monospace;}
 .role-pill.consulta{background:rgba(16,185,129,0.15);color:#34d399;}
 .role-pill.superadmin{background:rgba(239,68,68,0.15);color:#fca5a5;}
-.btn-logout{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-family:inherit;}
+.btn-logout{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-family:inherit;flex-shrink:0;white-space:nowrap;}
 .btn-logout:hover{border-color:var(--danger);color:#fca5a5;}
 main{flex:1;padding:32px 40px;max-width:1400px;width:100%;margin:0 auto;}
 .page{display:none;}
@@ -251,7 +251,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab superadmin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
       <button class="nav-tab superadmin-only" onclick="showPage('auditoria',this)" style="display:none">Auditoría</button>
       <button class="nav-tab admin-only" onclick="showPage('ftp',this)" style="display:none">FTP</button>
-      <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button>
+      <button class="nav-tab" onclick="showPage('icmp',this)">Monitor ICMP</button>
+      <button class="nav-tab" onclick="showPage('telefonia',this)">Telefonía</button>
+      <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button
     </div>
     <div class="nav-user">
       <button class="btn inicio-only" onclick="irAPagina('inicio')" style="display:none;padding:6px 14px;font-size:13px">&#8962; Inicio</button>
@@ -322,10 +324,20 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             <span style="font-size:14px;font-weight:500">Fortinet</span>
             <span style="font-size:12px;color:var(--muted)">Firmware y actualizaciones</span>
           </div>
+          <div onclick="irAPagina('telefonia')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" style="width:22px;height:22px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 17.5v-.58z"/></svg>
+            <span style="font-size:14px;font-weight:500">Telefonía</span>
+            <span style="font-size:12px;color:var(--muted)">CUCM, Webex e IPO</span>
+          </div>
           <div onclick="irAPagina('ftp')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" style="width:22px;height:22px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
             <span style="font-size:14px;font-weight:500">FTP</span>
             <span style="font-size:12px;color:var(--muted)">Archivos del servidor</span>
+          </div>
+          <div onclick="irAPagina('icmp')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" style="width:22px;height:22px"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span style="font-size:14px;font-weight:500">Monitor ICMP</span>
+            <span style="font-size:12px;color:var(--muted)">Ping y estado de enlaces</span>
           </div>
         </div>
       </div>
@@ -354,6 +366,51 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
 
 
     <!-- ESMAX -->
+    <!-- MONITOR ICMP -->
+    <div class="page" id="page-icmp">
+      <div class="page-title">Monitor ICMP</div>
+      <div class="page-sub">Monitoreo de enlaces por ping — red 10.158.x.x / 10.156.x.x</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+        <div class="stat-card"><div class="stat-label">Total equipos</div><div class="stat-value" id="icmp-total" style="font-size:28px">0</div></div>
+        <div class="stat-card"><div class="stat-label">Activos</div><div class="stat-value" id="icmp-activos" style="font-size:28px;color:var(--success)">0</div></div>
+        <div class="stat-card"><div class="stat-label">Caídos</div><div class="stat-value" id="icmp-caidos" style="font-size:28px;color:var(--danger)">0</div></div>
+        <div class="stat-card"><div class="stat-label">Intermitentes</div><div class="stat-value" id="icmp-inter" style="font-size:28px;color:var(--warning)">0</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+        <input id="icmp-search" type="text" placeholder="Buscar por IP, código de servicio o nombre..."
+          style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;min-width:200px"
+          oninput="filtrarICMP()">
+        <select id="icmp-zona" onchange="filtrarICMP()" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px">
+          <option value="">Todas las zonas</option>
+        </select>
+        <button class="btn btn-blue" id="btn-icmp-monitor" onclick="toggleICMP()">&#9654; Iniciar monitoreo</button>
+        <button class="btn btn-green admin-only" onclick="abrirModalICMP()" style="display:none">+ Agregar</button>
+      </div>
+      <div id="icmp-list"></div>
+    </div>
+
+    <!-- MODAL AGREGAR ICMP -->
+    <div class="modal-overlay" id="modal-icmp-agregar">
+      <div class="modal">
+        <div class="modal-title">Agregar equipo al monitor</div>
+        <div class="field"><label>IM</label><input type="text" id="icmp-im" placeholder="Ej: IM-4521"></div>
+        <div class="field"><label>IP de gestión o loopback</label><input type="text" id="icmp-ip" placeholder="Ej: 10.158.50.102" oninput="onIcmpIpInput(this.value)"></div>
+        <div class="field"><label>Código de servicio (opcional)</label><input type="text" id="icmp-codigo" placeholder="Ej: 33-61-0010443432" oninput="onIcmpCodigoInput(this.value)"></div>
+        <div class="field"><label>Cliente</label><input type="text" id="icmp-cliente" placeholder="Se completa automáticamente" readonly style="opacity:0.75"></div>
+        <div class="field" style="margin-top:8px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="icmp-requiere-vpn" style="width:auto;padding:0">
+            Requiere VPN (solo el agente externo puede actualizarlo)
+          </label>
+        </div>
+        <div id="modal-icmp-error" class="alert error" style="margin-top:12px"></div>
+        <div class="btn-row">
+          <button class="btn-cancel" onclick="closeModal('modal-icmp-agregar')">Cancelar</button>
+          <button class="btn-save" onclick="guardarICMP()">Agregar</button>
+        </div>
+      </div>
+    </div>
+
     <div class="page" id="page-esmax">
       <div class="page-title">Esmax</div>
       <div class="page-sub">Backups de Panorama y monitoreo ICMP en tiempo real</div>
@@ -685,8 +742,62 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <div id="ipo-result"></div>
     </div>
 
-    <!-- FORTINET -->
-    <!-- FTP -->
+    <!-- TELEFONÍA -->
+  <div class="page" id="page-telefonia">
+    <div class="page-title">Telefonía</div>
+    <div class="page-sub">Busque un cliente para ver en qué sistemas está registrado</div>
+
+    <!-- Buscador central -->
+    <div class="search-box" style="margin-bottom:20px">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" id="tel-search-global" type="text"
+          placeholder="Buscar cliente en CUCM, IP Office y Webex..."
+          onkeydown="if(event.key==='Enter')telBuscarGlobal()"
+          oninput="telBuscarGlobal()"
+          autocomplete="off">
+      </div>
+      <button class="btn btn-blue" onclick="telBuscarGlobal()">Buscar</button>
+    </div>
+
+    <!-- Resultados globales -->
+    <div id="tel-result-global" style="margin-bottom:24px"></div>
+
+    <!-- Separador -->
+    <div style="border-top:1px solid var(--border);margin:20px 0"></div>
+
+    <!-- Subtabs por sistema -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="tel-tab active" onclick="telSelTab('cucm',this)" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:none;background:rgba(27,106,198,0.15);color:#60a5fa;cursor:pointer;font-size:13px;font-weight:600">
+        <img src="/img/cisco-logo.svg" onerror="this.style.display='none'" style="height:20px"> CUCM
+      </button>
+      <button class="tel-tab" onclick="telSelTab('ipoffice',this)" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:none;background:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;border:1px solid var(--border)">
+        <img src="/img/avaya-logo.svg" onerror="this.style.display='none'" style="height:20px"> IP Office
+      </button>
+      <button class="tel-tab" onclick="telSelTab('webex',this)" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:none;background:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;border:1px solid var(--border)">
+        <img src="/img/webex-logo.svg" onerror="this.style.display='none'" style="height:20px"> Webex
+      </button>
+    </div>
+
+    <!-- Buscador por sistema -->
+    <div class="search-box" style="margin-bottom:12px">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" id="tel-search" type="text" placeholder="Filtrar en este sistema..." oninput="telFiltrar()" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Acciones CRUD -->
+    <div class="action-bar admin-only" style="display:none;margin-bottom:12px">
+      <button class="btn btn-green" onclick="telAgregar()">+ Agregar</button>
+      <button class="btn btn-yellow" onclick="telEditar()">Editar resultado</button>
+      <button class="btn btn-red" onclick="telEliminar()">Eliminar resultado</button>
+    </div>
+    <div id="tel-result" style="margin-top:8px"></div>
+  </div>
+
+  <!-- FORTINET -->
+  <!-- FTP -->
   <div class="page" id="page-ftp">
     <div class="page-title">Explorador FTP</div>
     <div class="page-sub">Conexión a servidor FTP — <span style="font-family:'Space Mono',monospace;color:var(--accent)">10.139.33.160</span></div>
@@ -1047,6 +1158,198 @@ window.fetch = async function(...args) {
 };
 
 // NAVEGACION
+window._agendaConfig = {};
+window._agendaCurrentKey = null;
+window._agendaData = [];
+window._agendaLastResult = null;
+window._agendaEditMode = false;
+
+async function cargarAgendaConfig(){
+  try{
+    window._agendaConfig = await fetch('/api/agenda-config').then(r=>r.json());
+  }catch(e){ window._agendaConfig = {}; }
+  renderAgendaSubtabs();
+  const keys = Object.keys(window._agendaConfig);
+  if(!window._agendaCurrentKey && keys.length){ window._agendaCurrentKey = keys[0]; }
+  if(window._agendaCurrentKey){ seleccionarSubtabAgenda(window._agendaCurrentKey); }
+}
+function renderAgendaSubtabs(){
+  const cont = document.getElementById('agenda-subtabs');
+  if(!cont) return;
+  const keys = Object.keys(window._agendaConfig);
+  cont.innerHTML = keys.map(k => {
+    const activo = k === window._agendaCurrentKey;
+    return '<button class="btn" data-agenda-key="'+k+'" style="padding:6px 14px;font-size:13px;'+(activo?'background:var(--accent);color:white;border:none':'background:none;border:1px solid var(--border);color:var(--muted)')+'">'+escHtml(window._agendaConfig[k].label)+'</button>';
+  }).join('');
+  cont.querySelectorAll('[data-agenda-key]').forEach(btn=>{
+    btn.onclick = function(){ seleccionarSubtabAgenda(this.getAttribute('data-agenda-key')); };
+  });
+}
+async function seleccionarSubtabAgenda(key){
+  window._agendaCurrentKey = key;
+  window._agendaLastResult = null;
+  renderAgendaSubtabs();
+  const el = document.getElementById('agenda-search');
+  if(el) el.value = '';
+  const cont = document.getElementById('agenda-result');
+  if(cont) cont.innerHTML = '';
+  await cargarDatosAgendaSheet();
+}
+async function cargarDatosAgendaSheet(){
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  if(!cfg) return;
+  try{
+    window._agendaData = await fetch('/api/hoja/'+encodeURIComponent(cfg.sheet)).then(r=>r.json());
+  }catch(e){ window._agendaData = []; }
+}
+function filtrarAgenda(){
+  const el = document.getElementById('agenda-search');
+  const q = el ? el.value.trim().toUpperCase() : '';
+  if(!q){ const cont=document.getElementById('agenda-result'); if(cont) cont.innerHTML=''; return; }
+  const filtrado = window._agendaData.filter(row =>
+    Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
+  );
+  renderAgenda(filtrado);
+}
+function renderAgenda(data){
+  const cont = document.getElementById('agenda-result');
+  if(!cont) return;
+  window._agendaDataRef = data;
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  if(!data || data.length === 0){
+    cont.innerHTML = '<div class="not-found"><p>Sin registros</p></div>';
+    return;
+  }
+  cont.innerHTML = data.map((row,idx) => {
+    const fields = cfg.cols.map(k=>{
+      const val = row[k]!==undefined&&row[k]!=='' ? row[k] : null;
+      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value'+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
+    }).join('');
+    const titulo = escHtml(String(row[cfg.cols[2]] || row[cfg.cols[0]] || ''));
+    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarAgenda('+idx+',this)"><div class="result-header"><div class="result-code">'+titulo+'</div><div class="result-badge">'+escHtml(cfg.label)+'</div></div><div class="result-grid">'+fields+'</div></div>';
+  }).join('');
+}
+function seleccionarAgenda(idx, el){
+  window._agendaLastResult = window._agendaDataRef[idx];
+  document.querySelectorAll('#agenda-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
+  el.style.borderColor = 'var(--accent)';
+}
+function openModalAgregarAgenda(){
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  if(!cfg) return;
+  document.getElementById('modal-registro-title').textContent = 'Agregar registro: ' + cfg.label;
+  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-agenda-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._agendaEditMode = false;
+  document.getElementById('modal-registro-save-btn').onclick = guardarAgenda;
+}
+function openModalEditarAgenda(){
+  if(!window._agendaLastResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  const row = window._agendaLastResult;
+  document.getElementById('modal-registro-title').textContent = 'Editar registro: ' + cfg.label;
+  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c=>
+    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-agenda-'+escHtml(c)+'" value="'+escHtml(String(row[c]||''))+'"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display='none';
+  document.getElementById('modal-registro').classList.add('open');
+  window._agendaEditMode = true;
+  document.getElementById('modal-registro-save-btn').onclick = guardarAgenda;
+}
+async function guardarAgenda(){
+  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  const errEl = document.getElementById('modal-registro-error');
+  errEl.style.display='none';
+  const data = {};
+  cfg.cols.forEach(c=>{
+    const el = document.getElementById('field-agenda-'+c);
+    if(el) data[c] = el.value.trim();
+  });
+  let r;
+  if(window._agendaEditMode){
+    const idVal = window._agendaLastResult._id;
+    r = await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:cfg.sheet,keyField:'_id',keyValue:idVal,data})
+    }).then(r=>r.json());
+  } else {
+    data._id = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+    r = await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:cfg.sheet,data})
+    }).then(r=>r.json());
+  }
+  if(!r.success){ showAlert(errEl, r.message||'Error al guardar', 'error'); return; }
+  closeModal('modal-registro');
+  await cargarDatosAgendaSheet();
+  filtrarAgenda();
+}
+function eliminarResultadoAgenda(){
+  if(!window._agendaLastResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  document.getElementById('confirm-msg').textContent='Esta seguro que desea eliminar este registro?';
+  document.getElementById('confirm-ok-btn').textContent='Eliminar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    const cfg = window._agendaConfig[window._agendaCurrentKey];
+    const r = await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sheet:cfg.sheet,keyField:'_id',keyValue:window._agendaLastResult._id})
+    }).then(r=>r.json());
+    closeModal('modal-confirm');
+    if(r.success){ window._agendaLastResult=null; await cargarDatosAgendaSheet(); filtrarAgenda(); }
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
+function openModalNuevaPestanaAgenda(){
+  document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove());
+  const overlay = document.createElement('div');
+  overlay.className = 'creds-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999';
+  const div = document.createElement('div');
+  div.className = 'creds-box';
+  div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--accent);border-radius:12px;padding:24px 32px;z-index:2000;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.5)';
+  div.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--accent)">Nueva pestana de Agenda</div><div style="margin-bottom:10px"><span style="color:var(--muted);font-size:12px">NOMBRE DE LA PESTANA</span><input id="agenda-nueva-label" type="text" placeholder="Ej: Contactos Emergencia" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div style="margin-bottom:16px"><span style="color:var(--muted);font-size:12px">COLUMNAS (separadas por coma)</span><input id="agenda-nueva-cols" type="text" placeholder="Ej: Zona, Empresa, Telefono" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div id="agenda-nueva-error" style="display:none;color:#f87171;font-size:13px;margin-bottom:10px"></div><button id="agenda-nueva-guardar" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">Crear</button><button id="agenda-nueva-cancelar" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer">Cancelar</button>';
+  overlay.onclick = function(){ div.remove(); overlay.remove(); };
+  document.body.appendChild(overlay);
+  document.body.appendChild(div);
+  div.querySelector('#agenda-nueva-guardar').onclick = crearPestanaAgenda;
+  div.querySelector('#agenda-nueva-cancelar').onclick = function(){ div.remove(); overlay.remove(); };
+}
+async function crearPestanaAgenda(){
+  const label = (document.getElementById('agenda-nueva-label')||{}).value||'';
+  const cols = (document.getElementById('agenda-nueva-cols')||{}).value||'';
+  const errEl = document.getElementById('agenda-nueva-error');
+  if(!label.trim() || !cols.trim()){
+    if(errEl){ errEl.textContent='Complete nombre y columnas'; errEl.style.display='block'; }
+    return;
+  }
+  try{
+    const r = await fetch('/api/agenda-config',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({label,cols})
+    }).then(r=>r.json());
+    if(!r.success){
+      if(errEl){ errEl.textContent=r.message||'Error al crear'; errEl.style.display='block'; }
+      return;
+    }
+    document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove());
+    await cargarAgendaConfig();
+    seleccionarSubtabAgenda(r.key);
+  }catch(e){
+    if(errEl){ errEl.textContent='Error de conexion'; errEl.style.display='block'; }
+  }
+}
+
 function showPage(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -1058,9 +1361,11 @@ function showPage(name,btn){
   if(name==='ipo') cargarDatosIpo();
   if(name==='sdwan') cargarDatosSdwan();
   if(name==='agenda') cargarAgendaConfig();
+  if(name==='icmp') iniciarICMPPage();
   if(name==='foscuras') cargarFO();
   if(name==='fwonpremise') cargarDatosFw();
   if(name==='fortinet') cargarFortinet();
+  if(name==='telefonia') { _telTab='cucm'; telCargar(); }
   if(name==='ftp') { ftpRutaActual='/home/ftp01'; ftpHistorial=['/home/ftp01']; ftpListar('/home/ftp01'); }
   if(name==='auditoria') cargarAuditoria();
 }
@@ -1075,6 +1380,209 @@ function buscarDesdeInicio(){
   if(inputReal) inputReal.value = q;
   irAPagina('consulta');
   setTimeout(()=>doSearch(), 50);
+}
+
+// ── MONITOR ICMP ─────────────────────────────────────────────────────────────
+const ICMP_FILE_KEY = 'icmp_sites';
+let icmpData = [];
+let icmpInterval = null;
+let icmpMonitoreando = false;
+let icmpCharts = {};
+
+async function iniciarICMPPage(){
+  await cargarICMPSites();
+  filtrarICMP();
+  poblarZonasICMP();
+}
+
+async function cargarICMPSites(){
+  try {
+    const r = await fetch('/api/icmp/sites').then(r=>r.json());
+    icmpData = Array.isArray(r) ? r : [];
+  } catch(e){ icmpData = []; }
+  actualizarEstadisticasICMP();
+  renderICMP(icmpData);
+}
+
+function poblarZonasICMP(){
+  const sel = document.getElementById('icmp-zona');
+  if(!sel) return;
+  const zonas = [...new Set(icmpData.map(s=>s.zona||'').filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todas las zonas</option>' + zonas.map(z=>'<option>'+escHtml(z)+'</option>').join('');
+}
+
+function filtrarICMP(){
+  const q = (document.getElementById('icmp-search')||{value:''}).value.trim().toUpperCase();
+  const zona = (document.getElementById('icmp-zona')||{value:''}).value;
+  let filtrado = icmpData;
+  if(zona) filtrado = filtrado.filter(s=>(s.zona||'')===zona);
+  if(q) filtrado = filtrado.filter(s=>
+    (s.nombre||'').toUpperCase().includes(q) ||
+    (s.ip||'').toUpperCase().includes(q) ||
+    (s.codigo||'').toUpperCase().includes(q)
+  );
+  renderICMP(filtrado);
+}
+
+function actualizarEstadisticasICMP(){
+  const total = icmpData.length;
+  const activos = icmpData.filter(s=>s.estado==='verde').length;
+  const caidos = icmpData.filter(s=>s.estado==='rojo').length;
+  const inter = icmpData.filter(s=>s.estado==='amarillo').length;
+  const set = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  set('icmp-total', total);
+  set('icmp-activos', activos);
+  set('icmp-caidos', caidos);
+  set('icmp-inter', inter);
+}
+
+function renderICMP(data){
+  const cont = document.getElementById('icmp-list');
+  if(!cont) return;
+  if(!data.length){
+    cont.innerHTML = '<div class="not-found"><p>No hay equipos agregados al monitor.</p></div>';
+    return;
+  }
+  const colores = {verde:'#10b981', amarillo:'#f59e0b', rojo:'#ef4444', gris:'#6b7280'};
+  const esAdmin = currentUser && ['admin','superadmin'].includes(currentUser.role);
+  cont.innerHTML = data.map(s => {
+    const color = colores[s.estado||'gris'];
+    const estadoTxt = s.estado==='verde'?'OK':s.estado==='amarillo'?'Intermitente':s.estado==='rojo'?'CAÍDO':'Esperando...';
+    const latTxt = s.avg!=null ? s.avg.toFixed(1)+' ms' : '— ms';
+    const perdTxt = s.loss!=null ? s.loss+'% pérdida' : '';
+    const badgeBg = s.estado==='verde'?'rgba(16,185,129,0.15)':s.estado==='rojo'?'rgba(239,68,68,0.1)':s.estado==='amarillo'?'rgba(245,158,11,0.15)':'rgba(107,114,128,0.15)';
+    const badgeColor = s.estado==='verde'?'#34d399':s.estado==='rojo'?'#fca5a5':s.estado==='amarillo'?'#fcd34d':'#9ca3af';
+    const borderColor = s.estado==='rojo'?'rgba(239,68,68,0.4)':s.estado==='amarillo'?'rgba(245,158,11,0.4)':'var(--border)';
+    return `<div style="background:var(--bg2);border:1px solid ${borderColor};border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px">
+      <div style="width:14px;height:14px;border-radius:50%;background:${color};flex-shrink:0;box-shadow:0 0 6px ${color}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:500">${escHtml(s.nombre||s.ip)}</div>
+        <div style="font-size:12px;color:var(--muted);font-family:'Space Mono',monospace">${escHtml(s.ip)}${s.codigo?' — '+escHtml(s.codigo):''}${s.cliente?' · '+escHtml(s.cliente):''}${s.requiereVpn?' <span style="font-size:10px;padding:1px 6px;border-radius:4px;background:rgba(139,92,246,0.15);color:#a78bfa;margin-left:4px">VPN</span>':''}</div>
+        <div style="font-size:12px;margin-top:2px;color:${color}">${estadoTxt}${perdTxt?' · '+perdTxt:''}</div>
+      </div>
+      <span style="font-size:13px;font-family:'Space Mono',monospace;color:var(--muted)">${latTxt}</span>
+      <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${badgeBg};color:${badgeColor}">${estadoTxt}</span>
+      <div style="display:flex;gap:6px">
+        <button onclick="pingICMPManual('${escHtml(s.ip)}','${escHtml(s.id)}')" style="padding:4px 10px;border-radius:6px;font-size:12px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer">Ping</button>
+        ${esAdmin?'<button onclick="eliminarICMP(\''+escHtml(s.id)+'\')" style="padding:4px 10px;border-radius:6px;font-size:12px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.1);color:#fca5a5;cursor:pointer">✕</button>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleICMP(){
+  const btn = document.getElementById('btn-icmp-monitor');
+  if(icmpMonitoreando){
+    clearInterval(icmpInterval);
+    icmpMonitoreando = false;
+    if(btn){ btn.innerHTML='&#9654; Iniciar monitoreo'; btn.style.background=''; }
+  } else {
+    icmpMonitoreando = true;
+    if(btn){ btn.textContent='&#9646;&#9646; Detener monitoreo'; btn.style.background='#ef4444'; }
+    monitorearTodosICMP();
+    icmpInterval = setInterval(monitorearTodosICMP, 30000);
+  }
+}
+
+async function monitorearTodosICMP(){
+  for(const s of icmpData){
+    if(s.requiereVpn) continue; // Solo el agente externo actualiza estos equipos
+    try {
+      const r = await fetch('/api/esmax/ping/'+s.ip).then(r=>r.json());
+      s.avg = r.avg;
+      s.loss = r.loss;
+      s.estado = r.estado;
+      await fetch('/api/icmp/sites/'+s.id, {method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({avg:r.avg, loss:r.loss, estado:r.estado})});
+    } catch(e){}
+  }
+  await cargarICMPSites(); // Refresca tambien los datos que subio el agente externo
+  filtrarICMP();
+}
+
+async function pingICMPManual(ip, id){
+  const site = icmpData.find(s=>s.id==id);
+  if(site && site.requiereVpn){
+    alert('Este equipo requiere VPN. Solo el agente externo conectado a la VPN puede actualizarlo, el servidor no tiene ruta directa.');
+    return;
+  }
+  try {
+    const r = await fetch('/api/esmax/ping/'+ip).then(r=>r.json());
+    if(site){ site.avg=r.avg; site.loss=r.loss; site.estado=r.estado; }
+    await fetch('/api/icmp/sites/'+id, {method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({avg:r.avg, loss:r.loss, estado:r.estado})});
+    actualizarEstadisticasICMP();
+    filtrarICMP();
+  } catch(e){}
+}
+
+let icmpServiciosData = [];
+async function cargarIcmpServiciosData(){
+  try{
+    icmpServiciosData = await fetch('/api/hoja/BD_Servicios').then(r=>r.json());
+  }catch(e){ icmpServiciosData = []; }
+}
+function onIcmpCodigoInput(val){
+  const v = (val||'').trim().toUpperCase();
+  if(!v){ return; }
+  const match = icmpServiciosData.find(row => String(row.Codigo_Servicio||'').trim().toUpperCase() === v);
+  if(match){
+    const ipEl = document.getElementById('icmp-ip');
+    const cliEl = document.getElementById('icmp-cliente');
+    if(ipEl && match.Ip_Gestion) ipEl.value = match.Ip_Gestion;
+    if(cliEl) cliEl.value = match.Cliente || '';
+  }
+}
+function onIcmpIpInput(val){
+  const v = (val||'').trim();
+  if(!v){ return; }
+  const match = icmpServiciosData.find(row => String(row.Ip_Gestion||'').trim() === v);
+  if(match){
+    const codEl = document.getElementById('icmp-codigo');
+    const cliEl = document.getElementById('icmp-cliente');
+    if(codEl && match.Codigo_Servicio) codEl.value = match.Codigo_Servicio;
+    if(cliEl) cliEl.value = match.Cliente || '';
+  }
+}
+async function abrirModalICMP(){
+  document.getElementById('icmp-im').value='';
+  document.getElementById('icmp-ip').value='';
+  document.getElementById('icmp-codigo').value='';
+  document.getElementById('icmp-cliente').value='';
+  document.getElementById('icmp-requiere-vpn').checked=false;
+  document.getElementById('modal-icmp-error').style.display='none';
+  document.getElementById('modal-icmp-agregar').classList.add('open');
+  if(!icmpServiciosData.length) await cargarIcmpServiciosData();
+}
+
+async function guardarICMP(){
+  const im = document.getElementById('icmp-im').value.trim();
+  const ip = document.getElementById('icmp-ip').value.trim();
+  const codigo = document.getElementById('icmp-codigo').value.trim();
+  const cliente = document.getElementById('icmp-cliente').value.trim();
+  const requiereVpn = document.getElementById('icmp-requiere-vpn').checked;
+  const nombre = im || codigo || cliente || ip;
+  const errEl = document.getElementById('modal-icmp-error');
+  if(!ip){ showAlert(errEl,'La IP es obligatoria','error'); return; }
+  const r = await fetch('/api/icmp/sites', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({nombre, ip, codigo, cliente, zona:'', requiereVpn})
+  }).then(r=>r.json());
+  if(!r.success){ showAlert(errEl, r.message||'Error', 'error'); return; }
+  closeModal('modal-icmp-agregar');
+  await cargarICMPSites();
+  poblarZonasICMP();
+}
+
+async function eliminarICMP(id){
+  document.getElementById('confirm-msg').textContent = '¿Eliminar este equipo del monitor?';
+  document.getElementById('confirm-ok-btn').textContent = 'Eliminar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    await fetch('/api/icmp/sites/'+id, {method:'DELETE'});
+    await cargarICMPSites();
+    poblarZonasICMP();
+  };
+  document.getElementById('modal-confirm').classList.add('open');
 }
 
 // FORTINET
@@ -3377,6 +3885,215 @@ async function eliminarResultadoFw(){
 
 
 
+
+
+// ── TELEFONÍA ─────────────────────────────────────────────────────────────────
+async function telBuscarGlobal() {
+  const q = (document.getElementById('tel-search-global')?.value || '').trim().toUpperCase();
+  const cont = document.getElementById('tel-result-global');
+  if (!cont) return;
+  if (!q) { cont.innerHTML = ''; return; }
+
+  // Cargar los 3 sistemas
+  const sistemas = [
+    { key: 'cucm',     sheet: 'BD_CUCM',     label: 'CUCM',      color: '#1B6AC6', logo: '/img/cisco-logo.svg' },
+    { key: 'ipoffice', sheet: 'BD_IPOffice', label: 'IP Office',  color: '#CC0000', logo: '/img/avaya-logo.svg' },
+    { key: 'webex',    sheet: 'BD_Webex',    label: 'Webex',      color: '#00B140', logo: '/img/webex-logo.svg' }
+  ];
+
+  cont.innerHTML = '<div style="color:var(--muted);padding:12px">Buscando en todos los sistemas...</div>';
+
+  const resultados = await Promise.all(sistemas.map(async s => {
+    try {
+      const data = await fetch('/api/hoja/' + encodeURIComponent(s.sheet)).then(r=>r.json());
+      const found = (data||[]).filter(row =>
+        Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
+      );
+      return { ...s, found };
+    } catch(e) { return { ...s, found: [] }; }
+  }));
+
+  const conResultados = resultados.filter(r => r.found.length > 0);
+
+  if (conResultados.length === 0) {
+    cont.innerHTML = '<div class="not-found"><p>No se encontró "<strong>' + escHtml(q) + '</strong>" en ningún sistema</p></div>';
+    return;
+  }
+
+  cont.innerHTML = conResultados.map(s => {
+    const cards = s.found.map(row => {
+      const cliente = row.Cliente || row[Object.keys(row)[0]] || '';
+      const ip = row.Ip_Gestion || '';
+      return '<div style="background:var(--bg3);border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">'
+        + '<div><div style="font-weight:600;font-size:13px">' + escHtml(cliente) + '</div>'
+        + (ip ? '<div style="font-family:\'Space Mono\',monospace;font-size:11px;color:var(--muted)">' + escHtml(ip) + '</div>' : '')
+        + '</div>'
+        + '<button onclick="telIrA(\'' + s.key + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;background:rgba(' + (s.color==='#1B6AC6'?'27,106,198':s.color==='#CC0000'?'204,0,0':'0,177,64') + ',0.15);color:' + s.color + ';border:1px solid ' + s.color + ';cursor:pointer">Ver en ' + s.label + ' →</button>'
+        + '</div>';
+    }).join('');
+
+    return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;border-left:3px solid ' + s.color + '">'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+      + '<img src="' + s.logo + '" style="height:22px" onerror="this.style.display=\'none\'">'
+      + '<span style="font-weight:600;color:' + s.color + '">' + s.label + '</span>'
+      + '<span style="font-size:12px;color:var(--muted)">— ' + s.found.length + ' resultado' + (s.found.length>1?'s':'') + '</span>'
+      + '</div>'
+      + cards
+      + '</div>';
+  }).join('');
+}
+
+function telIrA(tab) {
+  const btn = document.querySelector('.tel-tab[onclick*="' + tab + '"]');
+  if (btn) { telSelTab(tab, btn); }
+  const q = document.getElementById('tel-search-global')?.value || '';
+  if (q && document.getElementById('tel-search')) {
+    document.getElementById('tel-search').value = q;
+    telFiltrar();
+  }
+}
+
+
+const TEL_TABS = {
+  cucm:     { sheet: 'BD_CUCM',     cols: ['Cliente','Ip_Gestion','Usuario','Password'], keyField: 'Cliente', label: 'CUCM' },
+  ipoffice: { sheet: 'BD_IPOffice', cols: ['Cliente','Ip_Gestion'],                     keyField: 'Cliente', label: 'IP Office' },
+  webex:    { sheet: 'BD_Webex',    cols: ['Cliente','Ip_Gestion','Usuario','Password'], keyField: 'Cliente', label: 'Webex' }
+};
+let _telTab = 'cucm';
+let _telData = [];
+let _telLastResult = null;
+
+function telSelTab(tab, btn) {
+  _telTab = tab;
+  _telLastResult = null;
+  document.querySelectorAll('.tel-tab').forEach(b => {
+    b.style.background = 'none';
+    b.style.color = 'var(--muted)';
+    b.style.border = '1px solid var(--border)';
+  });
+  btn.style.background = 'rgba(59,130,246,0.15)';
+  btn.style.color = '#60a5fa';
+  btn.style.border = 'none';
+  document.getElementById('tel-search').value = '';
+  document.getElementById('tel-result').innerHTML = '';
+  telCargar();
+}
+
+async function telCargar() {
+  const cfg = TEL_TABS[_telTab];
+  try {
+    const r = await fetch('/api/hoja/' + encodeURIComponent(cfg.sheet)).then(r=>r.json());
+    _telData = r || [];
+    telRender(_telData);
+  } catch(e) { _telData = []; telRender([]); }
+}
+
+function telFiltrar() {
+  const q = (document.getElementById('tel-search')?.value || '').trim().toUpperCase();
+  if (!q) { telRender(_telData); return; }
+  telRender(_telData.filter(row =>
+    Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
+  ));
+}
+
+function telRender(data) {
+  const cont = document.getElementById('tel-result');
+  if (!cont) return;
+  _telLastResult = null;
+  const cfg = TEL_TABS[_telTab];
+  if (!data || data.length === 0) {
+    cont.innerHTML = '<div class="not-found"><p>Sin registros</p></div>';
+    return;
+  }
+  cont.innerHTML = data.map((row, idx) => {
+    const fields = cfg.cols.map(k => {
+      const val = row[k] || '';
+      const isPass = k.toLowerCase().includes('pass') || k.toLowerCase().includes('password');
+      const displayVal = isPass && val ? '••••••••' : escHtml(String(val || '—'));
+      return '<div class="result-field"><div class="rf-label">' + escHtml(k) + '</div><div class="rf-value">' + displayVal + '</div></div>';
+    }).join('');
+    return '<div class="result-card" data-idx="' + idx + '" style="margin-bottom:12px;cursor:pointer;transition:border-color 0.2s" onclick="telSeleccionar(' + idx + ',this)"><div class="result-header"><div class="result-code">' + escHtml(String(row[cfg.keyField]||'')) + '</div><div class="result-badge">' + escHtml(cfg.label) + '</div></div><div class="result-grid">' + fields + '</div></div>';
+  }).join('');
+}
+
+function telSeleccionar(idx, el) {
+  _telLastResult = _telData[idx];
+  document.querySelectorAll('#tel-result .result-card').forEach(c => c.style.borderColor = 'rgba(255,255,255,0.08)');
+  el.style.borderColor = 'var(--accent)';
+}
+
+function telAgregar() {
+  const cfg = TEL_TABS[_telTab];
+  document.getElementById('modal-registro-title').textContent = 'Agregar ' + cfg.label;
+  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c =>
+    '<div class="field"><label>' + escHtml(c) + '</label><input type="' + (c.toLowerCase().includes('pass') ? 'password' : 'text') + '" id="tel-field-' + escHtml(c) + '" placeholder="' + escHtml(c) + '"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display = 'none';
+  document.getElementById('modal-registro').classList.add('open');
+  document.getElementById('modal-registro-save-btn').onclick = telGuardar;
+  window._telEditMode = false;
+}
+
+function telEditar() {
+  if (!_telLastResult) {
+    alert('Primero seleccione un registro');
+    return;
+  }
+  const cfg = TEL_TABS[_telTab];
+  const row = _telLastResult;
+  document.getElementById('modal-registro-title').textContent = 'Editar ' + cfg.label;
+  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c =>
+    '<div class="field"><label>' + escHtml(c) + '</label><input type="' + (c.toLowerCase().includes('pass') ? 'password' : 'text') + '" id="tel-field-' + escHtml(c) + '" value="' + escHtml(String(row[c]||'')) + '"></div>'
+  ).join('');
+  document.getElementById('modal-registro-error').style.display = 'none';
+  document.getElementById('modal-registro').classList.add('open');
+  document.getElementById('modal-registro-save-btn').onclick = telGuardar;
+  window._telEditMode = true;
+}
+
+async function telGuardar() {
+  const cfg = TEL_TABS[_telTab];
+  const errEl = document.getElementById('modal-registro-error');
+  errEl.style.display = 'none';
+  const data = {};
+  cfg.cols.forEach(c => {
+    const el = document.getElementById('tel-field-' + c);
+    if (el) data[c] = el.value.trim();
+  });
+  if (!data[cfg.keyField]) {
+    showAlert(errEl, 'El campo ' + cfg.keyField + ' es obligatorio', 'error');
+    return;
+  }
+  let r;
+  if (window._telEditMode) {
+    r = await fetch('/api/multisheet', { method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ sheet: cfg.sheet, keyField: cfg.keyField, keyValue: _telLastResult[cfg.keyField], data })
+    }).then(r=>r.json());
+  } else {
+    r = await fetch('/api/multisheet', { method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ sheet: cfg.sheet, data })
+    }).then(r=>r.json());
+  }
+  if (!r.success) { showAlert(errEl, r.message || 'Error al guardar', 'error'); return; }
+  closeModal('modal-registro');
+  await telCargar();
+}
+
+function telEliminar() {
+  if (!_telLastResult) { alert('Primero seleccione un registro'); return; }
+  const cfg = TEL_TABS[_telTab];
+  const keyVal = _telLastResult[cfg.keyField];
+  document.getElementById('confirm-msg').textContent = '¿Eliminar ' + cfg.label + ': ' + keyVal + '?';
+  document.getElementById('confirm-ok-btn').textContent = 'Eliminar';
+  document.getElementById('confirm-ok-btn').onclick = async function() {
+    closeModal('modal-confirm');
+    const r = await fetch('/api/multisheet', { method: 'DELETE', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ sheet: cfg.sheet, keyField: cfg.keyField, keyValue: keyVal })
+    }).then(r=>r.json());
+    if (r.success) { _telLastResult = null; await telCargar(); }
+  };
+  document.getElementById('modal-confirm').classList.add('open');
+}
 
 // ── AGENDA ───────────────────────────────────────────────────────────────────
 // ── FIBRAS OSCURAS ──────────────────────────────────────────────────────────
