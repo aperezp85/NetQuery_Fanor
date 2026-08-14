@@ -1039,12 +1039,32 @@ app.delete('/api/agenda-config/:key', requireSuperAdmin, (req, res) => {
 
 
 // ── MONITOREO ─────────────────────────────────────────────────────────────────
-// Verificar si la red de gestion es alcanzable (10.156.x.x via Lenovo)
+// Verificar si alguna red de gestion VPN es alcanzable via Lenovo
 app.get('/api/monitoreo/vpn-status', requireAuth, (req, res) => {
   const { exec } = require('child_process');
-  exec('ping -c 1 -W 2 10.156.0.1', (err, stdout) => {
-    const activa = !err && stdout.includes('1 received');
-    res.json({ activa });
+
+  // Un destino representativo por cada segmento VPN
+  const destinos = [
+    '10.156.0.1',
+    '10.158.0.1',
+    '172.16.10.30'
+  ];
+
+  let pendientes = destinos.length;
+  let activa = false;
+
+  destinos.forEach(ip => {
+    exec(`ping -c 1 -W 2 ${ip}`, (err, stdout) => {
+      if (!err && stdout.includes('1 received')) {
+        activa = true;
+      }
+
+      pendientes--;
+
+      if (pendientes === 0) {
+        res.json({ activa });
+      }
+    });
   });
 });
 
