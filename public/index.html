@@ -1104,7 +1104,7 @@ async function initApp(){
   if(isAdmin){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
   }
-  await cargarGruposConfig();
+  if(currentUser.role==='superadmin') await cargarGruposConfig();
   aplicarPermisosGrupo(currentUser.permisos || {});
   if(isSuperAdmin){
     document.querySelectorAll('.superadmin-only').forEach(el=>el.style.display='');
