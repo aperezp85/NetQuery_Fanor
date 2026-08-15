@@ -242,11 +242,13 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab active" onclick="showPage('consulta',this)">Consulta</button>
       <button class="nav-tab" onclick="showPage('esmax',this)">Esmax</button>
       <button class="nav-tab" onclick="showPage('ipdb',this)">Buscador IP</button>
+      <button class="nav-tab" onclick="showPage('ipo',this)">IPO</button>
       <button class="nav-tab" onclick="showPage('sdwan',this)">SDWAN</button>
       <button class="nav-tab" onclick="showPage('agenda',this)">Agenda</button>
       <button class="nav-tab" onclick="showPage('foscuras',this)">F.Oscuras</button>
       <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
       <button class="nav-tab superadmin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
+      <button class="nav-tab superadmin-only" onclick="showPage('grupos',this)" style="display:none">Grupos</button>
       <button class="nav-tab superadmin-only" onclick="showPage('usuarios',this)" style="display:none">Usuarios</button>
       <button class="nav-tab superadmin-only" onclick="showPage('auditoria',this)" style="display:none">Auditoría</button>
       <button class="nav-tab admin-only" onclick="showPage('ftp',this)" style="display:none">FTP</button>
@@ -355,9 +357,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-blue" onclick="doSearch()">Buscar</button>
       </div>
       <div class="action-bar admin-only" style="display:none">
-        <button class="btn btn-green" onclick="openModalAgregar()">+ Agregar</button>
-        <button class="btn btn-yellow" onclick="openModalEditar()">Editar resultado</button>
-        <button class="btn btn-red" onclick="eliminarResultado()">Eliminar resultado</button>
+        <button class="btn btn-green" data-perm-pestana="consulta" data-perm-accion="agregar" onclick="openModalAgregar()">+ Agregar</button>
+        <button class="btn btn-yellow" data-perm-pestana="consulta" data-perm-accion="editar" onclick="openModalEditar()">Editar resultado</button>
+        <button class="btn btn-red" data-perm-pestana="consulta" data-perm-accion="eliminar" onclick="eliminarResultado()">Eliminar resultado</button>
       </div>
       <div id="search-result"></div>
     </div>
@@ -499,9 +501,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-blue" onclick="filtrarSdwan()">Buscar</button>
       </div>
       <div class="action-bar admin-only" style="display:none">
-        <button class="btn btn-green" onclick="openModalAgregarSdwan()">+ Agregar</button>
-        <button class="btn btn-yellow" onclick="openModalEditarSdwan()">Editar resultado</button>
-        <button class="btn btn-red" onclick="eliminarResultadoSdwan()">Eliminar resultado</button>
+        <button class="btn btn-green" data-perm-pestana="sdwan" data-perm-accion="agregar" onclick="openModalAgregarSdwan()">+ Agregar</button>
+        <button class="btn btn-yellow" data-perm-pestana="sdwan" data-perm-accion="editar" onclick="openModalEditarSdwan()">Editar resultado</button>
+        <button class="btn btn-red" data-perm-pestana="sdwan" data-perm-accion="eliminar" onclick="eliminarResultadoSdwan()">Eliminar resultado</button>
         <button class="btn btn-red" id="btn-eliminar-masivo-sdwan" onclick="eliminarMasivoSdwan()" style="display:none">Eliminar seleccionados (<span id="cnt-sdwan-sel">0</span>)</button>
       </div>
       <div id="sdwan-result"></div>
@@ -525,9 +527,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-blue" onclick="filtrarAgenda()">Buscar</button>
       </div>
       <div class="action-bar admin-only" style="display:none">
-        <button class="btn btn-green" onclick="openModalAgregarAgenda()">+ Agregar</button>
-        <button class="btn btn-yellow" onclick="openModalEditarAgenda()">Editar resultado</button>
-        <button class="btn btn-red" onclick="eliminarResultadoAgenda()">Eliminar resultado</button>
+        <button class="btn btn-green" data-perm-pestana="agenda" data-perm-accion="agregar" onclick="openModalAgregarAgenda()">+ Agregar</button>
+        <button class="btn btn-yellow" data-perm-pestana="agenda" data-perm-accion="editar" onclick="openModalEditarAgenda()">Editar resultado</button>
+        <button class="btn btn-red" data-perm-pestana="agenda" data-perm-accion="eliminar" onclick="eliminarResultadoAgenda()">Eliminar resultado</button>
         <button class="btn superadmin-only" style="display:none" onclick="openModalNuevaPestanaAgenda()">+ Nueva pestana</button>
         <button class="btn btn-red superadmin-only" style="display:none" onclick="eliminarPestanaAgenda()">&#10005; Eliminar pestana</button>
       </div>
@@ -570,9 +572,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-blue" onclick="filtrarFw()">Buscar</button>
       </div>
       <div class="action-bar admin-only" style="display:none">
-        <button class="btn btn-green" onclick="openModalAgregarFw()">+ Agregar</button>
-        <button class="btn btn-yellow" onclick="openModalEditarFw()">Editar resultado</button>
-        <button class="btn btn-red" onclick="eliminarResultadoFw()">Eliminar resultado</button>
+        <button class="btn btn-green" data-perm-pestana="fwonpremise" data-perm-accion="agregar" onclick="openModalAgregarFw()">+ Agregar</button>
+        <button class="btn btn-yellow" data-perm-pestana="fwonpremise" data-perm-accion="editar" onclick="openModalEditarFw()">Editar resultado</button>
+        <button class="btn btn-red" data-perm-pestana="fwonpremise" data-perm-accion="eliminar" onclick="eliminarResultadoFw()">Eliminar resultado</button>
         <button class="btn btn-red" id="btn-eliminar-masivo-fw" onclick="eliminarMasivoFw()" style="display:none">Eliminar seleccionados (<span id="cnt-fw-sel">0</span>)</button>
       </div>
       <div id="fw-result-internet" style="margin-bottom:24px"></div>
@@ -677,8 +679,53 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-blue" onclick="openModalUser()">+ Nuevo usuario</button>
       </div>
       <div class="table-wrap">
-        <table><thead><tr><th style="width:36px"><input type="checkbox" id="chk-todos" onchange="toggleSeleccionTodos(this)" style="width:auto"></th><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Última actividad</th><th>Acciones</th></tr></thead>
+        <table><thead><tr><th style="width:36px"><input type="checkbox" id="chk-todos" onchange="toggleSeleccionTodos(this)" style="width:auto"></th><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Grupo</th><th>Estado</th><th>Última actividad</th><th>Acciones</th></tr></thead>
         <tbody id="users-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- GRUPOS -->
+    <div class="page" id="page-grupos">
+      <div class="page-title">Gestión de Grupos</div>
+      <div class="page-sub">Cree grupos y defina qué puede ver, agregar, editar o eliminar cada uno en cada pestaña</div>
+      <div class="section-header">
+        <div class="section-title">Grupos del sistema</div>
+        <button class="btn btn-blue" onclick="abrirModalNuevoGrupo()">+ Nuevo grupo</button>
+      </div>
+      <div id="grupos-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px"></div>
+      <div id="grupos-matriz-wrap" style="display:none">
+        <div class="section-header">
+          <div class="section-title" id="grupos-matriz-titulo">Permisos</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-red" id="btn-eliminar-grupo" onclick="eliminarGrupoActual()" style="display:none">Eliminar grupo</button>
+            <button class="btn btn-blue" onclick="guardarPermisosGrupo()">Guardar cambios</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Pestaña</th>
+              <th style="text-align:center">Ver</th>
+              <th style="text-align:center">Agregar</th>
+              <th style="text-align:center">Editar</th>
+              <th style="text-align:center">Eliminar</th>
+            </tr></thead>
+            <tbody id="grupos-matriz-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL NUEVO GRUPO -->
+    <div class="modal-overlay" id="modal-nuevo-grupo">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-title">Nuevo grupo</div>
+        <div class="field"><label>Nombre del grupo</label><input type="text" id="grupo-nuevo-label" placeholder="Ej: Soporte Nivel 3"></div>
+        <div id="modal-nuevo-grupo-error" class="alert error" style="margin-top:8px"></div>
+        <div class="btn-row">
+          <button class="btn-cancel" onclick="closeModal('modal-nuevo-grupo')">Cancelar</button>
+          <button class="btn-save" onclick="crearGrupoNuevo()">Crear</button>
+        </div>
       </div>
     </div>
 
@@ -732,9 +779,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <button class="btn btn-blue" onclick="filtrarIpo()">Buscar</button>
       </div>
       <div class="action-bar admin-only" style="display:none">
-        <button class="btn btn-green" onclick="openModalAgregarIPO()">+ Agregar</button>
-        <button class="btn btn-yellow" onclick="openModalEditarIPO()">Editar resultado</button>
-        <button class="btn btn-red" onclick="eliminarResultadoIPO()">Eliminar resultado</button>
+        <button class="btn btn-green" data-perm-pestana="ipo" data-perm-accion="agregar" onclick="openModalAgregarIPO()">+ Agregar</button>
+        <button class="btn btn-yellow" data-perm-pestana="ipo" data-perm-accion="editar" onclick="openModalEditarIPO()">Editar resultado</button>
+        <button class="btn btn-red" data-perm-pestana="ipo" data-perm-accion="eliminar" onclick="eliminarResultadoIPO()">Eliminar resultado</button>
         <button class="btn btn-red" id="btn-eliminar-masivo-ipo" onclick="eliminarMasivoIPO()" style="display:none">Eliminar seleccionados (<span id="cnt-ipo-sel">0</span>)</button>
         <button class="btn superadmin-only" style="display:none;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredsEditable('ipo_admin_general')">&#128273; Creds</button>
       </div>
@@ -788,9 +835,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
 
     <!-- Acciones CRUD -->
     <div class="action-bar admin-only" style="display:none;margin-bottom:12px">
-      <button class="btn btn-green" onclick="telAgregar()">+ Agregar</button>
-      <button class="btn btn-yellow" onclick="telEditar()">Editar resultado</button>
-      <button class="btn btn-red" onclick="telEliminar()">Eliminar resultado</button>
+      <button class="btn btn-green" data-perm-pestana="telefonia" data-perm-accion="agregar" onclick="telAgregar()">+ Agregar</button>
+      <button class="btn btn-yellow" data-perm-pestana="telefonia" data-perm-accion="editar" onclick="telEditar()">Editar resultado</button>
+      <button class="btn btn-red" data-perm-pestana="telefonia" data-perm-accion="eliminar" onclick="telEliminar()">Eliminar resultado</button>
       <button class="btn superadmin-only" style="display:none;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredsEditable('ipo_admin_general')">&#128273; Creds</button>
     </div>
     <div id="tel-result" style="margin-top:8px"></div>
@@ -919,6 +966,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         </select>
       </div>
     </div>
+    <div class="field"><label>Grupo (define qué puede ver y hacer)</label>
+      <select id="u-grupo"></select>
+    </div>
     <div class="field" style="margin-top:8px">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
         <input type="checkbox" id="u-temporal" style="width:auto;padding:0">
@@ -946,6 +996,9 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
           <option value="admin">Administrador</option>
         </select>
       </div>
+    </div>
+    <div class="field"><label>Grupo (define qué puede ver y hacer)</label>
+      <select id="ue-grupo"></select>
     </div>
     <div id="modal-user-edit-error" class="alert error" style="margin-top:12px"></div>
     <div class="btn-row">
@@ -1018,7 +1071,10 @@ async function doLogin(){
   sessionStorage.removeItem('loginIntentos');
   currentUser=r.user;
   if(currentUser.mustChangePassword){document.getElementById('login-screen').style.display='none';document.getElementById('change-pass-screen').style.display='flex';}
-  else initApp();
+  else {
+    try{ currentUser = await fetch('/api/me').then(r=>r.json()); }catch(e){}
+    initApp();
+  }
 }
 async function doChangePassword(){
   const np=document.getElementById('cp-new').value;
@@ -1029,13 +1085,14 @@ async function doChangePassword(){
   const r=await fetch('/api/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({newPassword:np})}).then(r=>r.json());
   if(!r.success){showAlert(errEl,r.message,'error');return;}
   document.getElementById('change-pass-screen').style.display='none';
+  try{ currentUser = await fetch('/api/me').then(r=>r.json()); }catch(e){}
   initApp();
 }
 async function checkSession(){
   const r=await fetch('/api/me').then(r=>r.ok?r.json():null).catch(()=>null);
   if(r){currentUser=r;if(currentUser.mustChangePassword){document.getElementById('login-screen').style.display='none';document.getElementById('change-pass-screen').style.display='flex';}else initApp();}else{document.getElementById('app').style.display='none';document.getElementById('change-pass-screen').style.display='none';document.getElementById('login-screen').style.display='flex';}
 }
-function initApp(){
+async function initApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('change-pass-screen').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -1047,15 +1104,12 @@ function initApp(){
   if(isAdmin){
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
   }
-  if(currentUser.role==='admin'){
-    const navTabs = document.getElementById('nav-tabs');
-    if(navTabs) navTabs.style.display='none';
-    document.querySelectorAll('.inicio-only').forEach(el=>el.style.display='');
-    irAPagina('inicio');
-  }
+  await cargarGruposConfig();
+  aplicarPermisosGrupo(currentUser.permisos || {});
   if(isSuperAdmin){
     document.querySelectorAll('.superadmin-only').forEach(el=>el.style.display='');
     loadDbInfo();loadUsers();loadBackups();cargarAuditoria();
+    renderGruposCards();
   } else if(isAdmin){
     loadDbInfo();
   }
@@ -2890,6 +2944,160 @@ async function eliminarIPDB(id){
   document.getElementById('modal-confirm').classList.add('open');
 }
 
+// GRUPOS
+const PESTANAS_LABELS = {
+  consulta: 'Consulta', esmax: 'Esmax', ipdb: 'Buscador IP', ipo: 'IPO', sdwan: 'SDWAN',
+  agenda: 'Agenda', foscuras: 'F.Oscuras', fwonpremise: 'FW On-Premise', telefonia: 'Telefonía',
+  datos: 'Base de Datos', usuarios: 'Usuarios', auditoria: 'Auditoría', ftp: 'FTP',
+  icmp: 'Monitor ICMP', fortinet: 'Fortinet'
+};
+let gruposConfig = {};
+let grupoSeleccionado = null;
+
+async function cargarGruposConfig(){
+  try{
+    gruposConfig = await fetch('/api/grupos').then(r=>r.json());
+  }catch(e){ gruposConfig = {}; }
+}
+
+function renderGruposCards(){
+  const cont = document.getElementById('grupos-cards');
+  if(!cont) return;
+  const claves = Object.keys(gruposConfig);
+  cont.innerHTML = claves.map(k=>{
+    const g = gruposConfig[k];
+    const activo = k === grupoSeleccionado;
+    return `<div onclick="seleccionarGrupo('${escHtml(k)}')" style="cursor:pointer;background:var(--bg2);border:${activo?'2px solid var(--accent)':'1px solid var(--border)'};border-radius:12px;padding:16px">
+      <div style="font-weight:500;font-size:14px;margin-bottom:6px">${escHtml(g.label||k)}</div>
+      ${g.protegido?'<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(239,68,68,0.1);color:#fca5a5">Protegido</span>':'<span style="font-size:12px;color:var(--muted)">Editable</span>'}
+    </div>`;
+  }).join('');
+}
+
+function seleccionarGrupo(key){
+  grupoSeleccionado = key;
+  renderGruposCards();
+  const g = gruposConfig[key];
+  if(!g) return;
+  document.getElementById('grupos-matriz-wrap').style.display='block';
+  document.getElementById('grupos-matriz-titulo').textContent = 'Permisos de ' + (g.label||key);
+  const btnEliminar = document.getElementById('btn-eliminar-grupo');
+  if(btnEliminar) btnEliminar.style.display = (g.protegido || key==='superadmin') ? 'none' : 'inline-flex';
+  const tbody = document.getElementById('grupos-matriz-tbody');
+  const disabled = (key === 'superadmin') ? 'disabled' : '';
+  tbody.innerHTML = Object.keys(PESTANAS_LABELS).map(pk=>{
+    const perm = (g.permisos && g.permisos[pk]) || {ver:false,agregar:false,editar:false,eliminar:false};
+    const chk = (accion) => `<input type="checkbox" ${disabled} data-pestana="${pk}" data-accion="${accion}" class="grupo-perm-chk" ${perm[accion]?'checked':''} style="width:auto">`;
+    return `<tr>
+      <td>${escHtml(PESTANAS_LABELS[pk])}</td>
+      <td style="text-align:center">${chk('ver')}</td>
+      <td style="text-align:center">${chk('agregar')}</td>
+      <td style="text-align:center">${chk('editar')}</td>
+      <td style="text-align:center">${chk('eliminar')}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function guardarPermisosGrupo(){
+  if(!grupoSeleccionado || grupoSeleccionado==='superadmin'){
+    if(grupoSeleccionado==='superadmin') alert('El grupo Super Admin no se puede editar, siempre tiene acceso total.');
+    return;
+  }
+  const permisos = {};
+  Object.keys(PESTANAS_LABELS).forEach(pk=>{ permisos[pk] = {ver:false,agregar:false,editar:false,eliminar:false}; });
+  document.querySelectorAll('.grupo-perm-chk').forEach(chk=>{
+    const pk = chk.dataset.pestana;
+    const accion = chk.dataset.accion;
+    permisos[pk][accion] = chk.checked;
+  });
+  const g = gruposConfig[grupoSeleccionado];
+  const payload = {};
+  payload[grupoSeleccionado] = { label: g.label, protegido: !!g.protegido, permisos };
+  const r = await fetch('/api/grupos', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)}).then(r=>r.json());
+  if(r.success){
+    await cargarGruposConfig();
+    seleccionarGrupo(grupoSeleccionado);
+    alert('Permisos guardados correctamente.');
+  } else {
+    alert('Error al guardar: ' + (r.message||''));
+  }
+}
+
+function abrirModalNuevoGrupo(){
+  document.getElementById('grupo-nuevo-label').value='';
+  document.getElementById('modal-nuevo-grupo-error').style.display='none';
+  document.getElementById('modal-nuevo-grupo').classList.add('open');
+}
+
+async function crearGrupoNuevo(){
+  const label = document.getElementById('grupo-nuevo-label').value.trim();
+  const errEl = document.getElementById('modal-nuevo-grupo-error');
+  if(!label){ showAlert(errEl, 'Ingrese un nombre para el grupo', 'error'); return; }
+  const key = label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'').slice(0,30) || ('grupo'+Date.now());
+  if(gruposConfig[key]){ showAlert(errEl, 'Ya existe un grupo con una clave similar, use otro nombre', 'error'); return; }
+  const permisosVacios = {};
+  Object.keys(PESTANAS_LABELS).forEach(pk=>{ permisosVacios[pk] = {ver:false,agregar:false,editar:false,eliminar:false}; });
+  const payload = {};
+  payload[key] = { label, protegido:false, permisos: permisosVacios };
+  const r = await fetch('/api/grupos', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)}).then(r=>r.json());
+  if(r.success){
+    closeModal('modal-nuevo-grupo');
+    await cargarGruposConfig();
+    renderGruposCards();
+    seleccionarGrupo(key);
+  } else {
+    showAlert(errEl, r.message||'Error al crear el grupo', 'error');
+  }
+}
+
+async function eliminarGrupoActual(){
+  if(!grupoSeleccionado || grupoSeleccionado==='superadmin') return;
+  const g = gruposConfig[grupoSeleccionado];
+  if(g && g.protegido){ alert('Este grupo está protegido y no se puede eliminar.'); return; }
+  if(!confirm('¿Eliminar el grupo "'+(g?g.label:grupoSeleccionado)+'"? Los usuarios que lo tengan asignado quedarán sin permisos hasta que se les asigne otro grupo.')) return;
+  delete gruposConfig[grupoSeleccionado];
+  const r = await fetch('/api/grupos', {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(gruposConfig)}).then(r=>r.json());
+  if(r.success){
+    grupoSeleccionado = null;
+    document.getElementById('grupos-matriz-wrap').style.display='none';
+    await cargarGruposConfig();
+    renderGruposCards();
+  } else {
+    alert('Error al eliminar: ' + (r.message||''));
+  }
+}
+
+// Aplica visibilidad de pestañas del menú según los permisos del usuario logueado
+function aplicarPermisosGrupo(permisos){
+  const isSuperAdmin = currentUser.role === 'superadmin';
+
+  // Entrega 1: visibilidad de pestanas en el nav
+  Object.keys(PESTANAS_LABELS).forEach(pk=>{
+    const btn = document.querySelector('.nav-tab[onclick*="showPage(\''+pk+'\'"]');
+    if(!btn) return;
+    if(btn.classList.contains('superadmin-only')) return;
+    const puedeVer = isSuperAdmin || (permisos[pk] && permisos[pk].ver);
+    btn.style.display = puedeVer ? '' : 'none';
+  });
+
+  // Entrega 2: visibilidad de botones CRUD individuales por pestana
+  document.querySelectorAll('[data-perm-pestana]').forEach(el => {
+    const pestana = el.getAttribute('data-perm-pestana');
+    const accion  = el.getAttribute('data-perm-accion');
+    if (!pestana || !accion) return;
+    const puede = isSuperAdmin || (permisos[pestana] && permisos[pestana][accion]);
+    el.style.display = puede ? '' : 'none';
+  });
+
+  // Ocultar action-bar si ningun boton CRUD es visible
+  document.querySelectorAll('.action-bar').forEach(bar => {
+    const btns = bar.querySelectorAll('[data-perm-pestana]');
+    if (btns.length === 0) return;
+    const alguno = Array.from(btns).some(b => b.style.display !== 'none');
+    bar.style.display = alguno ? '' : 'none';
+  });
+}
+
 // USUARIOS
 async function loadUsers(){
   allUsers=await fetch('/api/usuarios').then(r=>r.json());
@@ -2909,6 +3117,7 @@ function renderUsers(){
     <td><strong>${escHtml(u.nombre)}</strong></td>
     <td style="font-family:Space Mono,monospace;font-size:13px">${escHtml(u.username)}</td>
     <td><span class="tag ${u.role}">${u.role==='superadmin'?'SuperAdmin':u.role==='admin'?'Administrador':'Consulta'}</span></td>
+    <td>${u.role==='superadmin'?'<span style="font-size:12px;color:var(--muted)">— (acceso total)</span>':'<span style="font-size:12px;color:var(--text)">'+escHtml((gruposConfig[u.grupo]&&gruposConfig[u.grupo].label)||u.grupo||'Sin grupo')+'</span>'}</td>
     <td><span class="tag ${u.activo?'active':'inactive'}">${u.activo?'Activo':'Inactivo'}</span>${u.mustChangePassword?'<span class="tag temporal" style="margin-left:4px">Temporal</span>':''}</td>
     <td style="font-size:12px;color:var(--muted)">${formatActividad(u.lastActivity)}</td>
     <td>
@@ -2962,10 +3171,18 @@ function confirmarEliminacionMasiva(){
   };
   document.getElementById('modal-confirm').classList.add('open');
 }
+function poblarSelectorGrupos(selectId, valorActual){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  const claves = Object.keys(gruposConfig).filter(k=>k!=='superadmin');
+  sel.innerHTML = claves.map(k=>'<option value="'+escHtml(k)+'">'+escHtml(gruposConfig[k].label||k)+'</option>').join('');
+  if(valorActual && claves.includes(valorActual)) sel.value = valorActual;
+}
 function abrirEdicionUsuario(u){
   document.getElementById('ue-nombre').value=u.nombre;
   document.getElementById('ue-username').value=u.username;
   document.getElementById('ue-role').value=u.role;
+  poblarSelectorGrupos('ue-grupo', u.grupo);
   document.getElementById('modal-user-edit-error').style.display='none';
   window._editUserId=u.id;
   document.getElementById('modal-user-edit').classList.add('open');
@@ -2973,9 +3190,10 @@ function abrirEdicionUsuario(u){
 async function guardarEdicionUsuario(){
   const nombre=document.getElementById('ue-nombre').value.trim();
   const role=document.getElementById('ue-role').value;
+  const grupo=document.getElementById('ue-grupo').value;
   const errEl=document.getElementById('modal-user-edit-error');errEl.style.display='none';
   if(!nombre){showAlert(errEl,'El nombre es requerido','error');return;}
-  const r=await fetch('/api/usuarios/'+window._editUserId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,role})}).then(r=>r.json());
+  const r=await fetch('/api/usuarios/'+window._editUserId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,role,grupo})}).then(r=>r.json());
   if(!r.success){showAlert(errEl,r.message||'Error al guardar','error');return;}
   closeModal('modal-user-edit');loadUsers();
 }
@@ -2983,6 +3201,7 @@ function openModalUser(){
   document.getElementById('u-nombre').value='';document.getElementById('u-username').value='';
   document.getElementById('u-password').value='';document.getElementById('u-role').value='consulta';
   document.getElementById('u-temporal').checked=false;
+  poblarSelectorGrupos('u-grupo', 'n2');
   document.getElementById('modal-user-error').style.display='none';
   document.getElementById('modal-user').classList.add('open');
 }
@@ -2991,11 +3210,12 @@ async function saveUser(){
   const username=document.getElementById('u-username').value.trim();
   const password=document.getElementById('u-password').value;
   const role=document.getElementById('u-role').value;
+  const grupo=document.getElementById('u-grupo').value;
   const temporal=document.getElementById('u-temporal').checked;
   const errEl=document.getElementById('modal-user-error');errEl.style.display='none';
   if(!nombre||!username||!password){showAlert(errEl,'Todos los campos son requeridos','error');return;}
   if(password.length<6){showAlert(errEl,'Minimo 6 caracteres','error');return;}
-  const r=await fetch('/api/usuarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,username,password,role,temporal})}).then(r=>r.json());
+  const r=await fetch('/api/usuarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,username,password,role,grupo,temporal})}).then(r=>r.json());
   if(!r.success){showAlert(errEl,r.message,'error');return;}
   closeModal('modal-user');loadUsers();
 }
