@@ -127,20 +127,17 @@ app.put('/api/grupos', requireSuperAdmin, (req, res) => {
   logAudit(req, 'GRUPOS_EDITAR', 'Permisos actualizados');
   res.json({ success: true });
 });
+function calcularPermisos(u) {
+  const grupos = loadGrupos();
+  if (u.role === 'superadmin') return (grupos.superadmin && grupos.superadmin.permisos) || {};
+  const g = grupos[u.grupo];
+  return (g && g.permisos) || {};
+}
 const loginLimiter = rateLimit({ windowMs: 15*60*1000, max: 10, message: { success: false, message: 'Demasiados intentos, espera 15 minutos' } });
-app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; if (!username || !password || !isValidUsername(username)) { logAudit(req, 'LOGIN_FALLIDO', 'Formato invalido: ' + sanitizeText(String(username||''), 60)); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); const _ip = req.headers['x-real-ip'] || req.ip || ''; _loginFallidosPorIP[_ip] = (_loginFallidosPorIP[_ip] || 0) + 1; if (_loginFallidosPorIP[_ip] === 3) { sendAlert('Intentos fallidos de login', 'Se detectaron <strong>3 intentos fallidos</strong> desde IP <strong>' + _ip + '</strong> con usuario <strong>' + username + '</strong>.'); } return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, grupo: user.grupo || (user.role==='superadmin'?'superadmin':'n2'), nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; const _ipLogin = req.headers['x-real-ip'] || req.ip || ''; delete _loginFallidosPorIP[_ipLogin]; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: req.session.user }); });
+app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; if (!username || !password || !isValidUsername(username)) { logAudit(req, 'LOGIN_FALLIDO', 'Formato invalido: ' + sanitizeText(String(username||''), 60)); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); const _ip = req.headers['x-real-ip'] || req.ip || ''; _loginFallidosPorIP[_ip] = (_loginFallidosPorIP[_ip] || 0) + 1; if (_loginFallidosPorIP[_ip] === 3) { sendAlert('Intentos fallidos de login', 'Se detectaron <strong>3 intentos fallidos</strong> desde IP <strong>' + _ip + '</strong> con usuario <strong>' + username + '</strong>.'); } return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, grupo: user.grupo || (user.role==='superadmin'?'superadmin':'n2'), nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; const _ipLogin = req.headers['x-real-ip'] || req.ip || ''; delete _loginFallidosPorIP[_ipLogin]; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: { ...req.session.user, permisos: calcularPermisos(req.session.user) } }); });
 app.post('/api/logout', (req, res) => { logAudit(req, 'LOGOUT', ''); req.session.destroy(() => res.json({ success: true })); });
 app.get('/api/me', requireAuth, (req, res) => {
-  const u = req.session.user;
-  const grupos = loadGrupos();
-  let permisos = {};
-  if (u.role === 'superadmin') {
-    permisos = (grupos.superadmin && grupos.superadmin.permisos) || {};
-  } else {
-    const g = grupos[u.grupo];
-    permisos = (g && g.permisos) || {};
-  }
-  res.json({ ...u, permisos });
+  res.json({ ...req.session.user, permisos: calcularPermisos(req.session.user) });
 });
 app.post('/api/change-password', requireAuth, (req, res) => { const newPassword = sanitizeText(req.body.newPassword, 200); if (!newPassword || newPassword.length < 6) return res.json({ success: false, message: 'Minimo 6 caracteres' }); const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.id === req.session.user.id); if (idx === -1) return res.json({ success: false, message: 'Usuario no encontrado' }); users[idx].passwordHash = bcrypt.hashSync(newPassword, 10); users[idx].mustChangePassword = false; saveJSON(USERS_FILE, users); req.session.user.mustChangePassword = false; logAudit(req, 'CAMBIO_PASSWORD_PROPIO', ''); res.json({ success: true }); });
 const MULTISHEET_FILE = './data/multisheet.json';
@@ -517,6 +514,15 @@ app.put('/api/icmp/sites/:id', requireAuth, (req, res) => {
   if (req.body.estado !== undefined) cambios.estado = sanitizeText(req.body.estado, 20);
   sites[idx] = { ...sites[idx], ...cambios };
   saveJSON(ICMP_FILE, sites);
+  if (cambios.avg !== undefined || cambios.loss !== undefined || cambios.estado !== undefined) {
+    const hist = loadJSON(ICMP_HIST_FILE) || {};
+    if (!hist[req.params.id]) hist[req.params.id] = [];
+    hist[req.params.id].push({ avg: cambios.avg, loss: cambios.loss, estado: cambios.estado, hora: new Date().toLocaleTimeString('es-CL'), ts: Date.now() });
+    const hace24h = Date.now() - 24 * 60 * 60 * 1000;
+    hist[req.params.id] = hist[req.params.id].filter(e => (e.ts || 0) > hace24h);
+    if (hist[req.params.id].length > 100) hist[req.params.id] = hist[req.params.id].slice(-100);
+    saveJSON(ICMP_HIST_FILE, hist);
+  }
   res.json({ success: true });
 });
 app.delete('/api/icmp/sites/:id', requireAdmin, (req, res) => {
@@ -526,6 +532,22 @@ app.delete('/api/icmp/sites/:id', requireAdmin, (req, res) => {
   sites = sites.filter(s => s.id !== req.params.id);
   saveJSON(ICMP_FILE, sites);
   logAudit(req, 'ICMP_ELIMINAR', 'Nombre: ' + target.nombre + ', IP: ' + target.ip);
+  res.json({ success: true });
+});
+const ICMP_HIST_FILE = './data/icmp_historico.json';
+if (!fs.existsSync(ICMP_HIST_FILE)) saveJSON(ICMP_HIST_FILE, {});
+app.get('/api/icmp/historico', requireAuth, (req, res) => {
+  res.json(loadJSON(ICMP_HIST_FILE) || {});
+});
+app.post('/api/icmp/historico', requireAuth, (req, res) => {
+  const { id, avg, loss, estado, hora } = req.body;
+  const hist = loadJSON(ICMP_HIST_FILE) || {};
+  if (!hist[id]) hist[id] = [];
+  hist[id].push({ avg, loss, estado, hora, ts: Date.now() });
+  const hace24h = Date.now() - 24 * 60 * 60 * 1000;
+  hist[id] = hist[id].filter(e => (e.ts || 0) > hace24h);
+  if (hist[id].length > 100) hist[id] = hist[id].slice(-100);
+  saveJSON(ICMP_HIST_FILE, hist);
   res.json({ success: true });
 });
 // --- BUSCADOR IP ---
