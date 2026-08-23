@@ -4372,6 +4372,7 @@ function telRender(data) {
   const cont = document.getElementById('tel-result');
   if (!cont) return;
   _telLastResult = null;
+  window._telDataRef = data;
   const cfg = TEL_TABS[_telTab];
   if (!data || data.length === 0) {
     cont.innerHTML = '<div class="not-found"><p>Sin registros</p></div>';
@@ -4389,7 +4390,7 @@ function telRender(data) {
 }
 
 function telSeleccionar(idx, el) {
-  _telLastResult = _telData[idx];
+  _telLastResult = (window._telDataRef || _telData)[idx];
   document.querySelectorAll('#tel-result .result-card').forEach(c => c.style.borderColor = 'rgba(255,255,255,0.08)');
   el.style.borderColor = 'var(--accent)';
 }

@@ -103,6 +103,7 @@ function requireAuth(req, res, next) { if (!req.session.user) return res.status(
 function requireAdmin(req, res, next) { if (!req.session.user || !['admin','superadmin'].includes(req.session.user.role)) return res.status(403).json({ error: 'Acceso denegado' }); next(); }
 function requireSuperAdmin(req, res, next) { if (!req.session.user || req.session.user.role !== 'superadmin') return res.status(403).json({ error: 'Acceso denegado: se requiere superadmin' }); next(); }
 function requireEditor(req, res, next) { if (!req.session.user || !['admin','superadmin'].includes(req.session.user.role)) return res.status(403).json({ error: 'Acceso denegado' }); next(); }
+function requireN2OSuperAdmin(req, res, next) { const u = req.session.user; if (!u || !(u.role === 'superadmin' || u.grupo === 'n2')) return res.status(403).json({ error: 'Acceso denegado' }); next(); }
 function loadGrupos() { return loadJSON(GRUPOS_FILE) || {}; }
 function requirePermiso(pestana, accion) {
   return function(req, res, next) {
@@ -134,6 +135,8 @@ function calcularPermisos(u) {
   return (g && g.permisos) || {};
 }
 const loginLimiter = rateLimit({ windowMs: 15*60*1000, max: 10, message: { success: false, message: 'Demasiados intentos, espera 15 minutos' } });
+const apiLimiter = rateLimit({ windowMs: 60*1000, max: 200, standardHeaders: true, legacyHeaders: false, message: { success: false, message: 'Demasiadas solicitudes, intenta de nuevo en un momento' } });
+app.use('/api/', apiLimiter);
 app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; if (!username || !password || !isValidUsername(username)) { logAudit(req, 'LOGIN_FALLIDO', 'Formato invalido: ' + sanitizeText(String(username||''), 60)); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); const _ip = req.headers['x-real-ip'] || req.ip || ''; _loginFallidosPorIP[_ip] = (_loginFallidosPorIP[_ip] || 0) + 1; if (_loginFallidosPorIP[_ip] === 3) { sendAlert('Intentos fallidos de login', 'Se detectaron <strong>3 intentos fallidos</strong> desde IP <strong>' + _ip + '</strong> con usuario <strong>' + username + '</strong>.'); } return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, grupo: user.grupo || (user.role==='superadmin'?'superadmin':'n2'), nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; const _ipLogin = req.headers['x-real-ip'] || req.ip || ''; delete _loginFallidosPorIP[_ipLogin]; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: { ...req.session.user, permisos: calcularPermisos(req.session.user) } }); });
 app.post('/api/logout', (req, res) => { logAudit(req, 'LOGOUT', ''); req.session.destroy(() => res.json({ success: true })); });
 app.get('/api/me', requireAuth, (req, res) => {
@@ -679,7 +682,7 @@ app.get('/api/ipdb/download', requireAdmin, async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename=ipdb-export.xlsx');
     await workbook.xlsx.write(res);
     res.end();
-  } catch(e) { res.status(500).json({ error: e.message }); }
+  } catch(e) { res.status(500).json({ error: 'Error interno del servidor' }); }
 });
 
 app.delete('/api/ipdb/all', requireAdmin, (req, res) => {
@@ -736,7 +739,7 @@ app.get('/api/palo/backups', requireAuth, (req, res) => {
     res.json(files);
   } catch(e) { res.json([]); }
 });
-app.get('/api/palo/backup/download/:filename', requireAuth, (req, res) => {
+app.get('/api/palo/backup/download/:filename', requireN2OSuperAdmin, (req, res) => {
   const file = path.join(PALO_BACKUP_DIR, path.basename(req.params.filename));
   if (!fs.existsSync(file)) return res.status(404).json({ error: 'No encontrado' });
   res.download(file);
@@ -1076,7 +1079,7 @@ app.get('/api/ftp/download', requireAdmin, async (req, res) => {
     stream.pipe(res);
   } catch(e) {
     if(c) try { c.end(); } catch(_) {}
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -1204,6 +1207,23 @@ function limpiarBackupAntiguo() {
     console.error('[Backup BD] Error limpieza:', e.message);
   }
 }
+
+// ── ROTACIÓN AUTOMÁTICA DE AUDIT ─────────────────────────────────────────────
+function rotarAudit() {
+  try {
+    const logs = loadJSON(AUDIT_FILE) || [];
+    if (logs.length > 2000) {
+      const nuevos = logs.slice(-1000);
+      saveJSON(AUDIT_FILE, nuevos);
+      console.log('[Audit] Rotación: ' + logs.length + ' → ' + nuevos.length + ' registros');
+    }
+  } catch(e) { console.error('[Audit] Error rotación:', e.message); }
+}
+// Rotar audit cada día a las 03:00
+setInterval(() => {
+  const h = new Date().getHours(), m = new Date().getMinutes();
+  if(h === 3 && m === 0) rotarAudit();
+}, 60 * 1000);
 
 function programarBackupBD() {
   // Polling cada minuto: evita setTimeout con valores > 2147483647ms (limite 32-bit Node.js)
