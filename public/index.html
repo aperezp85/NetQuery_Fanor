@@ -380,7 +380,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
           <option value="">Todas las zonas</option>
         </select>
         <button class="btn btn-blue" id="btn-icmp-monitor" onclick="toggleICMP()">&#9654; Iniciar monitoreo</button>
-        <button class="btn btn-green admin-only" onclick="abrirModalICMP()" style="display:none">+ Agregar</button>
+        <button class="btn btn-green admin-only" data-perm-pestana="icmp" data-perm-accion="agregar" onclick="abrirModalICMP()" style="display:none">+ Agregar</button>
       </div>
       <div id="icmp-list"></div>
     </div>
@@ -475,7 +475,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;align-items:center">
           <input id="esmax-nombre" type="text" class="admin-only" placeholder="Nombre del sitio" style="display:none;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);width:180px">
           <input id="esmax-ip" type="text" class="admin-only" placeholder="IP (ej: 192.168.1.1)" style="display:none;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);width:180px">
-          <button class="btn btn-green admin-only" onclick="agregarSitioEsmax()" style="display:none">+ Agregar Sitio</button>
+          <button class="btn btn-green admin-only" data-perm-pestana="esmax" data-perm-accion="agregar" onclick="agregarSitioEsmax()" style="display:none">+ Agregar Sitio</button>
           <button class="btn btn-blue admin-only" onclick="toggleMonitoreo()" id="btn-monitoreo" style="display:none;margin-left:auto">&#9654; Iniciar Monitoreo</button>
         </div>
         <div id="esmax-container"></div>
@@ -496,7 +496,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             autocomplete="off">
         </div>
         <button class="btn btn-blue" onclick="buscarIPDB()">Buscar</button>
-        <button class="btn btn-green admin-only" onclick="abrirModalIPDB()" style="display:none">+ Agregar</button>
+        <button class="btn btn-green admin-only" data-perm-pestana="ipdb" data-perm-accion="agregar" onclick="abrirModalIPDB()" style="display:none">+ Agregar</button>
       </div>
       <div id="ipdb-info" style="font-size:13px;color:var(--muted);margin-bottom:16px"></div>
       <div id="ipdb-result"></div>
