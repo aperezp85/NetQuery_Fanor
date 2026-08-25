@@ -1133,12 +1133,21 @@ app.get('/api/monitoreo/vpn-status', requireAuth, (req, res) => {
 app.get('/api/monitoreo/equipos', requireAuth, (req, res) => {
   try {
     const ms = loadJSON(MULTISHEET_FILE) || {};
-    const equipos = ms['BD_Equipos'] || [];
-    const resultado = equipos
-      .filter(e => e.Ip_Administracion && e.Ip_Administracion.trim())
+    const servicios = ms['BD_Servicios'] || [];
+    const q = (req.query.q || '').trim().toUpperCase();
+    const resultado = servicios
+      .filter(e => e.Ip_Gestion && e.Ip_Gestion.trim())
+      .filter(e => !q || 
+        (e.Cliente||'').toUpperCase().includes(q) ||
+        (e.Ip_Gestion||'').includes(q) ||
+        (e.Codigo_Servicio||'').toUpperCase().includes(q) ||
+        (e.Comuna||'').toUpperCase().includes(q)
+      )
+      .slice(0, 200)
       .map(e => ({
-        nombre: e.Swtich || e.Switch || e.Nombre || '',
-        ip: e.Ip_Administracion.trim(),
+        nombre: e.Cliente || '',
+        codigo: e.Codigo_Servicio || '',
+        ip: e.Ip_Gestion.trim(),
         direccion: e.Direccion || '',
         comuna: e.Comuna || ''
       }));
