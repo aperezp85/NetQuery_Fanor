@@ -1,8 +1,8 @@
 #!/bin/bash
 LOG="/var/log/vpn-check.log"
 VPN_IP="200.27.43.18"
-VPN_USER="clarogp"
-VPN_PASS="***ELIMINADA***"
+[ -r /etc/netquery/vpn.env ] || { echo "[$(date)] ERROR: falta /etc/netquery/vpn.env" >> "$LOG"; exit 1; }
+. /etc/netquery/vpn.env
 
 if ! ip link show tun0 > /dev/null 2>&1; then
     echo "[$(date)] VPN caida. Reconectando..." >> "$LOG"
