@@ -17,7 +17,10 @@ public/fortinet/*.iso
 public/fortinet/
 public/fortinet/
 public/fortinet/
-data/*.xlsx
+data/**/*.xlsx
 archivo_bak_20260815.tar.gz
 *.tar.gz
 *.bak*
+public/cisco/
+*.bad
+*.roto*
