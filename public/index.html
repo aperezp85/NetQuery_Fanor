@@ -190,6 +190,21 @@ body.light-mode .not-found{color:#4b5563;}
 body.light-mode .alert.error{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);color:#dc2626;}
 body.light-mode .alert.success{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);color:#059669;}
 body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);color:#d97706;}
+
+/* ===== Tabla reutilizable (nq-table) ===== */
+.nq-table-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.nq-table{width:100%;border-collapse:collapse;font-size:13px;}
+.nq-table thead tr{background:var(--bg3);}
+.nq-table th{padding:10px 12px;text-align:left;color:var(--muted);font-size:11px;letter-spacing:0.5px;text-transform:uppercase;font-weight:600;border-bottom:2px solid var(--border);}
+.nq-table th.nq-right{text-align:right;}
+.nq-table td{padding:12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+.nq-table td.nq-right{text-align:right;white-space:nowrap;}
+.nq-table tbody tr:last-child td{border-bottom:none;}
+.nq-table tbody tr:nth-child(even){background:rgba(255,255,255,0.025);}
+.nq-table tbody tr:hover{background:rgba(59,130,246,0.10);}
+body.light-mode .nq-table tbody tr:nth-child(even){background:rgba(0,0,0,0.025);}
+body.light-mode .nq-table tbody tr:hover{background:rgba(59,130,246,0.08);}
+.nq-table .nq-code{font-family:'Space Mono',monospace;font-weight:600;color:var(--accent);}
 </style>
 </head>
 <body>
@@ -245,6 +260,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('ipo',this)" style="display:none">IPO</button>
       <button class="nav-tab" onclick="showPage('sdwan',this)">SDWAN</button>
       <button class="nav-tab" onclick="showPage('agenda',this)">Agenda</button>
+      <button class="nav-tab" onclick="showPage('kmz',this)">KMZ</button>
       <button class="nav-tab" onclick="showPage('foscuras',this)">F.Oscuras</button>
       <button class="nav-tab" onclick="showPage('fwonpremise',this)">FW On-Premise</button>
       <button class="nav-tab superadmin-only" onclick="showPage('datos',this)" style="display:none">Base de Datos</button>
@@ -255,6 +271,7 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <button class="nav-tab" onclick="showPage('icmp',this)">Monitor ICMP</button>
       <button class="nav-tab" onclick="showPage('telefonia',this)">Telefonía</button>
       <button class="nav-tab" onclick="showPage('fortinet',this)">Fortinet</button>
+      <button class="nav-tab" onclick="showPage('cisco',this)">Cisco IOS</button>
     </div>
     <div class="nav-user">
       <button class="btn inicio-only" onclick="irAPagina('inicio')" style="display:none;padding:6px 14px;font-size:13px">&#8962; Inicio</button>
@@ -310,6 +327,11 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             <span style="font-size:14px;font-weight:500">Agenda</span>
             <span style="font-size:12px;color:var(--muted)">Contactos y referencia</span>
           </div>
+          <div data-home-pestana="kmz" onclick="irAPagina('kmz')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2" style="width:22px;height:22px"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+            <span style="font-size:14px;font-weight:500">KMZ</span>
+            <span style="font-size:12px;color:var(--muted)">Archivos geograficos</span>
+          </div>
           <div data-home-pestana="fwonpremise" onclick="irAPagina('fwonpremise')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="width:22px;height:22px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span style="font-size:14px;font-weight:500">FW On-Premise</span>
@@ -319,6 +341,11 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             <svg viewBox="0 0 24 24" fill="none" stroke="#be123c" stroke-width="2" style="width:22px;height:22px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span style="font-size:14px;font-weight:500">Fortinet</span>
             <span style="font-size:12px;color:var(--muted)">Firmware y actualizaciones</span>
+          </div>
+          <div data-home-pestana="cisco" onclick="irAPagina('cisco')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1ba0d7" stroke-width="2" style="width:22px;height:22px"><rect x="4" y="4" width="16" height="6" rx="1"/><rect x="4" y="14" width="16" height="6" rx="1"/><line x1="8" y1="7" x2="8.01" y2="7"/><line x1="8" y1="17" x2="8.01" y2="17"/></svg>
+            <span style="font-size:14px;font-weight:500">Cisco IOS</span>
+            <span style="font-size:12px;color:var(--muted)">Imagenes IOS por modelo</span>
           </div>
           <div data-home-pestana="telefonia" onclick="irAPagina('telefonia')" style="cursor:pointer;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color 0.2s;display:flex;flex-direction:column;gap:6px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" style="width:22px;height:22px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 17.5v-.58z"/></svg>
@@ -496,7 +523,11 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
             autocomplete="off">
         </div>
         <button class="btn btn-blue" onclick="buscarIPDB()">Buscar</button>
-        <button class="btn btn-green admin-only" data-perm-pestana="ipdb" data-perm-accion="agregar" onclick="abrirModalIPDB()" style="display:none">+ Agregar</button>
+      </div>
+      <div class="action-bar admin-only" style="display:none">
+        <button class="btn btn-green" data-perm-pestana="ipdb" data-perm-accion="agregar" onclick="abrirModalIPDB()">+ Agregar</button>
+        <button class="btn btn-yellow superadmin-only" style="display:none" onclick="editarResultadoIPDB()">Editar resultado</button>
+        <button class="btn btn-red superadmin-only" style="display:none" onclick="eliminarResultadoIPDB()">Eliminar resultado</button>
       </div>
       <div id="ipdb-info" style="font-size:13px;color:var(--muted);margin-bottom:16px"></div>
       <div id="ipdb-result"></div>
@@ -574,6 +605,26 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
       <div id="fo-result"></div>
     </div>
 
+    <!-- KMZ -->
+    <div class="page" id="page-kmz">
+      <div class="page-title">Archivos KMZ</div>
+      <div class="page-sub">Busque por codigo de servicio o nombre de cliente</div>
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input class="search-input" id="kmz-search" type="text"
+            placeholder="Codigo de servicio o nombre de cliente..."
+            onkeydown="if(event.key==='Enter')filtrarKmz()"
+            oninput="filtrarKmz()"
+            autocomplete="off">
+        </div>
+        <button class="btn btn-blue" onclick="filtrarKmz()">Buscar</button>
+      </div>
+      <div class="action-bar admin-only" style="display:none">
+        <button class="btn btn-green" onclick="openModalAgregarKmz()">+ Agregar</button>
+      </div>
+      <div id="kmz-result"></div>
+    </div>
     <div class="page" id="page-fwonpremise">
       <div class="page-title">FW On-Premise</div>
       <div class="page-sub">Busque en Internet Seguro y On Premise simultáneamente</div>
@@ -937,19 +988,49 @@ body.light-mode .alert.warning{background:rgba(245,158,11,0.08);border:1px solid
         <div class="section-title">Firmware disponibles</div>
         <div style="display:flex;gap:8px;align-items:center">
           <div class="admin-only" style="display:none;gap:8px;align-items:center">
-            <select id="fortinet-model-select" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
+            <select id="fortinet-model-select" onchange="onFortinetModelSelectChange(this)" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
               <option value="">Seleccionar modelo...</option>
+              <option value="__nuevo__">+ Nuevo modelo...</option>
             </select>
+            <input type="text" id="fortinet-nuevo-modelo" placeholder="Ej: 61F" oninput="actualizarSubcarpetaNuevoModelo()" style="display:none;padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px;width:100px">
+            <select id="fortinet-nuevo-tipo" onchange="actualizarSubcarpetaNuevoModelo()" style="display:none;padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px">
+              <option value="FGT">FortiGate (FGT)</option>
+              <option value="FWF">FortiWiFi (FWF)</option>
+            </select>
+            <input type="text" id="fortinet-nuevo-sub" placeholder="Subcarpeta" style="display:none;padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px;width:150px">
             <input type="text" id="fortinet-version-input" placeholder="Version ej: 6.2.7 (opcional)" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px;width:170px">
-            <input type="file" id="fortinet-file-input" style="display:none" onchange="subirFirmware()">
+            <input type="file" id="fortinet-file-input" style="display:none" multiple onchange="subirFirmware()">
             <button class="btn btn-green" onclick="document.getElementById('fortinet-file-input').click()">&#8593; Subir firmware</button>
           </div>
           <button class="btn btn-blue" onclick="cargarFortinet()">&#8635; Actualizar lista</button>
         </div>
       </div>
-      <div id="fortinet-upload-msg" style="margin-bottom:12px"></div>
+      <div id="fortinet-upload-msg" style="margin-bottom:8px"></div>
+      <div id="fortinet-upload-progress-wrap" style="display:none;margin-bottom:12px;background:var(--bg3);border-radius:8px;height:8px;overflow:hidden">
+        <div id="fortinet-upload-progress-bar" style="height:100%;width:0%;background:var(--accent);transition:width 0.15s"></div>
+      </div>
       <div id="fortinet-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
       </div><!-- /fn-tab-admin -->
+    </div>
+
+    <!-- CISCO IOS -->
+    <div class="page" id="page-cisco">
+      <div class="page-title">Cisco IOS</div>
+      <div class="page-sub">Imagenes de software IOS por modelo de equipo</div>
+      <div class="section-header" style="margin-bottom:16px">
+        <div class="section-title">Imagenes disponibles</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="admin-only" style="display:none;gap:8px;align-items:center">
+            <input list="cisco-models-datalist" id="cisco-model-input" placeholder="Modelo (se detecta solo)" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px;width:180px" autocomplete="off">
+            <datalist id="cisco-models-datalist"></datalist>
+            <input type="file" id="cisco-file-input" style="display:none" onchange="subirCisco()">
+            <button class="btn btn-green" onclick="prepararSubidaCisco()">&#8593; Subir imagen IOS</button>
+          </div>
+          <button class="btn btn-blue" onclick="cargarCisco()">&#8635; Actualizar lista</button>
+        </div>
+      </div>
+      <div id="cisco-upload-msg" style="margin-bottom:12px"></div>
+      <div id="cisco-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
     </div>
     </main>
 </div>
@@ -1199,11 +1280,11 @@ function filtrarAuditoria(filtro,btn){
     const fecha=new Date(r.fecha).toLocaleString('es-CL');
     const color=accionColor[r.accion]||'#3b82f6';
     return `<tr>
-      <td style="white-space:nowrap">${fecha}</td>
-      <td>${r.usuario||'-'}</td>
-      <td><span class="role-pill ${r.rol==='admin'?'':'consulta'}">${r.rol||'-'}</span></td>
-      <td><span style="color:${color};font-weight:600">${r.accion}</span></td>
-      <td>${r.detalle||''}</td>
+      <td style="white-space:nowrap">${escHtml(fecha)}</td>
+      <td>${escHtml(r.usuario||'-')}</td>
+      <td><span class="role-pill ${r.rol==='admin'?'':'consulta'}">${escHtml(r.rol||'-')}</span></td>
+      <td><span style="color:${color};font-weight:600">${escHtml(r.accion||'')}</span></td>
+      <td>${escHtml(r.detalle||'')}</td>
       <td style="white-space:nowrap;font-family:'Space Mono',monospace;font-size:12px">${r.ip||'-'}</td>
     </tr>`;
   }).join('');
@@ -1237,154 +1318,57 @@ window._agendaData = [];
 window._agendaLastResult = null;
 window._agendaEditMode = false;
 
-async function cargarAgendaConfig(){
-  try{
-    window._agendaConfig = await fetch('/api/agenda-config').then(r=>r.json());
-  }catch(e){ window._agendaConfig = {}; }
-  renderAgendaSubtabs();
-  const keys = Object.keys(window._agendaConfig);
-  if(!window._agendaCurrentKey && keys.length){ window._agendaCurrentKey = keys[0]; }
-  if(window._agendaCurrentKey){ seleccionarSubtabAgenda(window._agendaCurrentKey); }
+
+window._kmzLastResult = null;
+async function filtrarKmz(){
+  const el = document.getElementById('kmz-search');
+  const q = el ? el.value.trim() : '';
+  const cont = document.getElementById('kmz-result');
+  if(!q){ if(cont) cont.innerHTML=''; return; }
+  let data = [];
+  try{ data = await fetch('/api/kmz/search?q='+encodeURIComponent(q)).then(r=>r.json()); }catch(e){ data = []; }
+  renderKmz(data);
 }
-function renderAgendaSubtabs(){
-  const cont = document.getElementById('agenda-subtabs');
+function renderKmz(data){
+  const cont = document.getElementById('kmz-result');
   if(!cont) return;
-  const keys = Object.keys(window._agendaConfig);
-  cont.innerHTML = keys.map(k => {
-    const activo = k === window._agendaCurrentKey;
-    return '<button class="btn" data-agenda-key="'+k+'" style="padding:6px 14px;font-size:13px;'+(activo?'background:var(--accent);color:white;border:none':'background:none;border:1px solid var(--border);color:var(--muted)')+'">'+escHtml(window._agendaConfig[k].label)+'</button>';
-  }).join('');
-  cont.querySelectorAll('[data-agenda-key]').forEach(btn=>{
-    btn.onclick = function(){ seleccionarSubtabAgenda(this.getAttribute('data-agenda-key')); };
-  });
-}
-async function seleccionarSubtabAgenda(key){
-  window._agendaCurrentKey = key;
-  window._agendaLastResult = null;
-  renderAgendaSubtabs();
-  const el = document.getElementById('agenda-search');
-  if(el) el.value = '';
-  const cont = document.getElementById('agenda-result');
-  if(cont) cont.innerHTML = '';
-  await cargarDatosAgendaSheet();
-}
-async function cargarDatosAgendaSheet(){
-  const cfg = window._agendaConfig[window._agendaCurrentKey];
-  if(!cfg) return;
-  try{
-    window._agendaData = await fetch('/api/hoja/'+encodeURIComponent(cfg.sheet)).then(r=>r.json());
-  }catch(e){ window._agendaData = []; }
-}
-function filtrarAgenda(){
-  const el = document.getElementById('agenda-search');
-  const q = el ? el.value.trim().toUpperCase() : '';
-  if(!q){ const cont=document.getElementById('agenda-result'); if(cont) cont.innerHTML=''; return; }
-  const filtrado = window._agendaData.filter(row =>
-    Object.values(row).some(v => (v||'').toString().toUpperCase().includes(q))
-  );
-  renderAgenda(filtrado);
-}
-function renderAgenda(data){
-  const cont = document.getElementById('agenda-result');
-  if(!cont) return;
-  window._agendaDataRef = data;
-  const cfg = window._agendaConfig[window._agendaCurrentKey];
+  window._kmzDataRef = data;
   if(!data || data.length === 0){
-    cont.innerHTML = '<div class="not-found"><p>Sin registros</p></div>';
+    cont.innerHTML = '<div class="not-found"><p>Sin archivos KMZ encontrados</p></div>';
     return;
   }
+  const esAdmin = currentUser && ['admin','superadmin'].includes(currentUser.role);
   cont.innerHTML = data.map((row,idx) => {
-    const fields = cfg.cols.map(k=>{
-      const val = row[k]!==undefined&&row[k]!=='' ? row[k] : null;
-      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value'+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
-    }).join('');
-    const titulo = escHtml(String(row[cfg.cols[2]] || row[cfg.cols[0]] || ''));
-    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarAgenda('+idx+',this)"><div class="result-header"><div class="result-code">'+titulo+'</div><div class="result-badge">'+escHtml(cfg.label)+'</div></div><div class="result-grid">'+fields+'</div></div>';
+    const del = esAdmin ? '<button class="btn btn-red" style="padding:4px 12px;font-size:12px" onclick="eliminarKmz('+idx+')">Eliminar</button>' : '';
+    return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+      + '<div class="result-code" style="font-family:\'Space Mono\',monospace;font-weight:600;color:var(--accent);font-size:15px">'+escHtml(row.Codigo_Servicio||'')+'</div>'
+      + '<span style="font-size:11px;padding:2px 10px;border-radius:20px;background:rgba(59,130,246,0.15);color:#93c5fd">KMZ</span>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px">'
+      + '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Cliente</div><div style="font-size:14px">'+escHtml(row.Cliente||'&mdash;')+'</div></div>'
+      + '<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Archivo</div><div style="font-size:14px;color:var(--muted)">'+escHtml(row.originalName||'')+'</div></div>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px">'
+      + '<a class="btn btn-blue" style="padding:6px 14px;font-size:13px;text-decoration:none" href="/api/kmz/download/'+encodeURIComponent(row.Codigo_Servicio)+'">Descargar</a>'
+      + del
+      + '</div>'
+      + '</div>';
   }).join('');
 }
-function seleccionarAgenda(idx, el){
-  window._agendaLastResult = window._agendaDataRef[idx];
-  document.querySelectorAll('#agenda-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
-  el.style.borderColor = 'var(--accent)';
-}
-function openModalAgregarAgenda(){
-  const cfg = window._agendaConfig[window._agendaCurrentKey];
-  if(!cfg) return;
-  document.getElementById('modal-registro-title').textContent = 'Agregar registro: ' + cfg.label;
-  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c=>
-    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-agenda-'+escHtml(c)+'" placeholder="'+escHtml(c)+'"></div>'
-  ).join('');
-  document.getElementById('modal-registro-error').style.display='none';
-  document.getElementById('modal-registro').classList.add('open');
-  window._agendaEditMode = false;
-  document.getElementById('modal-registro-save-btn').onclick = guardarAgenda;
-}
-function openModalEditarAgenda(){
-  if(!window._agendaLastResult){
-    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
-    document.getElementById('confirm-ok-btn').textContent='Aceptar';
-    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
-    document.getElementById('modal-confirm').classList.add('open');
-    return;
-  }
-  const cfg = window._agendaConfig[window._agendaCurrentKey];
-  const row = window._agendaLastResult;
-  document.getElementById('modal-registro-title').textContent = 'Editar registro: ' + cfg.label;
-  document.getElementById('modal-registro-fields').innerHTML = cfg.cols.map(c=>
-    '<div class="field"><label>'+escHtml(c)+'</label><input type="text" id="field-agenda-'+escHtml(c)+'" value="'+escHtml(String(row[c]||''))+'"></div>'
-  ).join('');
-  document.getElementById('modal-registro-error').style.display='none';
-  document.getElementById('modal-registro').classList.add('open');
-  window._agendaEditMode = true;
-  document.getElementById('modal-registro-save-btn').onclick = guardarAgenda;
-}
-async function guardarAgenda(){
-  const cfg = window._agendaConfig[window._agendaCurrentKey];
-  const errEl = document.getElementById('modal-registro-error');
-  errEl.style.display='none';
-  const data = {};
-  cfg.cols.forEach(c=>{
-    const el = document.getElementById('field-agenda-'+c);
-    if(el) data[c] = el.value.trim();
-  });
-  let r;
-  if(window._agendaEditMode){
-    const idVal = window._agendaLastResult._id;
-    r = await fetch('/api/multisheet',{method:'PUT',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sheet:cfg.sheet,keyField:'_id',keyValue:idVal,data})
-    }).then(r=>r.json());
-  } else {
-    data._id = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
-    r = await fetch('/api/multisheet',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sheet:cfg.sheet,data})
-    }).then(r=>r.json());
-  }
-  if(!r.success){ showAlert(errEl, r.message||'Error al guardar', 'error'); return; }
-  closeModal('modal-registro');
-  await cargarDatosAgendaSheet();
-  filtrarAgenda();
-}
-function eliminarResultadoAgenda(){
-  if(!window._agendaLastResult){
-    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
-    document.getElementById('confirm-ok-btn').textContent='Aceptar';
-    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
-    document.getElementById('modal-confirm').classList.add('open');
-    return;
-  }
-  document.getElementById('confirm-msg').textContent='Esta seguro que desea eliminar este registro?';
+async function eliminarKmz(idx){
+  const row = window._kmzDataRef[idx];
+  if(!row) return;
+  document.getElementById('confirm-msg').textContent='Esta seguro que desea eliminar el KMZ de '+row.Codigo_Servicio+'?';
   document.getElementById('confirm-ok-btn').textContent='Eliminar';
   document.getElementById('confirm-ok-btn').onclick = async function(){
-    const cfg = window._agendaConfig[window._agendaCurrentKey];
-    const r = await fetch('/api/multisheet',{method:'DELETE',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({sheet:cfg.sheet,keyField:'_id',keyValue:window._agendaLastResult._id})
-    }).then(r=>r.json());
+    const r = await fetch('/api/kmz/'+encodeURIComponent(row.Codigo_Servicio),{method:'DELETE'}).then(r=>r.json());
     closeModal('modal-confirm');
-    if(r.success){ window._agendaLastResult=null; await cargarDatosAgendaSheet(); filtrarAgenda(); }
+    if(r.success){ filtrarKmz(); }
   };
   document.getElementById('modal-confirm').classList.add('open');
 }
-function openModalNuevaPestanaAgenda(){
+function openModalAgregarKmz(){
   document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove());
   const overlay = document.createElement('div');
   overlay.className = 'creds-overlay';
@@ -1392,32 +1376,35 @@ function openModalNuevaPestanaAgenda(){
   const div = document.createElement('div');
   div.className = 'creds-box';
   div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--accent);border-radius:12px;padding:24px 32px;z-index:2000;min-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.5)';
-  div.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--accent)">Nueva pestana de Agenda</div><div style="margin-bottom:10px"><span style="color:var(--muted);font-size:12px">NOMBRE DE LA PESTANA</span><input id="agenda-nueva-label" type="text" placeholder="Ej: Contactos Emergencia" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div style="margin-bottom:16px"><span style="color:var(--muted);font-size:12px">COLUMNAS (separadas por coma)</span><input id="agenda-nueva-cols" type="text" placeholder="Ej: Zona, Empresa, Telefono" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div id="agenda-nueva-error" style="display:none;color:#f87171;font-size:13px;margin-bottom:10px"></div><button id="agenda-nueva-guardar" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">Crear</button><button id="agenda-nueva-cancelar" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer">Cancelar</button>';
+  div.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:16px;color:var(--accent)">Agregar KMZ</div><div style="margin-bottom:10px"><span style="color:var(--muted);font-size:12px">CODIGO DE SERVICIO</span><input id="kmz-input-codigo" type="text" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div style="margin-bottom:10px"><span style="color:var(--muted);font-size:12px">CLIENTE</span><input id="kmz-input-cliente" type="text" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div style="margin-bottom:16px"><span style="color:var(--muted);font-size:12px">ARCHIVO KMZ</span><input id="kmz-input-file" type="file" accept=".kmz" style="width:100%;margin-top:4px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)"></div><div id="kmz-nueva-error" style="display:none;color:#f87171;font-size:13px;margin-bottom:10px"></div><button id="kmz-btn-guardar" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;margin-right:8px">Subir</button><button id="kmz-btn-cancelar" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer">Cancelar</button>';
   overlay.onclick = function(){ div.remove(); overlay.remove(); };
   document.body.appendChild(overlay);
   document.body.appendChild(div);
-  div.querySelector('#agenda-nueva-guardar').onclick = crearPestanaAgenda;
-  div.querySelector('#agenda-nueva-cancelar').onclick = function(){ div.remove(); overlay.remove(); };
+  div.querySelector('#kmz-btn-guardar').onclick = guardarKmz;
+  div.querySelector('#kmz-btn-cancelar').onclick = function(){ div.remove(); overlay.remove(); };
 }
-async function crearPestanaAgenda(){
-  const label = (document.getElementById('agenda-nueva-label')||{}).value||'';
-  const cols = (document.getElementById('agenda-nueva-cols')||{}).value||'';
-  const errEl = document.getElementById('agenda-nueva-error');
-  if(!label.trim() || !cols.trim()){
-    if(errEl){ errEl.textContent='Complete nombre y columnas'; errEl.style.display='block'; }
+async function guardarKmz(){
+  const codigo = (document.getElementById('kmz-input-codigo')||{}).value||'';
+  const cliente = (document.getElementById('kmz-input-cliente')||{}).value||'';
+  const fileInput = document.getElementById('kmz-input-file');
+  const errEl = document.getElementById('kmz-nueva-error');
+  if(!codigo.trim() || !fileInput || !fileInput.files[0]){
+    if(errEl){ errEl.textContent='Complete el codigo y seleccione un archivo'; errEl.style.display='block'; }
     return;
   }
+  const fd = new FormData();
+  fd.append('codigo', codigo.trim());
+  fd.append('cliente', cliente.trim());
+  fd.append('file', fileInput.files[0]);
   try{
-    const r = await fetch('/api/agenda-config',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({label,cols})
-    }).then(r=>r.json());
+    const r = await fetch('/api/kmz/upload',{method:'POST',body:fd}).then(r=>r.json());
     if(!r.success){
-      if(errEl){ errEl.textContent=r.message||'Error al crear'; errEl.style.display='block'; }
+      if(errEl){ errEl.textContent=r.message||'Error al subir'; errEl.style.display='block'; }
       return;
     }
     document.querySelectorAll('.creds-overlay,.creds-box').forEach(el=>el.remove());
-    await cargarAgendaConfig();
-    seleccionarSubtabAgenda(r.key);
+    const searchEl = document.getElementById('kmz-search');
+    if(searchEl){ searchEl.value = codigo.trim(); filtrarKmz(); }
   }catch(e){
     if(errEl){ errEl.textContent='Error de conexion'; errEl.style.display='block'; }
   }
@@ -1434,10 +1421,12 @@ function showPage(name,btn){
   if(name==='ipo') cargarDatosIpo();
   if(name==='sdwan') cargarDatosSdwan();
   if(name==='agenda') cargarAgendaConfig();
+  if(name==='kmz'){ const c=document.getElementById('kmz-result'); if(c) c.innerHTML=''; }
   if(name==='icmp') iniciarICMPPage();
   if(name==='foscuras') cargarFO();
   if(name==='fwonpremise') cargarDatosFw();
   if(name==='fortinet') cargarFortinet();
+  if(name==='cisco') cargarCisco();
   if(name==='telefonia') { _telTab='cucm'; telCargar(); }
   if(name==='ftp') { ftpRutaActual='/home/ftp01'; ftpHistorial=['/home/ftp01']; ftpListar('/home/ftp01'); }
   if(name==='auditoria') cargarAuditoria();
@@ -1809,7 +1798,7 @@ async function actualizarUrlFortinet(){
       body:JSON.stringify({model:modelFortinet, current_version:from, target_version:to})
     }).then(r=>r.json());
     if(ruta.success && ruta.path.length){
-      versionesSalto = ruta.path.map(s=>({version:s.version, type:s.type||''}));
+      versionesSalto = ruta.path.map(s=>({version:s.version, type:s.type||'', build:(s.build_number||'').toString()}));
       const nHops = ruta.path.length - 2;
       const primera = ruta.path[0].version;
       const ultima = ruta.path[ruta.path.length-1].version;
@@ -1853,19 +1842,23 @@ async function actualizarUrlFortinet(){
           +'<span style="color:var(--muted)">La API pública de Fortinet no tiene rutas de actualización registradas para <strong>'+modelFortinet+'</strong>. '
           +'Consulta directamente en <a href="https://support.fortinet.com" target="_blank" style="color:#60a5fa">support.fortinet.com</a> con tu cuenta de soporte.</span>'
           +'</div>'
-        : '<div style="color:var(--muted);font-size:13px;margin-bottom:12px">No se encontró ruta para esas versiones. Prueba con otras versiones o verifica el modelo.</div>';
+        : '<div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:8px;padding:12px;font-size:13px;color:#fbbf24;margin-bottom:12px">'
+          +'<strong>⚠️ Ruta no publicada para estas versiones</strong><br>'
+          +'<span style="color:var(--muted)">La API pública de Fortinet no encontró una ruta de actualización oficial entre esas versiones (probablemente firmware fuera de soporte / EOL). '
+          +'Consulta directamente en <a href="https://support.fortinet.com" target="_blank" style="color:#60a5fa">support.fortinet.com</a> con tu cuenta de soporte, o descarga el firmware directo desde la lista de abajo.</span>'
+          +'</div>';
     }
   } catch(e){
     hopsResultadoHtml='<div style="color:var(--muted);font-size:13px;margin-bottom:12px">Error al consultar Fortinet.</div>';
   }
   // Mostrar firmware filtrados abajo del formulario
   if(modelData.length){
-    const esAdmin = document.querySelector('.role-pill') && !document.querySelector('.role-pill.consulta');
+    const esAdmin = document.getElementById('nav-role') && !document.getElementById('nav-role').classList.contains('consulta');
     let files = modelData[0].files;
     // Filtrar solo por versiones de salto si las hay, sino por rango
     if(versionesSalto.length){
       files = files.filter(f => {
-        const ver = extraerVersion(f.file);
+        const ver = resolverVersionConBuild(f.file, versionesSalto, modelKey);
         return versionesSalto.some(v=>ver===v.version);
       });
     } else if(from && to){
@@ -1877,11 +1870,41 @@ async function actualizarUrlFortinet(){
       const numTo = verToNum(to);
       const [numMin, numMax] = numFrom < numTo ? [numFrom, numTo] : [numTo, numFrom];
       files = files.filter(f => {
-        const ver = extraerVersion(f.file);
+        const ver = resolverVersionConBuild(f.file, [], modelKey);
         if(!ver) return false;
         const n = verToNum(ver);
         return n >= numMin && n <= numMax;
       });
+    }
+    let rutaLocalHtml = '';
+    if(!versionesSalto.length && from && to && files.length){
+      const vNum = v => { const p=(v||'').replace(/[MF]$/,'').split('.').map(Number); return p[0]*10000+(p[1]||0)*100+(p[2]||0); };
+      const versionesUnicas = [...new Set(files.map(f=>resolverVersionConBuild(f.file, [], modelKey)).filter(Boolean))].sort((a,b)=>vNum(a)-vNum(b));
+      if(versionesUnicas.length){
+        const primeraL = versionesUnicas[0];
+        const ultimaL = versionesUnicas[versionesUnicas.length-1];
+        const nHopsL = versionesUnicas.length - 2;
+        const hopsHtmlL = versionesUnicas.map((v,i)=>{
+          const isFirst = i===0;
+          const isLast = i===versionesUnicas.length-1;
+          const label = isFirst ? 'CURRENT' : isLast ? 'TARGET' : 'HOP '+i;
+          const labelColor = isLast ? '#fca5a5' : 'var(--muted)';
+          const boxBg = isLast ? '#ef4444' : 'var(--bg3)';
+          const boxColor = isLast ? '#fff' : 'var(--text)';
+          const boxBorder = isLast ? '1px solid #ef4444' : '1px solid var(--border)';
+          const box = '<div style="display:flex;flex-direction:column;align-items:center;gap:6px">'
+            +'<span style="font-size:10px;font-weight:600;letter-spacing:1px;color:'+labelColor+'">'+label+'</span>'
+            +'<span style="padding:8px 16px;border-radius:8px;font-size:14px;font-weight:600;font-family:\'Space Mono\',monospace;background:'+boxBg+';color:'+boxColor+';border:'+boxBorder+'">'+escHtml(v)+'</span>'
+            +'</div>';
+          return (i>0?'<span style="color:var(--muted);font-size:18px;margin:0 4px;align-self:center;margin-top:18px">→</span>':'')+box;
+        }).join('');
+        rutaLocalHtml = '<div style="margin-bottom:20px">'
+          +'<div style="font-family:\'Space Mono\',monospace;font-size:22px;font-weight:700;margin-bottom:4px">'
+          +'<span style="color:#ef4444">'+escHtml(primeraL)+'</span> <span style="color:var(--muted)">→</span> <span style="color:var(--text)">'+escHtml(ultimaL)+'</span></div>'
+          +'<div style="font-size:12px;color:var(--muted)">'+(nHopsL>=0?nHopsL:0)+' saltos (reconstruida con tu firmware local; Fortinet no publica esta ruta oficialmente)</div>'
+          +'</div>'
+          +'<div style="display:flex;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:24px;padding:16px;background:var(--bg3);border-radius:10px">'+hopsHtmlL+'</div>';
+      }
     }
     // Agrupar por subcarpeta
     const grupos = {};
@@ -1895,10 +1918,10 @@ async function actualizarUrlFortinet(){
     // Ordenar archivos por versión y extraer build
     const extraerBuild = fn => { const m = fn.match(/build(\d+)/); return m ? m[1] : ''; };
     const verToNum2 = v => { const p = (v||'').split('.').map(Number); return p[0]*10000+(p[1]||0)*100+(p[2]||0); };
-    resultado.innerHTML = hopsResultadoHtml + '<div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted)">Firmware disponibles para '+escHtml(model)+(from&&to?' ('+escHtml(from)+' → '+escHtml(to)+')':'')+'</div>'+
+    resultado.innerHTML = hopsResultadoHtml + rutaLocalHtml + '<div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--muted)">Firmware disponibles para '+escHtml(model)+(from&&to?' ('+escHtml(from)+' → '+escHtml(to)+')':'')+'</div>'+
       (files.length===0 ? '<div style="color:var(--muted);font-size:13px">No hay firmware para esas versiones.</div>' :
       Object.entries(grupos).map(([sub,flist])=>{
-        const sorted = [...flist].sort((a,b)=>verToNum2(extraerVersion(a.file))-verToNum2(extraerVersion(b.file)));
+        const sorted = [...flist].sort((a,b)=>verToNum2(resolverVersionConBuild(a.file, versionesSalto, modelKey))-verToNum2(resolverVersionConBuild(b.file, versionesSalto, modelKey)));
         return `<div style="margin-bottom:16px">
           <div style="font-size:11px;color:#f0a639;font-weight:500;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">${escHtml(sub)}</div>
           <table style="width:100%;border-collapse:collapse">
@@ -1910,7 +1933,7 @@ async function actualizarUrlFortinet(){
               <th></th>
             </tr></thead>
             <tbody>${sorted.map((f,i)=>{
-              const ver = extraerVersion(f.file);
+              const ver = resolverVersionConBuild(f.file, versionesSalto, modelKey);
               const build = extraerBuild(f.file);
               const isFrom = ver === from.replace(/[MF]$/,'');
               const isTo = ver === to.replace(/[MF]$/,'');
@@ -1951,7 +1974,7 @@ function poblarComboboxFortinet(data){
   const selUp = document.getElementById('fortinet-model-select');
   if(!sel) return;
   sel.innerHTML = '<option value="">— Seleccionar modelo —</option>';
-  if(selUp) selUp.innerHTML = '<option value="">Seleccionar modelo...</option>';
+  if(selUp) selUp.innerHTML = '<option value="">Seleccionar modelo...</option><option value="__nuevo__">+ Nuevo modelo...</option>';
   data.forEach(m => {
     // Ver si tiene subcarpetas
     const subs = [...new Set(m.files.map(f => {
@@ -2033,7 +2056,7 @@ function onFntModelChange(){
     files = files.filter(f => f.path.split('/')[0] === subKey);
   }
   // Extraer versiones únicas ordenadas
-  const versiones = [...new Set(files.map(f => extraerVersion(f.file)).filter(Boolean))].sort((a,b)=>{
+  const versiones = [...new Set(files.map(f => resolverVersionConBuild(f.file, [], modelKey)).filter(Boolean))].sort((a,b)=>{
     const n = v => { const p=v.split('.').map(Number); return p[0]*10000+(p[1]||0)*100+(p[2]||0); };
     return n(a)-n(b);
   });
@@ -2152,9 +2175,33 @@ function extraerVersion(filename){
   m = filename.match(/v(\d+\.\d+\.\d+)/);
   return m ? m[1] : '';
 }
+// Builds de la rama principal (iguales para todos los modelos). Confirmados con notas de version
+// de Fortinet o con nombres de archivos que ya tenian la version escrita.
+const FORTINET_BUILD_GLOBAL = {
+  '1142':'6.2.5','1190':'6.2.7','1263':'6.2.10',
+  '1828':'6.4.5','1879':'6.4.6','1911':'6.4.7','1914':'6.4.8','1966':'6.4.9',
+  '2000':'6.4.10','2030':'6.4.11','2095':'6.4.15'
+};
+// Builds de ramas especiales (5xxx/6xxx): dependen del modelo, se agregan a mano.
+const FORTINET_BUILD_OVERRIDES = {
+  '60F': {'6414':'6.0.6','6083':'6.2.2','1112':'6.2.4','1778':'6.4.3','1828':'6.4.5'},
+  '100F': {'5978':'6.2.7'},
+  '40F': {'6811':'6.0.10'}
+};
+function resolverVersionConBuild(filename, tabla, modelKey){
+  const verDirecta = extraerVersion(filename);
+  if(verDirecta) return verDirecta;
+  const m = filename.match(/build(\d+)/);
+  if(!m) return '';
+  const build = m[1];
+  const hit = (tabla||[]).find(v => v.build === build);
+  if(hit) return hit.version;
+  const overrides = FORTINET_BUILD_OVERRIDES[modelKey] || {};
+  return overrides[build] || FORTINET_BUILD_GLOBAL[build] || '';
+}
 function renderFortinet(data, filtroVersiones){
   const cont = document.getElementById('fortinet-list');
-  const esAdmin = document.querySelector('.role-pill') && !document.querySelector('.role-pill.consulta');
+  const esAdmin = document.getElementById('nav-role') && !document.getElementById('nav-role').classList.contains('consulta');
   if(!data.length){ cont.innerHTML='<div style="color:var(--muted);padding:20px">No hay firmware cargados aún.</div>'; return; }
   cont.innerHTML = data.map(m=>{
     let files = m.files;
@@ -2192,41 +2239,290 @@ function renderFortinet(data, filtroVersiones){
     </div>`;
   }).join('');
 }
-async function subirFirmware(){
+function actualizarSubcarpetaNuevoModelo(){
+  const elModelo = document.getElementById('fortinet-nuevo-modelo');
+  const elTipo = document.getElementById('fortinet-nuevo-tipo');
+  const elSub = document.getElementById('fortinet-nuevo-sub');
+  if(!elModelo || !elTipo || !elSub) return;
+  const modelo = elModelo.value.trim().toUpperCase();
+  if(modelo) elSub.value = elTipo.value + '_' + modelo;
+}
+function onFortinetModelSelectChange(sel){
+  const esNuevo = sel.value === '__nuevo__';
+  const elModelo = document.getElementById('fortinet-nuevo-modelo');
+  const elTipo = document.getElementById('fortinet-nuevo-tipo');
+  const elSub = document.getElementById('fortinet-nuevo-sub');
+  if(elModelo) elModelo.style.display = esNuevo ? '' : 'none';
+  if(elTipo) elTipo.style.display = esNuevo ? '' : 'none';
+  if(elSub) elSub.style.display = esNuevo ? '' : 'none';
+}
+function subirFirmware(){
   const raw = document.getElementById('fortinet-model-select').value;
-  const [model, sub] = raw.split('|');
-  const file = document.getElementById('fortinet-file-input').files[0];
+  let model, sub;
+  if(raw === '__nuevo__'){
+    const elModelo = document.getElementById('fortinet-nuevo-modelo');
+    const elSub = document.getElementById('fortinet-nuevo-sub');
+    model = (elModelo ? elModelo.value : '').trim().toUpperCase();
+    sub = (elSub ? elSub.value : '').trim();
+  } else {
+    [model, sub] = raw.split('|');
+  }
+  const files = Array.from(document.getElementById('fortinet-file-input').files || []);
   const verInput = document.getElementById('fortinet-version-input');
   const ver = verInput ? verInput.value.trim() : '';
   const msg = document.getElementById('fortinet-upload-msg');
   if(!model){ msg.innerHTML='<span style="color:#fca5a5">Seleccione un modelo primero.</span>'; return; }
-  if(!file){ return; }
+  if(model && !/^[A-Za-z0-9_-]+$/.test(model)){ msg.innerHTML='<span style="color:#fca5a5">Nombre de modelo invalido: solo letras, numeros, guion y guion bajo</span>'; return; }
+  if(sub && !/^[A-Za-z0-9_-]+$/.test(sub)){ msg.innerHTML='<span style="color:#fca5a5">Nombre de subcarpeta invalido: solo letras, numeros, guion y guion bajo</span>'; return; }
+  if(!files.length){ return; }
   if(ver && !/^\d+\.\d+\.\d+$/.test(ver)){
     msg.innerHTML='<span style="color:#fca5a5">Formato de version invalido. Use algo como 6.2.7</span>';
     return;
   }
-  const fd = new FormData();
-  fd.append('file', file);
-  msg.innerHTML='<span style="color:var(--muted)">Subiendo...</span>';
-  let url = '/api/fortinet/upload/'+encodeURIComponent(model);
-  const params = [];
-  if(sub) params.push('sub='+encodeURIComponent(sub));
-  if(ver) params.push('ver='+encodeURIComponent(ver));
-  if(params.length) url += '?'+params.join('&');
-  const r = await fetch(url,{method:'POST',body:fd}).then(r=>r.json());
-  if(r.success){
-    msg.innerHTML='<span style="color:#34d399">✓ '+escHtml(r.filename)+' subido correctamente.</span>';
-    document.getElementById('fortinet-file-input').value='';
-    if(verInput) verInput.value='';
-    cargarFortinet();
-  } else {
-    msg.innerHTML='<span style="color:#fca5a5">Error: '+escHtml(r.message||'No se pudo subir')+'</span>';
+  const existentesModelo = (fortinetData.find(m=>m.model===model) || {}).files || [];
+  const existentesSet = new Set(existentesModelo.map(f=>f.path));
+  const conflictos = files.filter(f => {
+    const relPath = sub ? (sub+'/'+f.name) : f.name;
+    return existentesSet.has(relPath);
+  });
+  if(conflictos.length){
+    document.getElementById('confirm-msg').innerHTML = 'Ya existe'+(conflictos.length>1?'n':'')+' '+conflictos.length+' archivo(s) con ese nombre:<br><br>' + conflictos.map(f=>'&bull; '+escHtml(f.name)).join('<br>') + '<br><br>Deseas sobrescribirlos?';
+    document.getElementById('confirm-ok-btn').textContent='Sobrescribir';
+    document.getElementById('confirm-ok-btn').onclick = function(){
+      closeModal('modal-confirm');
+      ejecutarColaSubidaFirmware(model, sub, ver, files, true);
+    };
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
   }
+  ejecutarColaSubidaFirmware(model, sub, ver, files, false);
+}
+async function ejecutarColaSubidaFirmware(model, sub, ver, files, overwrite){
+  const msg = document.getElementById('fortinet-upload-msg');
+  const progWrap = document.getElementById('fortinet-upload-progress-wrap');
+  const progBar = document.getElementById('fortinet-upload-progress-bar');
+  const verInput = document.getElementById('fortinet-version-input');
+  const total = files.length;
+  const resultados = [];
+  if(progWrap) progWrap.style.display='block';
+  for(let i=0;i<total;i++){
+    const file = files[i];
+    msg.innerHTML='<span style="color:var(--muted)">Archivo '+(i+1)+'/'+total+': '+escHtml(file.name)+' - 0%</span>';
+    if(progBar) progBar.style.width='0%';
+    try{
+      const r = await subirUnFirmware(model, sub, (total===1?ver:''), file, overwrite, (pct)=>{
+        if(progBar) progBar.style.width=pct+'%';
+        msg.innerHTML='<span style="color:var(--muted)">Archivo '+(i+1)+'/'+total+': '+escHtml(file.name)+' - '+pct+'%</span>';
+      });
+      resultados.push({name:file.name, ok:r.success, message:r.message});
+    }catch(e){
+      resultados.push({name:file.name, ok:false, message:'Error de conexion'});
+    }
+  }
+  if(progWrap) progWrap.style.display='none';
+  const okList = resultados.filter(r=>r.ok);
+  const failList = resultados.filter(r=>!r.ok);
+  let html = '';
+  if(okList.length) html += '<span style="color:#34d399">\u2713 '+okList.length+' archivo(s) subido(s) correctamente.</span>';
+  if(failList.length){
+    if(html) html += '<br>';
+    html += '<span style="color:#fca5a5">\u2717 '+failList.length+' fallaron: '+failList.map(f=>escHtml(f.name)+' ('+escHtml(f.message||'error')+')').join(', ')+'</span>';
+  }
+  msg.innerHTML = html;
+  document.getElementById('fortinet-file-input').value='';
+  if(verInput) verInput.value='';
+  const elModelo2 = document.getElementById('fortinet-nuevo-modelo');
+  const elTipo2 = document.getElementById('fortinet-nuevo-tipo');
+  const elSub2 = document.getElementById('fortinet-nuevo-sub');
+  if(elModelo2) elModelo2.value='';
+  if(elTipo2) elTipo2.value='FGT';
+  if(elSub2) elSub2.value='';
+  onFortinetModelSelectChange({value:''});
+  cargarFortinet();
+}
+function subirUnFirmware(model, sub, ver, file, overwrite, onProgress){
+  return new Promise((resolve, reject)=>{
+    const fd = new FormData();
+    fd.append('file', file);
+    let url = '/api/fortinet/upload/'+encodeURIComponent(model);
+    const params = [];
+    if(sub) params.push('sub='+encodeURIComponent(sub));
+    if(ver) params.push('ver='+encodeURIComponent(ver));
+    if(overwrite) params.push('overwrite=1');
+    if(params.length) url += '?'+params.join('&');
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url);
+    xhr.upload.onprogress = function(e){
+      if(e.lengthComputable){
+        onProgress(Math.round((e.loaded/e.total)*100));
+      }
+    };
+    xhr.onload = function(){
+      let r;
+      try{ r = JSON.parse(xhr.responseText); }catch(e){ r = null; }
+      if(xhr.status>=200 && xhr.status<300 && r && r.success){
+        resolve({success:true, filename:r.filename});
+      } else {
+        resolve({success:false, message: r && r.message ? r.message : ('Error del servidor ('+xhr.status+')')});
+      }
+    };
+    xhr.onerror = function(){ resolve({success:false, message:'Error de conexion'}); };
+    xhr.ontimeout = function(){ resolve({success:false, message:'Tiempo de espera agotado'}); };
+    xhr.timeout = 300000;
+    xhr.send(fd);
+  });
 }
 async function eliminarFirmware(model, filename){
   if(!confirm('¿Eliminar '+filename+'?')) return;
   const r = await fetch('/api/fortinet/'+encodeURIComponent(model)+'/'+encodeURIComponent(filename),{method:'DELETE'}).then(r=>r.json());
   if(r.success) cargarFortinet();
+  else alert('Error al eliminar: '+(r.message||''));
+}
+// CISCO IOS
+let ciscoData = [];
+async function cargarCisco(){
+  const cont = document.getElementById('cisco-list');
+  cont.innerHTML = '<div style="color:var(--muted);padding:20px">Cargando...</div>';
+  try {
+    ciscoData = await fetch('/api/cisco/list').then(r=>r.json());
+    poblarDatalistCisco(ciscoData);
+    renderCisco(ciscoData);
+  } catch(e){ cont.innerHTML='<div style="color:var(--muted)">Error al cargar imagenes IOS.</div>'; }
+}
+function poblarDatalistCisco(data){
+  const dl = document.getElementById('cisco-models-datalist');
+  if(!dl) return;
+  dl.innerHTML = data.map(m => '<option value="'+escHtml(m.model)+'">').join('');
+}
+function renderCisco(data){
+  const cont = document.getElementById('cisco-list');
+  const esAdmin = document.getElementById('nav-role') && !document.getElementById('nav-role').classList.contains('consulta');
+  if(!data.length){ cont.innerHTML='<div style="color:var(--muted);padding:20px">No hay imagenes IOS cargadas aun.</div>'; return; }
+  cont.innerHTML = data.map(m=>{
+    return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#1ba0d7;display:inline-block"></span>
+        <span style="font-size:13px;font-weight:500">${escHtml(m.model)}</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:auto">${m.files.length} archivo${m.files.length!==1?'s':''}</span>
+      </div>
+      ${m.files.map(f=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border)">
+          <span style="font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;flex:1;word-break:break-all">${escHtml(f.file)}</span>
+          <div style="display:flex;gap:6px">
+            <button onclick="descargarCisco(this,'${escHtml(m.model)}','${escHtml(f.path)}')" style="font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);cursor:pointer;white-space:nowrap;min-width:92px">↓ Descargar</button>
+            ${esAdmin?`<button onclick="eliminarCisco('${escHtml(m.model)}','${escHtml(f.path)}')" style="font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);cursor:pointer;white-space:nowrap">✕ Eliminar</button>`:''}
+          </div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+async function descargarCisco(btn, model, relpath){
+  const original = btn.innerHTML;
+  btn.style.pointerEvents = 'none';
+  btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:50px;height:6px;border-radius:3px;background:rgba(255,255,255,0.15);overflow:hidden;display:inline-block"><span class="dl-bar" style="display:block;height:100%;width:0%;background:#60a5fa"></span></span><span class="dl-pct">0%</span></span>';
+  const barEl = btn.querySelector('.dl-bar');
+  const pctEl = btn.querySelector('.dl-pct');
+  try {
+    const url = '/cisco/'+model.split('/').map(encodeURIComponent).join('/')+'/'+relpath.split('/').map(encodeURIComponent).join('/');
+    const resp = await fetch(url);
+    if(!resp.ok || !resp.body) throw new Error('No se pudo descargar');
+    const total = parseInt(resp.headers.get('Content-Length')||'0',10);
+    const reader = resp.body.getReader();
+    let received = 0;
+    const chunks = [];
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      chunks.push(value);
+      received += value.length;
+      if(total){
+        const pct = Math.round((received/total)*100);
+        if(barEl) barEl.style.width = pct+'%';
+        if(pctEl) pctEl.textContent = pct+'%';
+      } else if(pctEl) {
+        pctEl.textContent = (received/1048576).toFixed(1)+'MB';
+      }
+    }
+    const blob = new Blob(chunks);
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = relpath.split('/').pop();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(blobUrl), 4000);
+    btn.innerHTML = original;
+  } catch(e){
+    btn.innerHTML = original;
+    alert('Error al descargar: '+(e.message||''));
+  } finally {
+    btn.style.pointerEvents = '';
+  }
+}
+function prepararSubidaCisco(){
+  document.getElementById('cisco-file-input').click();
+}
+function detectarModeloCisco(filename){
+  const m = filename.match(/^([A-Za-z0-9]+)[-_]/);
+  return m ? m[1].toUpperCase() : '';
+}
+function detectarVersionCisco(filename){
+  const m = filename.match(/(\d+\.\d+\.\d+)/);
+  return m ? m[1] : '';
+}
+async function subirCisco(){
+  const file = document.getElementById('cisco-file-input').files[0];
+  const msg = document.getElementById('cisco-upload-msg');
+  if(!file){ return; }
+  const modelInput = document.getElementById('cisco-model-input');
+  let model = (modelInput.value||'').trim();
+  if(!model){
+    model = detectarModeloCisco(file.name);
+    if(model) modelInput.value = model;
+  }
+  if(!model){ msg.innerHTML='<span style="color:#fca5a5">No se pudo detectar el modelo del nombre del archivo. Escribalo manualmente e intente de nuevo.</span>'; return; }
+  const version = detectarVersionCisco(file.name);
+  const fd = new FormData();
+  fd.append('file', file);
+  msg.innerHTML='<div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:8px;border-radius:4px;background:var(--bg3);overflow:hidden"><div id="cisco-upload-bar" style="height:100%;width:0%;background:#3b82f6;transition:width 0.15s"></div></div><span id="cisco-upload-pct" style="font-size:12px;color:var(--muted);min-width:38px;text-align:right">0%</span></div>';
+  const url = '/api/cisco/upload/'+encodeURIComponent(model);
+  await new Promise((resolve)=>{
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', url);
+    xhr.upload.onprogress = (e)=>{
+      if(e.lengthComputable){
+        const pct = Math.round((e.loaded/e.total)*100);
+        const bar = document.getElementById('cisco-upload-bar');
+        const pctEl = document.getElementById('cisco-upload-pct');
+        if(bar) bar.style.width = pct+'%';
+        if(pctEl) pctEl.textContent = pct+'%';
+      }
+    };
+    xhr.onload = ()=>{
+      let r;
+      try { r = JSON.parse(xhr.responseText); } catch(e){ r = { success:false, message:'Respuesta invalida del servidor' }; }
+      if(r.success){
+        msg.innerHTML='<span style="color:#34d399">✓ '+escHtml(r.filename)+' subido correctamente en modelo '+escHtml(model)+(version?' (version '+escHtml(version)+')':'')+'.</span>';
+        document.getElementById('cisco-file-input').value='';
+        modelInput.value='';
+        cargarCisco();
+      } else {
+        msg.innerHTML='<span style="color:#fca5a5">Error: '+escHtml(r.message||'No se pudo subir')+'</span>';
+      }
+      resolve();
+    };
+    xhr.onerror = ()=>{
+      msg.innerHTML='<span style="color:#fca5a5">Error de red al subir el archivo.</span>';
+      resolve();
+    };
+    xhr.send(fd);
+  });
+}
+async function eliminarCisco(model, filename){
+  if(!confirm('¿Eliminar '+filename+'?')) return;
+  const r = await fetch('/api/cisco/'+encodeURIComponent(model)+'/'+encodeURIComponent(filename),{method:'DELETE'}).then(r=>r.json());
+  if(r.success) cargarCisco();
   else alert('Error al eliminar: '+(r.message||''));
 }
 // BACKUP DRIVE
@@ -2372,7 +2668,16 @@ async function doSearch(){
       let fields=colsToShow.filter(k=>!oltExcluir.has(k)).map(k=>{
         const val=row[k]!==undefined&&row[k]!==''?row[k]:null;
         const isMono=MONO.some(m=>k.toLowerCase().includes(m.toLowerCase()));
-        return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val?escHtml(String(val)):'&mdash;')+'</div></div>';
+        const isConectable = !!val && (k==='Ip_Gestion' || k==='Ip_Admin_Switch');
+        let valorHtml;
+        if(isConectable){
+          const ipEsc = escHtml(String(val));
+          valorHtml = '<span class="ip-conectable" data-ip="'+ipEsc+'" style="cursor:pointer;border-bottom:1px dashed currentColor" title="Doble clic para conectar (SSH/Telnet)">'+ipEsc+'</span>'
+            + '<span class="ping-dot" data-ip="'+ipEsc+'" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280;margin-left:6px;vertical-align:middle" title="Verificando..."></span>';
+        } else {
+          valorHtml = val?escHtml(String(val)):'&mdash;';
+        }
+        return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+valorHtml+'</div></div>';
       }).join('');
       // Si hay OLT coincidente, agregar separador y campos FRAME/SLOT/PORT/ONU ID
       if(oltMatch){
@@ -2408,9 +2713,65 @@ async function doSearch(){
   } else {
     container.innerHTML=html;
   }
+  iniciarPingsAutomaticos(container);
   // Seleccionar primer card por defecto
   const firstCard=container.querySelector('.result-card');
   if(firstCard) firstCard.click();
+}
+function iniciarPingsAutomaticos(container){
+  if(!container) return;
+  container.querySelectorAll('.ip-conectable[data-ip]').forEach(el=>{
+    el.ondblclick = (ev)=>{ ev.stopPropagation(); conectarEquipo(ev, el.getAttribute('data-ip')); };
+  });
+  container.querySelectorAll('.ping-dot[data-ip]').forEach(dot=>{
+    const ip = dot.getAttribute('data-ip');
+    if(!ip) return;
+    fetch('/api/esmax/ping/'+encodeURIComponent(ip)).then(r=>r.json()).then(r=>{
+      const colores = {verde:'#22c55e', amarillo:'#eab308', rojo:'#ef4444'};
+      dot.style.background = colores[r.estado] || '#6b7280';
+      dot.title = r.estado==='verde' ? ('Responde'+(r.avg!=null?' ('+r.avg+' ms)':'')) : r.estado==='amarillo' ? ('Perdida parcial: '+r.loss+'%') : 'No responde al ping';
+    }).catch(()=>{ dot.style.background='#6b7280'; dot.title='Error al verificar conectividad'; });
+  });
+}
+async function conectarEquipo(ev, ip){
+  document.querySelectorAll('.conectar-popup').forEach(p=>p.remove());
+  const pop = document.createElement('div');
+  pop.className = 'conectar-popup';
+  pop.style.cssText = 'position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;box-shadow:0 8px 24px rgba(0,0,0,0.4);min-width:220px;font-size:13px';
+  const x = Math.min(ev.clientX, window.innerWidth-240);
+  const y = Math.min(ev.clientY, window.innerHeight-260);
+  pop.style.left = x+'px';
+  pop.style.top = y+'px';
+  pop.innerHTML = '<div style="color:var(--muted)">Verificando puertos de '+escHtml(ip)+'...</div>';
+  document.body.appendChild(pop);
+  const cerrar = (e)=>{ if(!pop.contains(e.target)){ pop.remove(); document.removeEventListener('click',cerrar); } };
+  setTimeout(()=>document.addEventListener('click',cerrar), 50);
+  const PUERTOS = [
+    {port:22, proto:'ssh2', label:'SSH :22'},
+    {port:2022, proto:'ssh2', label:'SSH :2022'},
+    {port:23, proto:'telnet', label:'Telnet :23'},
+    {port:2023, proto:'telnet', label:'Telnet :2023'}
+  ];
+  let abiertos = {};
+  try {
+    const r = await fetch('/api/network/portcheck/'+encodeURIComponent(ip)).then(r=>r.json());
+    if(r && r.success) abiertos = r.resultados||{};
+  } catch(e){}
+  const hayAbiertos = Object.values(abiertos).some(v=>v);
+  let htmlPop = '';
+  if(hayAbiertos){
+    htmlPop += '<div style="color:var(--muted);margin-bottom:6px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Puertos abiertos</div>';
+    PUERTOS.filter(p=>abiertos[p.port]).forEach(p=>{
+      htmlPop += '<a href="'+p.proto+'://'+encodeURIComponent(ip)+':'+p.port+'" onclick="setTimeout(()=>document.querySelectorAll(\'.conectar-popup\').forEach(p=>p.remove()),50)" style="display:block;padding:6px 10px;border-radius:6px;background:rgba(34,197,94,0.12);color:#4ade80;text-decoration:none;margin-bottom:4px">&#9679; '+p.label+'</a>';
+    });
+  } else {
+    htmlPop += '<div style="color:var(--muted);margin-bottom:6px;font-size:12px">No se detecto ningun puerto abierto (o no se pudo verificar).</div>';
+  }
+  htmlPop += '<div style="color:var(--muted);margin:8px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Forzar manualmente</div>';
+  PUERTOS.forEach(p=>{
+    htmlPop += '<a href="'+p.proto+'://'+encodeURIComponent(ip)+':'+p.port+'" onclick="setTimeout(()=>document.querySelectorAll(\'.conectar-popup\').forEach(p=>p.remove()),50)" style="display:block;padding:5px 10px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:12px">'+p.label+'</a>';
+  });
+  pop.innerHTML = htmlPop;
 }
 function verMasResultados(){
   const ocultos=document.getElementById('resultados-ocultos');
@@ -2664,8 +3025,7 @@ async function guardarServicio(){
   });
   const codigo = data.Codigo_Servicio||'';
   if(!codigo){showAlert(errEl,'El campo Codigo_Servicio es obligatorio','error');return;}
-  if(data.Ip_Gestion && !validarIP(data.Ip_Gestion)){showAlert(errEl,'IP Gestión no tiene formato válido (ej: 192.168.1.1 o https://...)','error');return;}
-  if(data.Ip_Admin_Switch && !validarIP(data.Ip_Admin_Switch)){showAlert(errEl,'Ip_Admin_Switch no tiene formato válido','error');return;}
+  // Campos de IP aceptan texto libre (IPs, URLs, nombres o notas) y pueden quedar vacios
   let r;
   const sheet = (window._servicioSheet === 'BD_Clientes_OLT' ? 'BD_Servicios' : window._servicioSheet) || 'BD_Servicios';
   if(window._modalEditMode){
@@ -3029,18 +3389,62 @@ async function buscarIPDB(){
   const cont=document.getElementById('ipdb-result');
   cont.innerHTML='<div style="color:var(--muted);padding:20px">Buscando...</div>';
   const r=await fetch('/api/ipdb/search?q='+encodeURIComponent(q)).then(r=>r.json());
+  window._ipdbDataRef = r||[];
+  window._ipdbLastResult = null;
   if(!r||r.length===0){cont.innerHTML='<div class="not-found"><p>No se encontraron equipos para <strong>'+escHtml(q)+'</strong></p></div>';return;}
-  cont.innerHTML=r.map(row=>`
-    <div class="result-card" style="margin-bottom:12px">
+  cont.innerHTML=r.map((row,idx)=>`
+    <div class="result-card" data-idx="${idx}" style="margin-bottom:12px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarIPDB(${idx},this)">
       <div class="result-header">
         <div class="result-code">${escHtml(row.Equipo||row.IP||'')}</div>
         <div style="display:flex;gap:8px;align-items:center">
-          ${currentUser&&currentUser.role==='admin'?`<button class="btn btn-yellow" style="padding:4px 10px;font-size:12px" onclick='editarIPDB(${JSON.stringify(row)})'>Editar</button><button class="btn btn-red" style="padding:4px 10px;font-size:12px" onclick="eliminarIPDB(${row.id})">X</button>`:''}
+          <button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();copiarIPDBIdx(this,${idx})">Copiar</button>
           <div class="result-badge">Encontrado</div>
         </div>
       </div>
       <div class="result-grid">${Object.keys(row).filter(k=>k!=='id').map(k=>'<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value">'+escHtml(String(row[k]||''))+'</div></div>').join('')}</div>
     </div>`).join('');
+}
+function copiarIPDBIdx(btn, idx){
+  const row = window._ipdbDataRef[idx];
+  if(!row) return;
+  const txt = Object.entries(row).filter(([k])=>k!=='id').map(([k,v])=>k+': '+(v||'')).join('\n');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  btn.textContent='¡Copiado!';btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
+}
+function seleccionarIPDB(idx, el){
+  window._ipdbLastResult = window._ipdbDataRef[idx];
+  document.querySelectorAll('#ipdb-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
+  el.style.borderColor='var(--accent)';
+}
+function editarResultadoIPDB(){
+  if(!window._ipdbLastResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  editarIPDB(window._ipdbLastResult);
+}
+function eliminarResultadoIPDB(){
+  if(!window._ipdbLastResult){
+    document.getElementById('confirm-msg').textContent='Primero seleccione un registro haciendo clic en el.';
+    document.getElementById('confirm-ok-btn').textContent='Aceptar';
+    document.getElementById('confirm-ok-btn').onclick=()=>closeModal('modal-confirm');
+    document.getElementById('modal-confirm').classList.add('open');
+    return;
+  }
+  document.getElementById('confirm-msg').textContent='Esta seguro que desea eliminar este equipo?';
+  document.getElementById('confirm-ok-btn').textContent='Eliminar';
+  document.getElementById('confirm-ok-btn').onclick = async function(){
+    closeModal('modal-confirm');
+    await fetch('/api/ipdb/'+window._ipdbLastResult.id,{method:'DELETE'});
+    window._ipdbLastResult=null;
+    buscarIPDB();
+  };
+  document.getElementById('modal-confirm').classList.add('open');
 }
 function abrirModalIPDB(){
   editIPDB=false;lastIPDB=null;
@@ -3081,7 +3485,7 @@ const PESTANAS_LABELS = {
   consulta: 'Consulta', esmax: 'Esmax', ipdb: 'Buscador IP', ipo: 'IPO', sdwan: 'SDWAN',
   agenda: 'Agenda', foscuras: 'F.Oscuras', fwonpremise: 'FW On-Premise', telefonia: 'Telefonía',
   datos: 'Base de Datos', usuarios: 'Usuarios', auditoria: 'Auditoría', ftp: 'FTP',
-  icmp: 'Monitor ICMP', fortinet: 'Fortinet'
+  icmp: 'Monitor ICMP', fortinet: 'Fortinet', cisco: 'Cisco IOS'
 };
 let gruposConfig = {};
 let grupoSeleccionado = null;
@@ -3442,10 +3846,30 @@ function validarIP(ip){
   const url = /^https?:\/\/.+/;
   return ipv4.test(ip) || url.test(ip);
 }
+let _nodoIpdbTimer = null;
 function onNodoInput(inputEl){
   const ip = buscarIpPorNodo(inputEl.value);
   const ipEl = document.getElementById('field-srv-Ip_Admin_Switch');
-  if(ipEl&&ip){ ipEl.value=ip; ipEl.style.borderColor='var(--success)'; setTimeout(()=>ipEl.style.borderColor='',2000); }
+  if(ipEl&&ip){
+    ipEl.value=ip; ipEl.style.borderColor='var(--success)'; setTimeout(()=>ipEl.style.borderColor='',2000);
+  } else if(ipEl){
+    clearTimeout(_nodoIpdbTimer);
+    const nodoVal = inputEl.value.trim();
+    if(nodoVal){
+      _nodoIpdbTimer = setTimeout(async () => {
+        try{
+          const r = await fetch('/api/ipdb/search?q='+encodeURIComponent(nodoVal)).then(r=>r.json());
+          const match = (r||[]).find(row => (row.Equipo||'').toString().trim().toUpperCase() === nodoVal.toUpperCase());
+          if(match && match.IP && document.getElementById('field-srv-Ip_Admin_Switch')){
+            const ipEl2 = document.getElementById('field-srv-Ip_Admin_Switch');
+            ipEl2.value = match.IP;
+            ipEl2.style.borderColor='var(--success)';
+            setTimeout(()=>ipEl2.style.borderColor='',2000);
+          }
+        }catch(e){}
+      }, 400);
+    }
+  }
   const oltSection = document.getElementById('olt-section');
   if(oltSection){
     if(inputEl.value.trim().toUpperCase().includes('OLT')){
@@ -3669,18 +4093,23 @@ function renderIpoTable(data){
   }
   const MONO_KEYS = ['ipo','ip','vlan','sbc','gw','gestion','publica'];
   const cols = Object.keys(data[0]);
-  cont.innerHTML = data.map((row,idx) => {
-    const ipo = escHtml(row.IPO||'');
+  const filas = data.map((row,idx) => {
     const isIntegral = (row.IPO||'').toUpperCase().includes('PRUEBA');
-    const fields = cols.map(k => {
+    const tds = cols.map(k => {
       const val = (row[k] !== undefined && row[k] !== '') ? escHtml(String(row[k])) : '';
       const isMono = MONO_KEYS.some(m => k.toLowerCase().includes(m));
-      return '<div class="result-field"><div class="rf-label">'+escHtml(k)+'</div><div class="rf-value '+(isMono?'mono':'')+(val?'':' empty')+'">'+(val||'&mdash;')+'</div></div>';
+      return '<td style="white-space:nowrap;'+(isMono?'font-family:\'Space Mono\',monospace;':'')+'color:'+(val?'var(--text)':'var(--muted)')+'">'+(val||'&mdash;')+'</td>';
     }).join('');
-    let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="copiarIPOIdx(this,'+idx+')">Copiar</button>';
-    if(isIntegral) btns += '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)" onclick="mostrarCredsIPO('+idx+')">&#128273; Creds</button>';
-    return '<div class="result-card" data-idx="'+idx+'" style="margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="seleccionarIPO('+idx+',this)"><div class="result-header"><div style="display:flex;align-items:center;gap:10px"><input type="checkbox" class="chk-ipo" data-idx="'+idx+'" onclick="event.stopPropagation();actualizarBotonMasivoIPO()" style="width:16px;height:16px;cursor:pointer"><div class="result-code">'+ipo+'</div></div><div style="display:flex;gap:8px;align-items:center">'+btns+'<div class="result-badge">IPO</div></div></div><div class="result-grid">'+fields+'</div></div>';
+    let btns = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();copiarIPOIdx(this,'+idx+')">Copiar</button>';
+    if(isIntegral) btns += '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(245,158,11,0.15);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);margin-left:6px" onclick="event.stopPropagation();mostrarCredsIPO('+idx+')">&#128273; Creds</button>';
+    return '<tr data-idx="'+idx+'" style="cursor:pointer" onclick="seleccionarIPO('+idx+',this)">'
+      + '<td style="width:1%"><input type="checkbox" class="chk-ipo" data-idx="'+idx+'" onclick="event.stopPropagation();actualizarBotonMasivoIPO()" style="width:16px;height:16px;cursor:pointer"></td>'
+      + tds
+      + '<td class="nq-right">'+btns+'</td>'
+      + '</tr>';
   }).join('');
+  const heads = '<th style="width:1%"></th>'+cols.map(c=>'<th>'+escHtml(c)+'</th>').join('')+'<th class="nq-right">Acciones</th>';
+  cont.innerHTML = '<div class="nq-table-wrap"><table class="nq-table"><thead><tr>'+heads+'</tr></thead><tbody>'+filas+'</tbody></table></div>';
 }
 
 function actualizarBotonMasivoIPO(){
@@ -3704,8 +4133,8 @@ async function eliminarMasivoIPO(){
 }
 function seleccionarIPO(idx, el){
   lastIPOResult = window._ipoDataRef[idx];
-  document.querySelectorAll('#ipo-result .result-card').forEach(c=>c.style.borderColor='rgba(255,255,255,0.08)');
-  el.style.borderColor='var(--accent)';
+  document.querySelectorAll('#ipo-result tbody tr').forEach(r=>r.style.background='');
+  el.style.background='rgba(59,130,246,0.15)';
 }
 
 function copiarIPOIdx(btn, idx){
@@ -4385,7 +4814,8 @@ function telRender(data) {
       const displayVal = isPass && val ? '••••••••' : escHtml(String(val || '—'));
       return '<div class="result-field"><div class="rf-label">' + escHtml(k) + '</div><div class="rf-value">' + displayVal + '</div></div>';
     }).join('');
-    return '<div class="result-card" data-idx="' + idx + '" style="margin-bottom:12px;cursor:pointer;transition:border-color 0.2s" onclick="telSeleccionar(' + idx + ',this)"><div class="result-header"><div class="result-code">' + escHtml(String(row[cfg.keyField]||'')) + '</div><div class="result-badge">' + escHtml(cfg.label) + '</div></div><div class="result-grid">' + fields + '</div></div>';
+    const btnCopiar = '<button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)" onclick="event.stopPropagation();telCopiar(this,' + idx + ')">Copiar</button>';
+    return '<div class="result-card" data-idx="' + idx + '" style="margin-bottom:12px;cursor:pointer;transition:border-color 0.2s" onclick="telSeleccionar(' + idx + ',this)"><div class="result-header"><div class="result-code">' + escHtml(String(row[cfg.keyField]||'')) + '</div><div style="display:flex;gap:8px;align-items:center">' + btnCopiar + '<div class="result-badge">' + escHtml(cfg.label) + '</div></div></div><div class="result-grid">' + fields + '</div></div>';
   }).join('');
 }
 
@@ -4393,6 +4823,15 @@ function telSeleccionar(idx, el) {
   _telLastResult = (window._telDataRef || _telData)[idx];
   document.querySelectorAll('#tel-result .result-card').forEach(c => c.style.borderColor = 'rgba(255,255,255,0.08)');
   el.style.borderColor = 'var(--accent)';
+}
+function telCopiar(btn, idx){
+  const row = (window._telDataRef || _telData)[idx];
+  if(!row) return;
+  const txt = Object.entries(row).filter(([k])=>k!=='_id').map(([k,v])=>k+': '+(v||'')).join('\n');
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  btn.textContent='¡Copiado!';btn.style.color='#34d399';
+  setTimeout(()=>{btn.textContent='Copiar';btn.style.color='';},2000);
 }
 
 function telAgregar() {
@@ -4664,19 +5103,18 @@ function renderAgendaPorZona(data, cfg, zonaCol){
     html += '<span style="font-size:13px;font-weight:600;color:'+color+'">'+escHtml(zona)+'</span>';
     html += '<span style="font-size:11px;color:var(--muted)">('+filas.length+')</span>';
     html += '</div>';
-    html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
-    html += '<thead><tr>'+cols.map(c=>'<th style="text-align:left;padding:8px 10px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap">'+escHtml(c)+'</th>').join('')+'</tr></thead>';
+    html += '<table class="nq-table"><thead><tr>'+cols.map(c=>'<th>'+escHtml(c)+'</th>').join('')+'</tr></thead>';
     html += '<tbody>';
     filas.forEach(function(item){
       const row = item.row, idx = item.idx;
-      html += '<tr style="cursor:pointer;border-bottom:1px solid var(--border)" onclick="seleccionarAgenda('+idx+',this)" onmouseover="this.style.background=\'var(--bg2)\'" onmouseout="if(!this.hasAttribute(\'data-sel\'))this.style.background=\'\'">';
+      html += '<tr style="cursor:pointer" onclick="seleccionarAgenda('+idx+',this)">';
       html += cols.map(function(c){
         const val = row[c]!==undefined && row[c]!=='' ? String(row[c]) : '';
-        return '<td style="padding:8px 10px;white-space:nowrap;color:'+(val?'var(--text)':'var(--muted)')+'">'+(val?escHtml(val):'&mdash;')+'</td>';
+        return '<td style="white-space:nowrap;color:'+(val?'var(--text)':'var(--muted)')+'">'+(val?escHtml(val):'&mdash;')+'</td>';
       }).join('');
       html += '</tr>';
     });
-    html += '</tbody></table></div></div>';
+    html += '</tbody></table></div>';
   });
   cont.innerHTML = html;
 }

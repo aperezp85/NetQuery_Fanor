@@ -16,7 +16,22 @@ const cors = require('cors');
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      baseUri: ["'self'"],
+      scriptSrcAttr: ["'unsafe-inline'"]
+    }
+  }
+}));
 app.use(cors({ origin: 'https://172.17.35.109', credentials: true }));
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
@@ -123,7 +138,8 @@ app.put('/api/grupos', requireSuperAdmin, (req, res) => {
   const nuevo = req.body;
   if (!nuevo || typeof nuevo !== 'object') return res.json({ success: false, message: 'Datos invalidos' });
   const actual = loadGrupos();
-  Object.keys(nuevo).forEach(k => { if (k !== 'superadmin') actual[k] = nuevo[k]; });
+  const CLAVES_PROHIBIDAS = ['superadmin', '__proto__', 'constructor', 'prototype'];
+  Object.keys(nuevo).forEach(k => { if (!CLAVES_PROHIBIDAS.includes(k)) actual[k] = nuevo[k]; });
   saveJSON(GRUPOS_FILE, actual);
   logAudit(req, 'GRUPOS_EDITAR', 'Permisos actualizados');
   res.json({ success: true });
@@ -168,7 +184,7 @@ const AUDIT_FILE = './data/audit.json';
 if (!fs.existsSync(AUDIT_FILE)) saveJSON(AUDIT_FILE, []);
 function logAudit(req, accion, detalle) {
   try {
-    const logs = loadJSON(AUDIT_FILE) || [];
+    const _rawLogs = loadJSON(AUDIT_FILE); const logs = Array.isArray(_rawLogs) ? _rawLogs : [];
     logs.push({
       id: Date.now() + Math.random().toString(36).slice(2,7),
       fecha: new Date().toISOString(),
@@ -228,8 +244,73 @@ app.post('/api/agenda-config', requireSuperAdmin, (req, res) => {
   res.json({ success: true, key, config: config[key] });
 });
 
+const KMZ_INDEX_FILE = './data/kmz_index.json';
+const KMZ_DIR = './uploads/kmz';
+if (!fs.existsSync(KMZ_INDEX_FILE)) saveJSON(KMZ_INDEX_FILE, []);
+if (!fs.existsSync(KMZ_DIR)) fs.mkdirSync(KMZ_DIR, { recursive: true });
+const kmzUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, KMZ_DIR),
+    filename: (req, file, cb) => cb(null, Date.now() + '_' + path.basename(file.originalname))
+  }),
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.kmz') cb(null, true); else cb(new Error('Solo se permiten archivos .kmz'));
+  },
+  limits: { fileSize: 20 * 1024 * 1024 }
+});
+app.get('/api/kmz/search', requireAuth, (req, res) => {
+  const q = sanitizeText(req.query.q || '', 200).trim().toUpperCase();
+  const index = loadJSON(KMZ_INDEX_FILE) || [];
+  if (!q) return res.json([]);
+  const found = index.filter(r => (r.Codigo_Servicio || '').toUpperCase().includes(q) || (r.Cliente || '').toUpperCase().includes(q));
+  res.json(found);
+});
+app.post('/api/kmz/upload', requireAdmin, kmzUpload.single('file'), (req, res) => {
+  if (!req.file) return res.json({ success: false, message: 'No se recibio archivo' });
+  const codigo = sanitizeText(req.body.codigo, 100).trim();
+  const cliente = sanitizeText(req.body.cliente, 200).trim();
+  if (!codigo) { fs.unlinkSync(req.file.path); return res.json({ success: false, message: 'El codigo de servicio es obligatorio' }); }
+  const index = loadJSON(KMZ_INDEX_FILE) || [];
+  const existente = index.find(r => (r.Codigo_Servicio || '').trim() === codigo);
+  if (existente) {
+    const oldPath = path.join(KMZ_DIR, existente.filename);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    existente.Cliente = cliente;
+    existente.filename = req.file.filename;
+    existente.originalName = req.file.originalname;
+    existente.uploadedAt = new Date().toISOString();
+  } else {
+    index.push({ Codigo_Servicio: codigo, Cliente: cliente, filename: req.file.filename, originalName: req.file.originalname, uploadedAt: new Date().toISOString() });
+  }
+  saveJSON(KMZ_INDEX_FILE, index);
+  logAudit(req, 'KMZ_SUBIR', 'Codigo: ' + codigo + ', Cliente: ' + cliente);
+  res.json({ success: true });
+});
+app.get('/api/kmz/download/:codigo', requireAuth, (req, res) => {
+  const codigo = sanitizeText(req.params.codigo, 100).trim();
+  const index = loadJSON(KMZ_INDEX_FILE) || [];
+  const item = index.find(r => (r.Codigo_Servicio || '').trim() === codigo);
+  if (!item) return res.status(404).json({ success: false, message: 'No encontrado' });
+  const filePath = path.join(KMZ_DIR, item.filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ success: false, message: 'Archivo no encontrado en disco' });
+  res.download(filePath, item.originalName || item.filename);
+});
+app.delete('/api/kmz/:codigo', requireAdmin, (req, res) => {
+  const codigo = sanitizeText(req.params.codigo, 100).trim();
+  let index = loadJSON(KMZ_INDEX_FILE) || [];
+  const item = index.find(r => (r.Codigo_Servicio || '').trim() === codigo);
+  if (!item) return res.json({ success: false, message: 'No encontrado' });
+  const filePath = path.join(KMZ_DIR, item.filename);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  index = index.filter(r => (r.Codigo_Servicio || '').trim() !== codigo);
+  saveJSON(KMZ_INDEX_FILE, index);
+  logAudit(req, 'KMZ_ELIMINAR', 'Codigo: ' + codigo);
+  res.json({ success: true });
+});
+
 app.get('/api/auditoria', requireSuperAdmin, (req, res) => {
-  const logs = loadJSON(AUDIT_FILE) || [];
+  const _rawLogs = loadJSON(AUDIT_FILE); const logs = Array.isArray(_rawLogs) ? _rawLogs : [];
   res.json(logs.slice().reverse().slice(0, 1000));
 });
 
@@ -452,6 +533,33 @@ app.get('/api/esmax/ping/:ip', requireAuth, (req, res) => {
   });
 });
 
+// Chequeo rapido de puertos abiertos (para conexion SSH/Telnet desde la UI)
+app.get('/api/network/portcheck/:ip', requireAuth, (req, res) => {
+  const net = require('net');
+  const ip = sanitizeIP(req.params.ip);
+  if (!ip) return res.json({ success: false, message: 'IP invalida' });
+  const puertos = [22, 2022, 23, 2023];
+  const resultados = {};
+  let pendientes = puertos.length;
+  puertos.forEach(port => {
+    const socket = new net.Socket();
+    let done = false;
+    const finalizar = (abierto) => {
+      if (done) return;
+      done = true;
+      resultados[port] = abierto;
+      socket.destroy();
+      pendientes--;
+      if (pendientes === 0) res.json({ success: true, ip, resultados });
+    };
+    socket.setTimeout(800);
+    socket.once('connect', () => finalizar(true));
+    socket.once('timeout', () => finalizar(false));
+    socket.once('error', () => finalizar(false));
+    socket.connect(port, ip);
+  });
+});
+
 // Backup Esmax con fecha
 const ESMAX_BACKUP_DIR = './data/esmax_backups';
 if (!fs.existsSync(ESMAX_BACKUP_DIR)) fs.mkdirSync(ESMAX_BACKUP_DIR, { recursive: true });
@@ -581,7 +689,7 @@ app.post('/api/ipdb', requireAdmin, (req, res) => {
   res.json({ success: true });
 });
 
-app.put('/api/ipdb/:id', requireAdmin, (req, res) => {
+app.put('/api/ipdb/:id', requireSuperAdmin, (req, res) => {
   const db = loadJSON(IP_FILE) || [];
   const idx = db.findIndex(r => r.id == req.params.id);
   if (idx === -1) return res.json({ success: false, message: 'No encontrado' });
@@ -593,7 +701,7 @@ app.put('/api/ipdb/:id', requireAdmin, (req, res) => {
   res.json({ success: true });
 });
 
-app.delete('/api/ipdb/:id', requireAdmin, (req, res) => {
+app.delete('/api/ipdb/:id', requireSuperAdmin, (req, res) => {
   let db = loadJSON(IP_FILE) || [];
   const target = db.find(r => r.id == req.params.id);
   if (!target) return res.json({ success: false, message: 'Registro no encontrado' });
@@ -685,7 +793,7 @@ app.get('/api/ipdb/download', requireAdmin, async (req, res) => {
   } catch(e) { res.status(500).json({ error: 'Error interno del servidor' }); }
 });
 
-app.delete('/api/ipdb/all', requireAdmin, (req, res) => {
+app.delete('/api/ipdb/all', requireSuperAdmin, (req, res) => {
   saveJSON(IP_FILE, []);
   res.json({ success: true });
 });
@@ -926,6 +1034,7 @@ const fortinetUpload = multer({
       const dir = req._fortinetDestDir;
       const ver = req.query.ver ? String(req.query.ver).trim() : '';
       const verValida = /^\d+\.\d+\.\d+$/.test(ver);
+      const overwrite = req.query.overwrite === '1';
       let name = file.originalname;
       if (verValida && !name.includes(ver)) {
         const ext = path.extname(name);
@@ -933,9 +1042,13 @@ const fortinetUpload = multer({
         name = base + '_' + ver + ext;
       }
       if (dir && fs.existsSync(path.join(dir, name))) {
-        return cb(new Error('Ya existe un archivo con ese nombre: ' + name));
+        if (overwrite) {
+          try { fs.unlinkSync(path.join(dir, name)); } catch (e) { return cb(new Error('No se pudo sobrescribir el archivo existente: ' + e.message)); }
+        } else {
+          return cb(new Error('Ya existe un archivo con ese nombre: ' + name));
+        }
       }
-      if (dir && verValida) {
+      if (dir && verValida && !overwrite) {
         const existentes = fs.readdirSync(dir).filter(f => f.includes('_' + ver + '.') || f.includes('v' + ver + '.') || f.includes('v' + ver + '-'));
         if (existentes.length) {
           return cb(new Error('Ya existe firmware con la version ' + ver + ': ' + existentes.join(', ')));
@@ -960,8 +1073,12 @@ app.post('/api/fortinet/upload/:model', requireAdmin, (req, res, next) => {
 app.delete('/api/fortinet/:model/:filename', requireAdmin, (req, res) => {
   const model = sanitizeModelStrict(req.params.model);
   if (!model) return res.json({ success: false, message: 'Nombre de modelo invalido' });
-  const filename = path.basename(req.params.filename);
-  const filePath = path.join(__dirname, 'public', 'fortinet', model, filename);
+  const modelDir = path.join(__dirname, 'public', 'fortinet', model);
+  const relPath = req.params.filename;
+  const filePath = path.normalize(path.join(modelDir, relPath));
+  if (filePath !== modelDir && !filePath.startsWith(modelDir + path.sep)) {
+    return res.json({ success: false, message: 'Ruta invalida' });
+  }
   if (!fs.existsSync(filePath)) return res.json({ success: false, message: 'Archivo no encontrado' });
   fs.unlinkSync(filePath);
   logAudit(req, 'FORTINET_FIRMWARE_ELIMINAR', 'Modelo: ' + req.params.model + ', Archivo: ' + req.params.filename);
@@ -970,6 +1087,78 @@ app.delete('/api/fortinet/:model/:filename', requireAdmin, (req, res) => {
 
 app.get('/api/fortinet/list', requireAuth, (req, res) => {
   const base = path.join(__dirname, 'public', 'fortinet');
+  if (!fs.existsSync(base)) return res.json([]);
+  const getAllFiles = (dir, prefix) => {
+    const entries = fs.readdirSync(dir);
+    let files = [];
+    entries.forEach(e => {
+      const full = path.join(dir, e);
+      const rel = prefix ? prefix+'/'+e : e;
+      if (fs.statSync(full).isDirectory()) {
+        files = files.concat(getAllFiles(full, rel));
+      } else {
+        files.push({ file: e, path: rel });
+      }
+    });
+    return files;
+  };
+  const models = fs.readdirSync(base).filter(f => fs.statSync(path.join(base, f)).isDirectory());
+  const result = models.map(model => {
+    const files = getAllFiles(path.join(base, model), '');
+    return { model, files };
+  }).filter(m => m.files.length > 0);
+  res.json(result);
+});
+
+// ── CISCO IOS ─────────────────────────────────────────────────────────────
+const ciscoUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const model = sanitizeModelStrict(req.params.model);
+      if (!model) return cb(new Error('Nombre de modelo invalido'));
+      let dir = path.join(__dirname, 'public', 'cisco', model);
+      const sub = req.query.sub ? sanitizeModelStrict(req.query.sub) : null;
+      if (req.query.sub && !sub) return cb(new Error('Nombre de subcarpeta invalido'));
+      if (sub) dir = path.join(dir, sub);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      req._ciscoDestDir = dir;
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+      const dir = req._ciscoDestDir;
+      const name = file.originalname;
+      if (dir && fs.existsSync(path.join(dir, name))) {
+        return cb(new Error('Ya existe un archivo con ese nombre: ' + name));
+      }
+      cb(null, name);
+    }
+  }),
+  limits: { fileSize: 2048 * 1024 * 1024 }
+});
+
+app.post('/api/cisco/upload/:model', requireAdmin, (req, res, next) => {
+  if (!sanitizeModelStrict(req.params.model)) return res.json({ success: false, message: 'Nombre de modelo invalido: solo letras, numeros, guion y guion bajo' });
+  ciscoUpload.single('file')(req, res, (err) => {
+    if (err) return res.json({ success: false, message: err.message });
+    if (!req.file) return res.json({ success: false, message: 'No se recibi\u00f3 archivo' });
+    logAudit(req, 'CISCO_IOS_SUBIR', 'Modelo: ' + req.params.model + ', Archivo: ' + req.file.originalname);
+    res.json({ success: true, filename: req.file.originalname });
+  });
+});
+
+app.delete('/api/cisco/:model/:filename', requireAdmin, (req, res) => {
+  const model = sanitizeModelStrict(req.params.model);
+  if (!model) return res.json({ success: false, message: 'Nombre de modelo invalido' });
+  const filename = path.basename(req.params.filename);
+  const filePath = path.join(__dirname, 'public', 'cisco', model, filename);
+  if (!fs.existsSync(filePath)) return res.json({ success: false, message: 'Archivo no encontrado' });
+  fs.unlinkSync(filePath);
+  logAudit(req, 'CISCO_IOS_ELIMINAR', 'Modelo: ' + req.params.model + ', Archivo: ' + req.params.filename);
+  res.json({ success: true });
+});
+
+app.get('/api/cisco/list', requireAuth, (req, res) => {
+  const base = path.join(__dirname, 'public', 'cisco');
   if (!fs.existsSync(base)) return res.json([]);
   const getAllFiles = (dir, prefix) => {
     const entries = fs.readdirSync(dir);
@@ -1155,6 +1344,244 @@ app.get('/api/monitoreo/equipos', requireAuth, (req, res) => {
   } catch(e) { res.json([]); }
 });
 
+// ── MANEJO DE ERRORES DE MULTER (evita páginas HTML de error en la API) ─────
+app.use((err, req, res, next) => {
+  if (err && err.name === 'MulterError') {
+    return res.status(400).json({ success: false, error: err.message });
+  }
+  if (err) {
+    console.error('[Error no manejado]', err.message);
+    return res.status(500).json({ success: false, error: 'Error interno del servidor' });
+  }
+  next();
+});
+
+
+// --- PROTECCION /api/folders: login admin + nombres validos + auditoria ---
+const FOLDER_MODULOS = ['fortinet', 'cisco', 'kmz'];
+const FOLDER_SEGMENTO = /^[A-Za-z0-9_-][A-Za-z0-9_.-]*$/;
+function folderSegmentoValido(s) {
+  return typeof s === 'string' && s.length > 0 && s.length <= 100 && FOLDER_SEGMENTO.test(s);
+}
+app.use('/api/folders', requireAdmin, (req, res, next) => {
+  const esGet = req.method === 'GET';
+  const datos = esGet ? req.query : (req.body || {});
+  const fallo = (msg) => res.status(400).json({ success: false, message: msg, folders: [] });
+  if (!FOLDER_MODULOS.includes(datos.module)) return fallo('Modulo invalido');
+  const sub = esGet ? datos.path : datos.targetPath;
+  if (sub !== undefined && sub !== '') {
+    if (typeof sub !== 'string') return fallo('Ruta invalida');
+    const partes = sub.split('/').filter(Boolean);
+    if (!partes.every(folderSegmentoValido)) return fallo('Ruta invalida');
+  }
+  for (const campo of ['folderName', 'oldName', 'newName']) {
+    if (datos[campo] !== undefined && !folderSegmentoValido(datos[campo])) {
+      return fallo('Nombre de carpeta invalido: solo letras, numeros, punto, guion y guion bajo');
+    }
+  }
+  if (!esGet) {
+    const nombre = datos.folderName || datos.oldName || '';
+    const detalle = datos.module + '/' + (datos.targetPath || '') + ' ' + nombre + (datos.newName ? ' -> ' + datos.newName : '');
+    logAudit(req, 'CARPETA_' + req.path.replace(/\W/g, '').toUpperCase(), detalle.slice(0, 300));
+  }
+  next();
+});
+
+// --- GESTIÓN AVANZADA DE CARPETAS (RENAME/DELETE) ---
+app.post('/api/folders/rename', (req, res) => {
+    try {
+        const { module: mod, targetPath, oldName, newName } = req.body;
+        if (!mod || !oldName || !newName) {
+            return res.json({ success: false, message: 'Faltan datos requeridos' });
+        }
+        const cleanNew = newName.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+        let baseDir = '';
+        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
+        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
+        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
+        else return res.json({ success: false, message: 'Módulo inválido' });
+
+        const oldTarget = targetPath ? path.join(baseDir, targetPath, oldName) : path.join(baseDir, oldName);
+        const newTarget = targetPath ? path.join(baseDir, targetPath, cleanNew) : path.join(baseDir, cleanNew);
+        
+        const resolvedBase = path.resolve(baseDir);
+        if (!path.resolve(oldTarget).startsWith(resolvedBase) || !path.resolve(newTarget).startsWith(resolvedBase)) {
+            return res.json({ success: false, message: 'Ruta no permitida' });
+        }
+
+        if (!fs.existsSync(oldTarget)) {
+            return res.json({ success: false, message: 'La carpeta de origen no existe' });
+        }
+
+        fs.renameSync(oldTarget, newTarget);
+        return res.json({ success: true, message: 'Carpeta renombrada exitosamente' });
+    } catch (err) {
+        console.error('Error al renombrar carpeta:', err);
+        return res.json({ success: false, message: 'Error interno al renombrar la carpeta' });
+    }
+});
+
+app.post('/api/folders/delete', (req, res) => {
+    try {
+        const { module: mod, targetPath, folderName } = req.body;
+        if (!mod || !folderName) {
+            return res.json({ success: false, message: 'Faltan datos requeridos' });
+        }
+        let baseDir = '';
+        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
+        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
+        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
+        else return res.json({ success: false, message: 'Módulo inválido' });
+
+        const fullTarget = targetPath ? path.join(baseDir, targetPath, folderName) : path.join(baseDir, folderName);
+        const resolvedBase = path.resolve(baseDir);
+        const resolvedTarget = path.resolve(fullTarget);
+
+        if (!resolvedTarget.startsWith(resolvedBase)) {
+            return res.json({ success: false, message: 'Ruta no permitida' });
+        }
+
+        if (!fs.existsSync(resolvedTarget)) {
+            return res.json({ success: false, message: 'La carpeta no existe' });
+        }
+
+        fs.rmSync(resolvedTarget, { recursive: true, force: true });
+        return res.json({ success: true, message: 'Carpeta eliminada exitosamente' });
+    } catch (err) {
+        console.error('Error al eliminar carpeta:', err);
+        return res.json({ success: false, message: 'Error interno al eliminar la carpeta' });
+    }
+});
+
+
+// --- GESTIÓN DE CARPETAS API ---
+app.get('/api/folders/list', (req, res) => {
+    try {
+        const { module: mod, path: subpath } = req.query;
+        let baseDir = '';
+        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
+        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
+        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
+        else return res.json({ success: false, message: 'Módulo inválido', folders: [] });
+
+        const targetDir = subpath ? path.join(baseDir, subpath) : baseDir;
+        const resolvedBase = path.resolve(baseDir);
+        const resolvedTarget = path.resolve(targetDir);
+
+        if (!resolvedTarget.startsWith(resolvedBase) || !fs.existsSync(resolvedTarget)) {
+            return res.json({ success: true, folders: [] });
+        }
+
+        const items = fs.readdirSync(resolvedTarget, { withFileTypes: true });
+        const folders = items.filter(item => item.isDirectory()).map(item => item.name);
+        return res.json({ success: true, folders });
+    } catch (err) {
+        console.error('Error al listar carpetas:', err);
+        return res.json({ success: false, message: 'Error interno', folders: [] });
+    }
+});
+
+app.post('/api/folders/create', (req, res) => {
+    try {
+        const { module: mod, targetPath, folderName } = req.body;
+        if (!mod || !folderName) {
+            return res.json({ success: false, message: 'Faltan datos requeridos' });
+        }
+        const cleanName = folderName.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+        let baseDir = '';
+        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
+        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
+        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
+        else return res.json({ success: false, message: 'Módulo inválido' });
+
+        const parentDir = targetPath ? path.join(baseDir, targetPath) : baseDir;
+        const newFolderDir = path.join(parentDir, cleanName);
+
+        const resolvedBase = path.resolve(baseDir);
+        if (!path.resolve(newFolderDir).startsWith(resolvedBase)) {
+            return res.json({ success: false, message: 'Ruta no permitida' });
+        }
+
+        if (!fs.existsSync(parentDir)) {
+            fs.mkdirSync(parentDir, { recursive: true });
+        }
+
+        if (!fs.existsSync(newFolderDir)) {
+            fs.mkdirSync(newFolderDir, { recursive: true });
+        }
+
+        return res.json({ success: true, message: 'Carpeta creada exitosamente' });
+    } catch (err) {
+        console.error('Error al crear carpeta:', err);
+        return res.json({ success: false, message: 'Error interno al crear carpeta' });
+    }
+});
+
+app.post('/api/folders/rename', (req, res) => {
+    try {
+        const { module: mod, targetPath, oldName, newName } = req.body;
+        if (!mod || !oldName || !newName) {
+            return res.json({ success: false, message: 'Faltan datos requeridos' });
+        }
+        const cleanNew = newName.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+        let baseDir = '';
+        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
+        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
+        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
+        else return res.json({ success: false, message: 'Módulo inválido' });
+
+        const oldTarget = targetPath ? path.join(baseDir, targetPath, oldName) : path.join(baseDir, oldName);
+        const newTarget = targetPath ? path.join(baseDir, targetPath, cleanNew) : path.join(baseDir, cleanNew);
+        
+        const resolvedBase = path.resolve(baseDir);
+        if (!path.resolve(oldTarget).startsWith(resolvedBase) || !path.resolve(newTarget).startsWith(resolvedBase)) {
+            return res.json({ success: false, message: 'Ruta no permitida' });
+        }
+
+        if (!fs.existsSync(oldTarget)) {
+            return res.json({ success: false, message: 'La carpeta de origen no existe' });
+        }
+
+        fs.renameSync(oldTarget, newTarget);
+        return res.json({ success: true, message: 'Carpeta renombrada exitosamente' });
+    } catch (err) {
+        console.error('Error al renombrar carpeta:', err);
+        return res.json({ success: false, message: 'Error interno al renombrar la carpeta' });
+    }
+});
+
+app.post('/api/folders/delete', (req, res) => {
+    try {
+        const { module: mod, targetPath, folderName } = req.body;
+        if (!mod || !folderName) {
+            return res.json({ success: false, message: 'Faltan datos requeridos' });
+        }
+        let baseDir = '';
+        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
+        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
+        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
+        else return res.json({ success: false, message: 'Módulo inválido' });
+
+        const fullTarget = targetPath ? path.join(baseDir, targetPath, folderName) : path.join(baseDir, folderName);
+        const resolvedBase = path.resolve(baseDir);
+        const resolvedTarget = path.resolve(fullTarget);
+
+        if (!resolvedTarget.startsWith(resolvedBase)) {
+            return res.json({ success: false, message: 'Ruta no permitida' });
+        }
+
+        if (!fs.existsSync(resolvedTarget)) {
+            return res.json({ success: false, message: 'La carpeta no existe' });
+        }
+
+        fs.rmSync(resolvedTarget, { recursive: true, force: true });
+        return res.json({ success: true, message: 'Carpeta eliminada exitosamente' });
+    } catch (err) {
+        console.error('Error al eliminar carpeta:', err);
+        return res.json({ success: false, message: 'Error interno al eliminar la carpeta' });
+    }
+});
+
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
 app.listen(PORT, () => { console.log('NetQuery corriendo en http://localhost:' + PORT); });
 
@@ -1220,7 +1647,7 @@ function limpiarBackupAntiguo() {
 // ── ROTACIÓN AUTOMÁTICA DE AUDIT ─────────────────────────────────────────────
 function rotarAudit() {
   try {
-    const logs = loadJSON(AUDIT_FILE) || [];
+    const _rawLogs = loadJSON(AUDIT_FILE); const logs = Array.isArray(_rawLogs) ? _rawLogs : [];
     if (logs.length > 2000) {
       const nuevos = logs.slice(-1000);
       saveJSON(AUDIT_FILE, nuevos);
