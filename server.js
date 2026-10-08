@@ -1661,10 +1661,49 @@ setInterval(() => {
   if(h === 3 && m === 0) rotarAudit();
 }, 60 * 1000);
 
+// -- BACKUP AUTOMATICO IPDB: cada 24 h, conserva los ultimos 14 --
+function edadUltimoBackupIPDBHoras() {
+  try {
+    const tiempos = fs.readdirSync(IP_BACKUP_DIR)
+      .filter(f => f.startsWith('ipdb-backup-') && f.endsWith('.xlsx'))
+      .map(f => fs.statSync(path.join(IP_BACKUP_DIR, f)).mtimeMs);
+    if (!tiempos.length) return Infinity;
+    return (Date.now() - Math.max(...tiempos)) / 3600000;
+  } catch (e) { return Infinity; }
+}
+
+async function ejecutarBackupIPDB() {
+  try {
+    const db = loadJSON(IP_FILE) || [];
+    if (!fs.existsSync(IP_BACKUP_DIR)) fs.mkdirSync(IP_BACKUP_DIR, { recursive: true });
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const filename = 'ipdb-backup-' + ts + '.xlsx';
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('IPdb');
+    if (db.length > 0) {
+      const cols = Object.keys(db[0]);
+      worksheet.columns = cols.map(c => ({ header: c, key: c, width: 20 }));
+      db.forEach(row => worksheet.addRow(row));
+    }
+    await workbook.xlsx.writeFile(path.join(IP_BACKUP_DIR, filename));
+    const files = fs.readdirSync(IP_BACKUP_DIR)
+      .filter(f => f.startsWith('ipdb-backup-') && f.endsWith('.xlsx'))
+      .sort();
+    if (files.length > 14) {
+      files.slice(0, files.length - 14).forEach(f => fs.unlinkSync(path.join(IP_BACKUP_DIR, f)));
+    }
+    console.log('[Backup IPDB] Backup creado: ' + filename + ' (' + db.length + ' registros)');
+  } catch (e) {
+    console.error('[Backup IPDB] Error en backup:', e.message);
+    sendAlert('Error en backup automatico de IPDB', 'El backup de IPDB fallo: <strong>' + e.message + '</strong>');
+  }
+}
+
 function programarBackupBD() {
   // Polling cada minuto: evita setTimeout con valores > 2147483647ms (limite 32-bit Node.js)
   let backupEjecutado = false;
   let limpiezaEjecutada = false;
+  let ipdbUltimoIntento = 0;
   console.log("[Backup BD] Scheduler iniciado (polling cada minuto)");
   setInterval(() => {
     const ahora = new Date();
@@ -1678,6 +1717,11 @@ function programarBackupBD() {
     if(diaMes===1 && hora===0 && min===0) {
       if(!limpiezaEjecutada) { limpiarBackupAntiguo(); limpiezaEjecutada=true; }
     } else { limpiezaEjecutada=false; }
+    // IPDB: si el ultimo backup tiene 24 h o mas, crear uno (maximo un intento por hora)
+    if (Date.now() - ipdbUltimoIntento > 3600000 && edadUltimoBackupIPDBHoras() >= 24) {
+      ipdbUltimoIntento = Date.now();
+      ejecutarBackupIPDB();
+    }
   }, 60 * 1000);
 }
 
