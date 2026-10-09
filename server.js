@@ -796,11 +796,6 @@ app.get('/api/ipdb/download', requireAdmin, async (req, res) => {
   } catch(e) { res.status(500).json({ error: 'Error interno del servidor' }); }
 });
 
-app.delete('/api/ipdb/all', requireSuperAdmin, (req, res) => {
-  saveJSON(IP_FILE, []);
-  res.json({ success: true });
-});
-
 app.get('/api/ipdb/search', requireAuth, (req, res) => {
   const db = loadJSON(IP_FILE) || [];
   const q = (req.query.q || '').trim().toUpperCase();
@@ -1517,71 +1512,6 @@ app.post('/api/folders/create', (req, res) => {
     } catch (err) {
         console.error('Error al crear carpeta:', err);
         return res.json({ success: false, message: 'Error interno al crear carpeta' });
-    }
-});
-
-app.post('/api/folders/rename', (req, res) => {
-    try {
-        const { module: mod, targetPath, oldName, newName } = req.body;
-        if (!mod || !oldName || !newName) {
-            return res.json({ success: false, message: 'Faltan datos requeridos' });
-        }
-        const cleanNew = newName.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
-        let baseDir = '';
-        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
-        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
-        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
-        else return res.json({ success: false, message: 'Módulo inválido' });
-
-        const oldTarget = targetPath ? path.join(baseDir, targetPath, oldName) : path.join(baseDir, oldName);
-        const newTarget = targetPath ? path.join(baseDir, targetPath, cleanNew) : path.join(baseDir, cleanNew);
-        
-        const resolvedBase = path.resolve(baseDir);
-        if (!path.resolve(oldTarget).startsWith(resolvedBase) || !path.resolve(newTarget).startsWith(resolvedBase)) {
-            return res.json({ success: false, message: 'Ruta no permitida' });
-        }
-
-        if (!fs.existsSync(oldTarget)) {
-            return res.json({ success: false, message: 'La carpeta de origen no existe' });
-        }
-
-        fs.renameSync(oldTarget, newTarget);
-        return res.json({ success: true, message: 'Carpeta renombrada exitosamente' });
-    } catch (err) {
-        console.error('Error al renombrar carpeta:', err);
-        return res.json({ success: false, message: 'Error interno al renombrar la carpeta' });
-    }
-});
-
-app.post('/api/folders/delete', (req, res) => {
-    try {
-        const { module: mod, targetPath, folderName } = req.body;
-        if (!mod || !folderName) {
-            return res.json({ success: false, message: 'Faltan datos requeridos' });
-        }
-        let baseDir = '';
-        if (mod === 'fortinet') baseDir = path.join(__dirname, 'public', 'fortinet');
-        else if (mod === 'cisco') baseDir = path.join(__dirname, 'public', 'cisco');
-        else if (mod === 'kmz') baseDir = path.join(__dirname, 'uploads', 'kmz');
-        else return res.json({ success: false, message: 'Módulo inválido' });
-
-        const fullTarget = targetPath ? path.join(baseDir, targetPath, folderName) : path.join(baseDir, folderName);
-        const resolvedBase = path.resolve(baseDir);
-        const resolvedTarget = path.resolve(fullTarget);
-
-        if (!resolvedTarget.startsWith(resolvedBase)) {
-            return res.json({ success: false, message: 'Ruta no permitida' });
-        }
-
-        if (!fs.existsSync(resolvedTarget)) {
-            return res.json({ success: false, message: 'La carpeta no existe' });
-        }
-
-        fs.rmSync(resolvedTarget, { recursive: true, force: true });
-        return res.json({ success: true, message: 'Carpeta eliminada exitosamente' });
-    } catch (err) {
-        console.error('Error al eliminar carpeta:', err);
-        return res.json({ success: false, message: 'Error interno al eliminar la carpeta' });
     }
 });
 
