@@ -536,8 +536,11 @@ app.get('/api/esmax/ping/:ip', requireAuth, (req, res) => {
 // Chequeo rapido de puertos abiertos (para conexion SSH/Telnet desde la UI)
 app.get('/api/network/portcheck/:ip', requireAuth, (req, res) => {
   const net = require('net');
-  const ip = sanitizeIP(req.params.ip);
-  if (!ip) return res.json({ success: false, message: 'IP invalida' });
+  const ip = String(req.params.ip || '').trim().replace(/\/\d{1,2}$/, '');
+  const oct = ip.split('.').map(Number);
+  if (!net.isIPv4(ip) || oct[0] === 0 || oct[0] === 127 || oct[0] >= 224 || (oct[0] === 169 && oct[1] === 254)) {
+    return res.json({ success: false, message: 'IP invalida' });
+  }
   const puertos = [22, 2022, 23, 2023];
   const resultados = {};
   let pendientes = puertos.length;

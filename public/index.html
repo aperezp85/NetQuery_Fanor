@@ -4306,7 +4306,7 @@ async function eliminarMasivoSdwan(){
       body:JSON.stringify({sheet:'BD_Sdwan',keyField:'Codigo_Servicio',keyValue:row.Codigo_Servicio})
     }).then(r=>r.json());
   }
-  buscarSdwan();
+  cargarDatosSdwan();
 }
 function seleccionarSdwan(idx, el){
   lastSdwanResult = window._sdwanDataRef[idx];
@@ -4509,7 +4509,7 @@ async function eliminarMasivoFw(){
       body:JSON.stringify({sheet,keyField,keyValue:row.Nombre})
     }).then(r=>r.json());
   }
-  buscarFw();
+  cargarDatosFw();
 }
 function seleccionarFwCard(idx, tipo, el){
   const data = tipo.includes('INTERNET') ? (window._fwFiltI||fwInternetData) : (window._fwFiltO||fwOnPremiseData);
