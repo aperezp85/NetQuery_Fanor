@@ -56,8 +56,15 @@ _mailTransport.verify((err) => {
   if (err) console.error('[Mail] Error de configuracion:', err.message);
   else { _mailReady = true; console.log('[Mail] Listo para enviar notificaciones'); }
 });
+const _alertasUltimo = new Map();
 async function sendAlert(asunto, cuerpo) {
   if (!_mailReady || !process.env.MAIL_TO) return;
+  // Enfriamiento: el mismo asunto no se reenvia antes de MAIL_COOLDOWN_MIN minutos
+  const _enfriamiento = (parseInt(process.env.MAIL_COOLDOWN_MIN, 10) || 60) * 60000;
+  const _previo = _alertasUltimo.get(asunto);
+  if (_previo && Date.now() - _previo < _enfriamiento) return;
+  if (_alertasUltimo.size > 2000) _alertasUltimo.clear();
+  _alertasUltimo.set(asunto, Date.now());
   try {
     await _mailTransport.sendMail({
       from: '"Queulat Alertas" <' + process.env.MAIL_USER + '>',
@@ -153,6 +160,71 @@ function calcularPermisos(u) {
 const loginLimiter = rateLimit({ windowMs: 15*60*1000, max: 10, message: { success: false, message: 'Demasiados intentos, espera 15 minutos' } });
 const apiLimiter = rateLimit({ windowMs: 60*1000, max: 200, standardHeaders: true, legacyHeaders: false, message: { success: false, message: 'Demasiadas solicitudes, intenta de nuevo en un momento' } });
 app.use('/api/', apiLimiter);
+
+// -- PERMISOS POR GRUPO EN EL SERVIDOR --
+// PERMISOS_MODO=auditar (por defecto): solo registra lo que se negaria. PERMISOS_MODO=aplicar: bloquea con 403.
+const PERMISOS_MODO = String(process.env.PERMISOS_MODO || 'auditar').toLowerCase();
+const HOJA_A_PESTANA = {
+  BD_Sdwan: 'sdwan', BD_Fw_On_Premise: 'fwonpremise', BD_Fw_Internet_Seguro: 'fwonpremise',
+  BD_Ipo: 'ipo', BD_Webex: 'telefonia', BD_CUCM: 'telefonia'
+};
+const ACCION_POR_METODO = { GET: 'ver', POST: 'agregar', PUT: 'editar', DELETE: 'eliminar' };
+// Devuelve [pestana, accion o lista de acciones] o null si la ruta no depende de permisos de grupo.
+function clasificarRuta(metodo, ruta, body) {
+  const base = ACCION_POR_METODO[metodo];
+  if (!base) return null;
+  let m;
+  if (/^\/(consulta|sugerencias)(\/|$)/.test(ruta) || ruta === '/db/info') return ['consulta', 'ver'];
+  if (/^\/datos(\/|$)/.test(ruta)) return ['consulta', base];
+  if (/^\/esmax(\/|$)/.test(ruta)) {
+    if (metodo === 'GET' || ruta === '/esmax/historico') return ['esmax', 'ver'];
+    if (ruta === '/esmax/backup') return ['esmax', 'editar'];
+    return ['esmax', base];
+  }
+  if (/^\/ipdb(\/|$)/.test(ruta)) return ['ipdb', ruta === '/ipdb/backup' ? 'editar' : base];
+  if (/^\/ipo(\/|$)/.test(ruta)) return ['ipo', 'ver'];
+  if (/^\/fo(\/|$)/.test(ruta)) return ['foscuras', ruta === '/fo/reload' ? 'editar' : 'ver'];
+  if (/^\/(cucm|webex)(\/|$)/.test(ruta)) return ['telefonia', 'ver'];
+  if (/^\/fortinet(\/|$)/.test(ruta)) return ['fortinet', ruta === '/fortinet/upgrade-path' ? 'ver' : base];
+  if (/^\/ftp(\/|$)/.test(ruta)) return ['ftp', 'ver'];
+  if (/^\/icmp(\/|$)/.test(ruta)) {
+    if (metodo === 'GET' || ruta === '/icmp/historico') return ['icmp', 'ver'];
+    return ['icmp', base];
+  }
+  if (/^\/agenda-config(\/|$)/.test(ruta)) return ['agenda', base];
+  if ((m = ruta.match(/^\/hoja\/([^\/]+)$/))) {
+    const p = HOJA_A_PESTANA[decodeURIComponent(m[1])];
+    return p ? [p, 'ver'] : null;
+  }
+  if (ruta === '/multisheet') {
+    const p = HOJA_A_PESTANA[body && body.sheet];
+    return p ? [p, metodo === 'DELETE' ? 'eliminar' : ['agregar', 'editar']] : null;
+  }
+  return null;
+}
+let _gruposCache = null, _gruposHora = 0;
+const _permisosLog = new Map();
+function permisosPorRuta(req, res, next) {
+  const u = req.session && req.session.user;
+  if (!u || u.role === 'superadmin') return next();
+  const c = clasificarRuta(req.method, req.path, req.body);
+  if (!c) return next();
+  const pestana = c[0];
+  const acciones = Array.isArray(c[1]) ? c[1] : [c[1]];
+  if (!_gruposCache || Date.now() - _gruposHora > 5000) { _gruposCache = loadGrupos(); _gruposHora = Date.now(); }
+  const g = _gruposCache[u.grupo];
+  const p = (g && g.permisos && g.permisos[pestana]) || {};
+  if (acciones.some(a => p[a])) return next();
+  const k = u.username + '|' + req.method + ' ' + req.path;
+  if (!_permisosLog.has(k) || Date.now() - _permisosLog.get(k) > 3600000) {
+    if (_permisosLog.size > 5000) _permisosLog.clear();
+    _permisosLog.set(k, Date.now());
+    console.log('[PERMISOS][' + PERMISOS_MODO + '] ' + u.username + ' (' + u.grupo + ') ' + req.method + ' /api' + req.path + ' -> sin permiso ' + pestana + '.' + acciones.join('|'));
+  }
+  if (PERMISOS_MODO === 'aplicar') return res.status(403).json({ error: 'Acceso denegado: sin permiso para esta accion' });
+  next();
+}
+app.use('/api/', permisosPorRuta);
 app.post('/api/login', loginLimiter, (req, res) => { const { username, password } = req.body; if (!username || !password || !isValidUsername(username)) { logAudit(req, 'LOGIN_FALLIDO', 'Formato invalido: ' + sanitizeText(String(username||''), 60)); return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const users = loadJSON(USERS_FILE); const idx = users.findIndex(u => u.username === username && u.activo); if (idx === -1 || !bcrypt.compareSync(password, users[idx].passwordHash)) { logAudit(req, 'LOGIN_FALLIDO', 'Usuario: ' + username); const _ip = req.headers['x-real-ip'] || req.ip || ''; _loginFallidosPorIP[_ip] = (_loginFallidosPorIP[_ip] || 0) + 1; if (_loginFallidosPorIP[_ip] === 3) { sendAlert('Intentos fallidos de login', 'Se detectaron <strong>3 intentos fallidos</strong> desde IP <strong>' + _ip + '</strong> con usuario <strong>' + username + '</strong>.'); } return res.json({ success: false, message: 'Usuario o contrasena incorrectos' }); } const user = users[idx]; user.lastActivity = new Date().toISOString(); saveJSON(USERS_FILE, users); req.session.user = { id: user.id, username: user.username, role: user.role, grupo: user.grupo || (user.role==='superadmin'?'superadmin':'n2'), nombre: user.nombre, mustChangePassword: !!user.mustChangePassword }; const _ipLogin = req.headers['x-real-ip'] || req.ip || ''; delete _loginFallidosPorIP[_ipLogin]; logAudit(req, 'LOGIN_OK', ''); res.json({ success: true, user: { ...req.session.user, permisos: calcularPermisos(req.session.user) } }); });
 app.post('/api/logout', (req, res) => { logAudit(req, 'LOGOUT', ''); req.session.destroy(() => res.json({ success: true })); });
 app.get('/api/me', requireAuth, (req, res) => {
@@ -515,8 +587,23 @@ app.delete('/api/esmax/sites/:id', requireAdmin, (req, res) => {
 });
 
 // Ping a un sitio
+const _pingCache = new Map();
+function ipMonitoreada(ip) {
+  try {
+    return [].concat(loadJSON(ESMAX_FILE) || [], loadJSON(ICMP_FILE) || [])
+      .some(x => String(x.ip || '').trim() === ip);
+  } catch (e) { return false; }
+}
 app.get('/api/esmax/ping/:ip', requireAuth, (req, res) => {
-  const ip = req.params.ip.replace(/[^0-9.]/g, '');
+  const ip = String(req.params.ip || '').trim();
+  const oct = ip.split('.').map(Number);
+  // IP invalida (vacia, texto, N/A...): no se pinguea ni se avisa
+  if (!require('net').isIPv4(ip) || oct[0] === 0 || oct[0] === 127 || oct[0] >= 224 || (oct[0] === 169 && oct[1] === 254)) {
+    return res.json({ ip, loss: null, avg: null, estado: 'error', raw: '' });
+  }
+  // Cache de 20 s: las tarjetas de resultados piden el mismo ping muchas veces
+  const _c = _pingCache.get(ip);
+  if (_c && Date.now() - _c.t < 20000) return res.json(_c.r);
   exec('ping -c 5 -W 2 ' + ip, (err, stdout) => {
     const lines = stdout || '';
     const lossMatch = lines.match(/(\d+)% packet loss/);
@@ -526,10 +613,13 @@ app.get('/api/esmax/ping/:ip', requireAuth, (req, res) => {
     let estado = 'rojo';
     if (loss === 0 && avg !== null && avg < 100) estado = 'verde';
     else if (loss < 50) estado = 'amarillo';
-    if (estado === 'rojo') {
+    if (estado === 'rojo' && ipMonitoreada(ip)) {
       sendAlert('Equipo caido: ' + ip, 'El equipo <strong>' + ip + '</strong> no responde al ping. Perdida: <strong>' + loss + '%</strong>. Hora: ' + new Date().toLocaleString('es-CL'));
     }
-    res.json({ ip, loss, avg, estado, raw: lines });
+    const _r = { ip, loss, avg, estado, raw: lines };
+    _pingCache.set(ip, { t: Date.now(), r: _r });
+    if (_pingCache.size > 500) _pingCache.clear();
+    res.json(_r);
   });
 });
 
